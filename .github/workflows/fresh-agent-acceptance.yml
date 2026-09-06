@@ -1,0 +1,198 @@
+name: Fresh coding-agent acceptance
+
+on:
+  push:
+    branches:
+      - chatgpt/fresh-agent-acceptance-20260905
+  workflow_dispatch:
+
+jobs:
+  prepare:
+    name: Prepare sanitized sandbox
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Checkout acceptance control branch
+        uses: actions/checkout@v4
+
+      - name: Reconstruct capability-base source
+        run: |
+          bash acceptance_control/reconstruct_acceptance_source.sh "$RUNNER_TEMP/capability-base"
+
+      - name: Generate sanitized fresh-agent sandbox
+        run: |
+          python "$RUNNER_TEMP/capability-base/tools/create_acceptance_sandbox.py" "$RUNNER_TEMP/fresh-agent"
+
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("${{ runner.temp }}/fresh-agent")
+          manifest = root / "FILE_MANIFEST.txt"
+          files = [
+              p for p in sorted(root.rglob("*"))
+              if p.is_file() and p != manifest and ".git" not in p.parts
+          ]
+          manifest.write_text(
+              "\n".join(str(p.relative_to(root)) for p in files) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+          test ! -e "$RUNNER_TEMP/fresh-agent/tests/acceptance"
+          test ! -e "$RUNNER_TEMP/fresh-agent/tools/evaluate_acceptance.py"
+          test ! -e "$RUNNER_TEMP/fresh-agent/tools/create_acceptance_sandbox.py"
+          test ! -e "$RUNNER_TEMP/fresh-agent/docs/ACCEPTANCE_TEST.md"
+          test ! -e "$RUNNER_TEMP/fresh-agent/docs/ACCEPTANCE_RUNBOOK.md"
+          test ! -e "$RUNNER_TEMP/fresh-agent/clients/beta_reference"
+          test -f "$RUNNER_TEMP/fresh-agent/ACCEPTANCE_PROMPT.txt"
+          test -z "$(git -C "$RUNNER_TEMP/fresh-agent" status --short)"
+
+          tar -czf "$RUNNER_TEMP/pristine-sandbox.tar.gz" -C "$RUNNER_TEMP" fresh-agent
+          sha256sum "$RUNNER_TEMP/pristine-sandbox.tar.gz"
+
+      - name: Upload sanitized sandbox only
+        uses: actions/upload-artifact@v4
+        with:
+          name: pristine-sandbox
+          path: ${{ runner.temp }}/pristine-sandbox.tar.gz
+          retention-days: 1
+          if-no-files-found: error
+
+  agent:
+    name: Fresh Copilot coding agent
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      copilot-requests: write
+    steps:
+      - name: Download sanitized sandbox
+        uses: actions/download-artifact@v4
+        with:
+          name: pristine-sandbox
+          path: ${{ runner.temp }}/input
+
+      - name: Extract isolated workspace
+        run: |
+          tar -xzf "$RUNNER_TEMP/input/pristine-sandbox.tar.gz" -C "$RUNNER_TEMP"
+          test -f "$RUNNER_TEMP/fresh-agent/AGENTS.md"
+          test -f "$RUNNER_TEMP/fresh-agent/ACCEPTANCE_PROMPT.txt"
+          test ! -e "$RUNNER_TEMP/fresh-agent/tools/evaluate_acceptance.py"
+          test ! -e "$RUNNER_TEMP/fresh-agent/tests/acceptance"
+          test -z "$(git -C "$RUNNER_TEMP/fresh-agent" status --short)"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install sandbox test dependencies and Copilot CLI
+        run: |
+          python -m pip install -r "$RUNNER_TEMP/fresh-agent/requirements-dev.txt"
+          npm install -g @github/copilot
+
+      - name: Run genuinely fresh coding-agent task
+        working-directory: ${{ runner.temp }}/fresh-agent
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          echo "Fresh-agent prompt:"
+          cat ACCEPTANCE_PROMPT.txt
+          echo
+          copilot \
+            -p "$(cat ACCEPTANCE_PROMPT.txt)" \
+            --allow-all-tools \
+            --no-ask-user \
+            --no-remote \
+            --no-auto-update \
+            | tee "$RUNNER_TEMP/copilot-output.txt"
+
+      - name: Capture agent changes
+        if: always()
+        run: |
+          git -C "$RUNNER_TEMP/fresh-agent" status --short | tee "$RUNNER_TEMP/agent-status.txt"
+          git -C "$RUNNER_TEMP/fresh-agent" diff --stat | tee "$RUNNER_TEMP/agent-diff-stat.txt"
+          git -C "$RUNNER_TEMP/fresh-agent" diff > "$RUNNER_TEMP/agent-diff.patch"
+          tar -czf "$RUNNER_TEMP/fresh-agent-result.tar.gz" -C "$RUNNER_TEMP" fresh-agent
+
+      - name: Upload completed agent workspace
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fresh-agent-result
+          path: |
+            ${{ runner.temp }}/fresh-agent-result.tar.gz
+            ${{ runner.temp }}/copilot-output.txt
+            ${{ runner.temp }}/agent-status.txt
+            ${{ runner.temp }}/agent-diff-stat.txt
+            ${{ runner.temp }}/agent-diff.patch
+          retention-days: 1
+          if-no-files-found: warn
+
+  evaluate:
+    name: Evaluate only after agent exits
+    needs: agent
+    if: always() && needs.agent.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Checkout evaluator/control source
+        uses: actions/checkout@v4
+
+      - name: Download completed agent workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: fresh-agent-result
+          path: ${{ runner.temp }}/result
+
+      - name: Reconstruct evaluator source and matching baseline
+        run: |
+          tar -xzf "$RUNNER_TEMP/result/fresh-agent-result.tar.gz" -C "$RUNNER_TEMP"
+          bash acceptance_control/reconstruct_acceptance_source.sh "$RUNNER_TEMP/control"
+          python "$RUNNER_TEMP/control/tools/create_acceptance_sandbox.py" "$RUNNER_TEMP/baseline-sandbox"
+          python acceptance_control/refresh_acceptance_baselines.py "$RUNNER_TEMP/control" "$RUNNER_TEMP/baseline-sandbox"
+
+      - name: Setup evaluator Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install evaluator dependencies
+        run: python -m pip install -r "$RUNNER_TEMP/control/requirements-dev.txt"
+
+      - name: Run automated acceptance evaluator
+        id: evaluator
+        run: python "$RUNNER_TEMP/control/tools/evaluate_acceptance.py" "$RUNNER_TEMP/fresh-agent"
+
+      - name: Human-review evidence
+        if: always()
+        run: |
+          echo '=== AGENT STATUS ==='
+          cat "$RUNNER_TEMP/result/agent-status.txt" || true
+          echo
+          echo '=== DIFF STAT ==='
+          cat "$RUNNER_TEMP/result/agent-diff-stat.txt" || true
+          echo
+          echo '=== BETA PROJECT DIFF ==='
+          git -C "$RUNNER_TEMP/fresh-agent" diff -- clients/beta_reference || true
+          echo
+          echo '=== SHARED CAPABILITY DIFF ==='
+          git -C "$RUNNER_TEMP/fresh-agent" diff -- capabilities || true
+          echo
+          echo '=== BETA FILES ==='
+          if [ -d "$RUNNER_TEMP/fresh-agent/clients/beta_reference" ]; then
+            while IFS= read -r file; do
+              echo "--- ${file#$RUNNER_TEMP/fresh-agent/} ---"
+              sed -n '1,260p' "$file" || true
+            done < <(find "$RUNNER_TEMP/fresh-agent/clients/beta_reference" -type f | sort)
+          fi
