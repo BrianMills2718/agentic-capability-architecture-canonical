@@ -1,0 +1,16 @@
+selected:
+  - core
+  - notifications
+rejected:
+  approvals: Shipment lifecycle transitions do not require approval-decision semantics.
+  scheduling: Shipment exceptions do not require appointment or availability behavior.
+interfaces:
+  - na_core.transitions.TransitionSpec
+  - na_core.transitions.TransitionResult
+  - na_core.transitions.plan_transition
+  - na_notifications.email.send_email
+local_gaps:
+  - Shipment Exception state vocabulary and transition specifications
+  - Durable evidence input and persistence ownership
+  - Shipment authorization policy
+  - Notification timing, recipient, subject, and message
