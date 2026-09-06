@@ -43,6 +43,10 @@ def main():
         f"# {args.project}\n\nCreated from the capability base. Document project-specific behavior and reusable learning here.\n",
         encoding="utf-8",
     )
+    (project_dir / "LEARNINGS.md").write_text(
+        "# Reuse assessment\n\nNo promotion candidate yet. Update this file before declaring the project complete.\n",
+        encoding="utf-8",
+    )
     (project_dir / "custom" / "README.md").write_text(
         "# Project-specific extensions\n\nKeep unique behavior here; do not edit shared capabilities for project-only requirements.\n",
         encoding="utf-8",
