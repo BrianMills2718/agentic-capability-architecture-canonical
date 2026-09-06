@@ -58,6 +58,7 @@ over a forked or duplicated capability.
 - Persistence tests when final database state matters.
 - Compatibility tests when shared behavior changes.
 - For reminders, scheduled syncs, retries, expirations, or other automatic behavior, test the trigger/wiring as well as the callable function. A helper that can send a reminder is not enough unless something actually schedules or invokes it.
+- Any scheduled/retryable external side effect must be idempotent using durable state or a durable idempotency key. Run the job twice for the same logical event and assert the side effect happens once. A time window alone is not deduplication.
 
 ## 7. Record learning
 
