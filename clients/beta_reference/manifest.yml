@@ -1,0 +1,23 @@
+project: beta_reference
+purpose: Reference project proving appointment scheduling with threshold approvals
+  and email reminders.
+capabilities:
+  core: ^0.1.0
+  scheduling: ^0.1.0
+  approvals: ^0.1.0
+  notifications: ^0.1.0
+configuration:
+  scheduling:
+    default_duration_minutes: 30
+    cancellation_enabled: true
+    approval_threshold_minutes: 90
+    reminder:
+      enabled: true
+      channel: email
+      minutes_before: 60
+custom_extensions:
+  - beta_rules
+acceptance_scenarios:
+  - normal appointments remain allowed
+  - appointments over 90 minutes require approval
+  - appointment reminders use the shared email notification transport

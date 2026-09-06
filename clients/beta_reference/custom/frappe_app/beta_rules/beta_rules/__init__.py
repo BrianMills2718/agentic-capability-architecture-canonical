@@ -1,0 +1,1 @@
+"""Beta-specific scheduling rules."""

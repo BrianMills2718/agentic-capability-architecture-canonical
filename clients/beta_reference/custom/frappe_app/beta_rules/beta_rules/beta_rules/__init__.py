@@ -1,0 +1,1 @@
+"""Beta-specific Frappe extension."""
