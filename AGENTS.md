@@ -87,8 +87,10 @@ For reusable behavior, prefer:
 
 1. Pure unit tests for business logic.
 2. Framework integration tests for hooks/lifecycle behavior.
-3. Persistence tests for the final document/database state.
+3. Persistence tests when final database state matters.
 4. Compatibility tests across known consumers when changing a proven/core capability.
+
+Framework/Bench-only tests must still be collectable in the lightweight local bootstrap environment. If a test requires Frappe at import time, use `pytest.importorskip("frappe")` (or otherwise defer the framework import) so `python tools/check_bootstrap.py` can discover the test and skip it locally while real Bench CI executes it.
 
 Every bug fix that reveals a reusable failure mode should leave behind a regression test.
 
@@ -140,7 +142,7 @@ Before declaring any project complete, run the exact repository-wide command:
 python tools/check_bootstrap.py
 ```
 
-Targeted tests, syntax checks, package builds, or schema checks are useful during development but do **not** substitute for this final gate. If the full command fails, the project is not complete.
+Targeted tests, syntax checks, package builds, or schema checks are useful during development but do **not** substitute for this final gate. The gate discovers nested app tests and supplies app import paths itself, so do not rely on packages that happen to be installed in your current shell. If the full command fails, the project is not complete.
 
 ## Machine-readable workflow helpers
 
