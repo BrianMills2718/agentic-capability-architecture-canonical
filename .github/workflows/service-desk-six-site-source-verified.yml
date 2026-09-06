@@ -60,7 +60,7 @@ jobs:
 
       - name: Reconstruct and verify exact Service Desk source tree
         run: |
-          cat proof/sdrun00 proof/sdrun01 proof/sdrun02 proof/sdrun03 proof/sdrun04 proof/sdrun05 proof/sdrun06 proof/sdrun07 proof/sdfinal08 proof/sdfinal09 proof/sdfinal10 proof/sdfinal11 proof/sdfinal12 proof/sdfinal13 | base64 --decode > /tmp/service_desk.zip
+          cat proof/sd15_00 proof/sd15_01 proof/sd15_02 proof/sd15_03 proof/sd15_04 proof/sd15_05 proof/sd15_06 proof/sd15_07 proof/sdfinal08 proof/sdfinal09 proof/sdfinal10 proof/sdfinal11 proof/sdfinal12 proof/sdfinal13 | base64 --decode > /tmp/service_desk.zip
           echo "7a821cdb98f00585d0d5ced31fc64853c72de2e4178b72e3cae9ff496bd45fe9  /tmp/service_desk.zip" | sha256sum -c -
           unzip -t /tmp/service_desk.zip
           unzip -o /tmp/service_desk.zip -d "$GITHUB_WORKSPACE"
