@@ -1,0 +1,17 @@
+project: shipment_exception
+purpose: Handle high-risk or delayed shipments by escalating to approval and notifying the operations team without modifying the shared capability layer.
+capabilities:
+  - core
+  - scheduling
+  - approvals
+  - notifications
+custom_extension: shipment_exception
+implementation_order:
+  - confirm capability reuse
+  - configure thresholds in client manifest
+  - implement local rule adapter
+  - add approval / notification workflow tests
+  - record project learning
+validation:
+  - run python tools/check_bootstrap.py
+  - ensure project manifest and reuse assessment are complete

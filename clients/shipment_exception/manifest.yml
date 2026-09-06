@@ -1,0 +1,31 @@
+project: shipment_exception
+purpose: Route delayed, high-risk, or blocked shipments through approval and operations notification without changing shared capabilities.
+capabilities:
+  core: "^0.1.0"
+  scheduling: "^0.1.0"
+  approvals: "^0.1.0"
+  notifications: "^0.1.0"
+configuration:
+  shipping:
+    approval_delay_hours: 24
+    high_risk_states:
+      - high
+      - critical
+    exception_types:
+      - damaged
+      - missing
+      - late
+  notifications:
+    ops_recipients:
+      - ops@example.com
+custom_extensions:
+  - shipment_exception
+acceptance_scenarios:
+  - standard shipments clear without intervention
+  - delayed or high-risk shipments require approval
+  - blocked shipments fail validation
+  - project-specific notifications use the shared email adapter
+notes:
+  - Shipment exception rules are intentionally local to the project until a second client demonstrates the same pattern.
+reuse_notes:
+  - The composition pattern is reusable, but the transport-specific exception triggers stay local.

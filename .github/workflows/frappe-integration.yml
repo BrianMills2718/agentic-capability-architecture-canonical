@@ -2,6 +2,8 @@ name: Frappe integration
 
 "on":
   push:
+    paths:
+      - 'clients/**'
   workflow_dispatch:
 
 concurrency:
