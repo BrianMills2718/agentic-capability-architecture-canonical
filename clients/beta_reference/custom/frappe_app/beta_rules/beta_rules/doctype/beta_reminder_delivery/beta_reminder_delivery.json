@@ -1,0 +1,42 @@
+{
+  "doctype": "DocType",
+  "name": "Beta Reminder Delivery",
+  "module": "Beta Rules",
+  "autoname": "field:delivery_key",
+  "engine": "InnoDB",
+  "field_order": [
+    "delivery_key",
+    "appointment",
+    "sent_at"
+  ],
+  "fields": [
+    {
+      "fieldname": "delivery_key",
+      "fieldtype": "Data",
+      "label": "Delivery Key",
+      "unique": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "appointment",
+      "fieldtype": "Link",
+      "label": "Appointment",
+      "options": "Appointment",
+      "reqd": 1
+    },
+    {
+      "fieldname": "sent_at",
+      "fieldtype": "Datetime",
+      "label": "Sent At"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ]
+}
