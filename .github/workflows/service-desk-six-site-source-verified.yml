@@ -64,6 +64,8 @@ jobs:
           echo "7a821cdb98f00585d0d5ced31fc64853c72de2e4178b72e3cae9ff496bd45fe9  /tmp/service_desk.zip" | sha256sum -c -
           unzip -t /tmp/service_desk.zip
           unzip -o /tmp/service_desk.zip -d "$GITHUB_WORKSPACE"
+          git checkout -- tools/run_frappe_reference_tests.sh
+          bash -n tools/run_frappe_reference_tests.sh
 
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
