@@ -1,0 +1,19 @@
+project: beta_reference
+purpose: Reference project with 90-minute appointment approvals and email reminders
+capabilities:
+  core: ^0.1.0
+  scheduling: ^0.1.0
+  approvals: ^0.1.0
+  notifications: ^0.1.0
+configuration:
+  scheduling:
+    default_duration_minutes: 30
+    cancellation_enabled: true
+  reminders:
+    minutes_before: 60
+custom_extensions:
+  - beta_rules
+acceptance_scenarios:
+  - normal appointments remain allowed
+  - appointments over 90 minutes require approval
+  - upcoming appointments receive email reminders
