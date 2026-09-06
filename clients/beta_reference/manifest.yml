@@ -1,0 +1,23 @@
+project: beta_reference
+purpose: Reference project for appointment scheduling, long-appointment approvals,
+  and email reminders
+capabilities:
+  core: ^0.1.0
+  scheduling: ^0.1.0
+  approvals: ^0.1.0
+  notifications: ^0.1.0
+configuration: {}
+  scheduling:
+    default_duration_minutes: 30
+    cancellation_enabled: true
+  reminders:
+    minutes_before: 15
+custom_extensions:
+  - beta_rules
+acceptance_scenarios:
+  - normal appointments remain allowed
+  - appointments over 90 minutes require approval
+  - upcoming appointments send email reminders through the shared notification transport
+  - reminder delivery is wired to the Frappe scheduler
+notes:
+  - Appointment approval policy and reminder timing remain project-specific.
