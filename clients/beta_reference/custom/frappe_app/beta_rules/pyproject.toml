@@ -1,0 +1,8 @@
+[project]
+name = "beta-rules"
+version = "0.1.0"
+description = "Beta Reference project-specific rules"
+requires-python = ">=3.10"
+
+[tool.frappe]
+app_name = "beta_rules"

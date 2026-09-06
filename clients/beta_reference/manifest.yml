@@ -1,0 +1,13 @@
+project: beta_reference
+purpose: Reference project proving appointment scheduling, approval rules, and email reminders.
+capabilities:
+  core: ^0.1.0
+  scheduling: ^0.1.0
+  approvals: ^0.1.0
+  notifications: ^0.1.0
+configuration: {}
+custom_extensions:
+  - beta_rules
+notes:
+  - Appointments longer than 90 minutes require approval.
+  - Confirmed appointments receive scheduled email reminders.
