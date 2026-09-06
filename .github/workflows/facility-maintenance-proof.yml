@@ -54,8 +54,8 @@ jobs:
 
       - name: Reconstruct Facility Maintenance delta
         run: |
-          cat proof/facility_clean.part0 proof/facility_clean.part1 | base64 --decode > /tmp/facility_maintenance.zip
-          echo "6cae1c489cf335c65299a70222315b1e8304f067d8e604bfa131aaae2f4a3581  /tmp/facility_maintenance.zip" | sha256sum -c -
+          cat proof/facility_v2.part0 | base64 --decode > /tmp/facility_maintenance.zip
+          echo "267d5c088dec06533f29849b21cd716750219943c9b15ea6c3ba6d4a24994032  /tmp/facility_maintenance.zip" | sha256sum -c -
           unzip -t /tmp/facility_maintenance.zip
           unzip -o /tmp/facility_maintenance.zip -d "$GITHUB_WORKSPACE"
 
