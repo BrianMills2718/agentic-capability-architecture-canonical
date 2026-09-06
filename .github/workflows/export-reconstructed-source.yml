@@ -1,0 +1,45 @@
+name: Export reconstructed source
+
+on:
+  push:
+    branches:
+      - chatgpt/resource-reservation-proof-20260906
+    paths:
+      - '.github/workflows/export-reconstructed-source.yml'
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct prior proof payloads
+        run: |
+          cat proof/procurement_payload.part* | base64 --decode > /tmp/procurement_payload.zip
+          unzip -o /tmp/procurement_payload.zip -d "$GITHUB_WORKSPACE"
+          cat proof/it_access_delta.part00 proof/it_access_delta.part01 proof/it_access_delta.part02 proof/it_access_delta.part03 proof/it_access_delta.part04 proof/it_access_delta.part05 proof/it_access_delta.fix06a proof/it_access_delta.fix06b proof/it_access_delta.part07 proof/it_access_delta.part08 proof/it_access_delta.part09 proof/it_access_delta.part10 | base64 --decode > /tmp/it_access_delta.zip
+          unzip -o /tmp/it_access_delta.zip -d "$GITHUB_WORKSPACE"
+          cat proof/facility_v2_clean.part0 proof/facility_v2_clean.part1 proof/facility_v2_clean.part2 | base64 --decode > /tmp/facility_maintenance.zip
+          unzip -o /tmp/facility_maintenance.zip -d "$GITHUB_WORKSPACE"
+          base64 --decode proof/facility_v3_patch.b64 > /tmp/facility_v3_patch.zip
+          unzip -o /tmp/facility_v3_patch.zip -d "$GITHUB_WORKSPACE"
+          cat proof/service_desk_core.part* | base64 --decode > /tmp/service_desk_core.zip
+          unzip -o /tmp/service_desk_core.zip -d "$GITHUB_WORKSPACE"
+          cat proof/resource_reservation_delta_v2.part00 proof/resource_reservation_delta_v2.part01 proof/resource_reservation_delta_v2.part02 proof/resource_reservation_delta_v2.part03 proof/resource_reservation_delta_v2.part04a proof/resource_reservation_delta_v2.tail00 proof/resource_reservation_delta_v2.tail01 proof/resource_reservation_delta_v2.tail02 proof/resource_reservation_delta_v2.tail03 proof/resource_reservation_delta_v2.tail04 | base64 --decode > /tmp/resource_reservation_delta.zip
+          unzip -o /tmp/resource_reservation_delta.zip -d "$GITHUB_WORKSPACE"
+
+      - name: Package reconstructed source
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude='proof/*.part*' \
+            --exclude='proof/*.b64' \
+            --exclude='proof/*.trigger' \
+            -czf /tmp/reconstructed-source.tar.gz .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reconstructed-source
+          path: /tmp/reconstructed-source.tar.gz
+          if-no-files-found: error
