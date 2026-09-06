@@ -1,105 +1,59 @@
 name: Frappe integration
 
 "on":
-  workflow_dispatch:
   push:
-    paths:
-      - "capabilities/**"
-      - "clients/acme_reference/**"
-      - "tools/run_frappe_reference_tests.sh"
-      - ".github/workflows/frappe-integration.yml"
-  pull_request:
-    paths:
-      - "capabilities/**"
-      - "clients/acme_reference/**"
-      - "tools/run_frappe_reference_tests.sh"
-      - ".github/workflows/frappe-integration.yml"
-
-concurrency:
-  group: frappe-integration-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch:
 
 jobs:
   appointment-lifecycle:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-
     services:
       redis-cache:
         image: redis:alpine
-        ports:
-          - 13000:6379
-
+        ports: [13000:6379]
       redis-queue:
         image: redis:alpine
-        ports:
-          - 11000:6379
-
+        ports: [11000:6379]
       mariadb:
         image: mariadb:10.6
         env:
           MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
+        ports: [3306:3306]
         options: >-
           --health-cmd="mariadb-admin ping -proot"
           --health-interval=5s
           --health-timeout=2s
           --health-retries=10
-
     env:
       BENCH_PATH: /home/runner/frappe-bench
       SITE: test_site
       DB_ROOT_PASSWORD: root
       ADMIN_PASSWORD: admin
       CI: "Yes"
-
     steps:
-      - name: Checkout capability base
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-          cache: pip
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Install system and Bench dependencies
-        run: |
+      - run: |
           sudo apt-get update
           sudo apt-get install -y mariadb-client
-          python -m pip install --upgrade pip
-          python -m pip install frappe-bench
-
-      - name: Initialize Frappe version-15 Bench
-        run: |
-          bench init \
-            --frappe-branch version-15 \
-            --skip-redis-config-generation \
-            --skip-assets \
-            --python "$(which python)" \
-            "$BENCH_PATH"
-
-          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" \
-            -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" \
-            -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
-
-      - name: Create test site
-        working-directory: ${{ env.BENCH_PATH }}
-        run: |
-          bench new-site "$SITE" \
-            --db-root-password "$DB_ROOT_PASSWORD" \
-            --admin-password "$ADMIN_PASSWORD"
-
-      - name: Install reference apps and run Appointment lifecycle tests
+          python -m pip install --upgrade pip frappe-bench
+      - run: |
+          bench init --frappe-branch version-15 --skip-redis-config-generation --skip-assets --python "$(which python)" "$BENCH_PATH"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          cd "$BENCH_PATH"
+          bench set-config -g redis_cache redis://127.0.0.1:13000
+          bench set-config -g redis_queue redis://127.0.0.1:11000
+          bench set-config -g redis_socketio redis://127.0.0.1:11000
+          bench new-site "$SITE" --db-host 127.0.0.1 --db-port 3306 --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD"
+      - name: Run real intake project lifecycle tests
         working-directory: ${{ env.BENCH_PATH }}
         env:
           CAPABILITY_BASE: ${{ github.workspace }}
-        run: |
-          bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
+        run: bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
