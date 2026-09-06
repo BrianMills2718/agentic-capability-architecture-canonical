@@ -1,0 +1,1 @@
+"""Beta reference project module."""

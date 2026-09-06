@@ -1,0 +1,29 @@
+{
+  "doctype": "DocType",
+  "name": "Beta Reminder Delivery",
+  "module": "Beta Rules",
+  "autoname": "field:appointment",
+  "engine": "InnoDB",
+  "field_order": [
+    "appointment"
+  ],
+  "fields": [
+    {
+      "fieldname": "appointment",
+      "fieldtype": "Link",
+      "label": "Appointment",
+      "options": "Appointment",
+      "reqd": 1,
+      "unique": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ]
+}
