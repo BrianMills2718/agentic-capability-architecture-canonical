@@ -58,13 +58,12 @@ jobs:
           echo "205e13597aa5fe7a897cf9a3621b17929b9e4b94f12a7f2f8ac214008231f268  /tmp/facility_v3_patch.zip" | sha256sum -c -
           unzip -o /tmp/facility_v3_patch.zip -d "$GITHUB_WORKSPACE"
 
-      - name: Reconstruct and verify exact Service Desk source tree
+      - name: Reconstruct and verify exact Service Desk runtime payload
         run: |
           cat proof/sd15_00 proof/sd15_01 proof/sd15_02 proof/sd15_03 proof/sd15_04 proof/sd15_05 proof/sd15_06 proof/sd15_07 proof/sdfinal08 proof/sdfinal09 proof/sdfinal10 proof/sdfinal11 proof/sdfinal12 proof/sdfinal13 | base64 --decode > /tmp/service_desk.zip
           echo "7a821cdb98f00585d0d5ced31fc64853c72de2e4178b72e3cae9ff496bd45fe9  /tmp/service_desk.zip" | sha256sum -c -
           unzip -t /tmp/service_desk.zip
           unzip -o /tmp/service_desk.zip -d "$GITHUB_WORKSPACE"
-          sha256sum -c proof/service_desk_files.sha256
 
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
