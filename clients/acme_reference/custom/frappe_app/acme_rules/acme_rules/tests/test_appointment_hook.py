@@ -1,6 +1,8 @@
 from unittest.mock import patch
 
-import frappe
+import pytest
+
+frappe = pytest.importorskip("frappe", reason="real Frappe lifecycle test")
 from frappe.tests.utils import FrappeTestCase
 from frappe.utils import now_datetime
 
