@@ -1,0 +1,30 @@
+name: Export capability snapshot
+
+on:
+  push:
+    branches:
+      - chatgpt/resource-reservation-proof-20260906
+    paths:
+      - .github/workflows/export-capability-snapshot.yml
+  workflow_dispatch:
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create clean snapshot
+        run: |
+          tar \
+            --exclude=.git \
+            --exclude='**/__pycache__' \
+            --exclude='**/.pytest_cache' \
+            --exclude='**/build' \
+            --exclude='**/dist' \
+            --exclude='**/*.egg-info' \
+            -czf /tmp/composable-capability-base.tgz .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: composable-capability-base
+          path: /tmp/composable-capability-base.tgz
+          if-no-files-found: error
