@@ -26,3 +26,11 @@ def test_package_check_validates_frappe_module_markers():
     checker = (ROOT / "tools/check_frappe_packages.py").read_text(encoding="utf-8")
     assert "validate_frappe_module_layout" in checker
     assert "modules.txt" in checker
+
+
+def test_agent_rules_require_idempotent_retryable_side_effects():
+    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    workflow = (ROOT / "docs/PROJECT_WORKFLOW.md").read_text(encoding="utf-8")
+    assert "durable idempotency" in agents
+    assert "side effect occurs only once" in agents
+    assert "A time window alone is not deduplication" in workflow
