@@ -86,7 +86,7 @@ Tests are part of the capability, not optional cleanup.
 For reusable behavior, prefer:
 
 1. Pure unit tests for business logic.
-2. Framework integration tests for Frappe hooks/lifecycle behavior.
+2. Framework integration tests for hooks/lifecycle behavior.
 3. Persistence tests for the final document/database state.
 4. Compatibility tests across known consumers when changing a proven/core capability.
 
@@ -131,6 +131,16 @@ Before editing a shared capability, answer:
 6. Is this truly shared behavior, or should it remain local?
 
 Update `docs/DECISIONS.md` when making an architectural decision that future work should preserve.
+
+## Completion gate
+
+Before declaring any project complete, run the exact repository-wide command:
+
+```bash
+python tools/check_bootstrap.py
+```
+
+Targeted tests, syntax checks, package builds, or schema checks are useful during development but do **not** substitute for this final gate. If the full command fails, the project is not complete.
 
 ## Machine-readable workflow helpers
 
