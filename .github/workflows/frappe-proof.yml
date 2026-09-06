@@ -1,0 +1,96 @@
+name: Composable capability base - Frappe proof
+
+on:
+  push:
+    branches:
+      - chatgpt/frappe-proof-20260905
+  workflow_dispatch:
+
+jobs:
+  appointment-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      redis-cache:
+        image: redis:alpine
+        ports:
+          - 13000:6379
+      redis-queue:
+        image: redis:alpine
+        ports:
+          - 11000:6379
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mariadb-admin ping -proot"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=10
+
+    env:
+      BENCH_PATH: /home/runner/frappe-bench
+      SITE: test_site
+      DB_ROOT_PASSWORD: root
+      ADMIN_PASSWORD: admin
+      CI: "Yes"
+
+    steps:
+      - name: Checkout proof branch
+        uses: actions/checkout@v4
+
+      - name: Extract capability-base snapshot
+        run: |
+          mkdir capability-base
+          tar -xzf frappe_proof_payload.tar.gz -C capability-base
+          test -f capability-base/tools/run_frappe_reference_tests.sh
+          test -f capability-base/clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/tests/test_appointment_hook.py
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Bench dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mariadb-client
+          python -m pip install --upgrade pip
+          python -m pip install frappe-bench
+
+      - name: Initialize Frappe version-15 Bench
+        run: |
+          bench init \
+            --frappe-branch version-15 \
+            --skip-redis-config-generation \
+            --skip-assets \
+            --python "$(which python)" \
+            "$BENCH_PATH"
+
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" \
+            -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" \
+            -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+
+      - name: Create test site
+        working-directory: ${{ env.BENCH_PATH }}
+        run: |
+          bench new-site "$SITE" \
+            --db-root-password "$DB_ROOT_PASSWORD" \
+            --admin-password "$ADMIN_PASSWORD"
+
+      - name: Run real Appointment lifecycle tests
+        working-directory: ${{ env.BENCH_PATH }}
+        env:
+          CAPABILITY_BASE: ${{ github.workspace }}/capability-base
+        run: |
+          bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
