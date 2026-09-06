@@ -34,3 +34,9 @@ def test_agent_rules_require_idempotent_retryable_side_effects():
     assert "durable idempotency" in agents
     assert "side effect occurs only once" in agents
     assert "A time window alone is not deduplication" in workflow
+
+
+def test_package_check_requires_standard_doctype_controllers():
+    checker = (ROOT / "tools/check_frappe_packages.py").read_text(encoding="utf-8")
+    assert "validate_standard_doctype_controllers" in checker
+    assert "Missing standard DocType controller module" in checker
