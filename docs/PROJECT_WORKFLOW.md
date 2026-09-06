@@ -57,10 +57,18 @@ over a forked or duplicated capability.
 - Framework integration tests for Frappe hooks and lifecycle behavior.
 - Persistence tests when final database state matters.
 - Compatibility tests when shared behavior changes.
+- For reminders, scheduled syncs, retries, expirations, or other automatic behavior, test the trigger/wiring as well as the callable function. A helper that can send a reminder is not enough unless something actually schedules or invokes it.
 
 ## 7. Record learning
 
-If the project reveals a reusable constraint, failure mode, integration pattern, or candidate abstraction, record it in code/tests/docs.
+Every project must create `clients/<project>/LEARNINGS.md` before it is complete.
+
+Record either:
+
+- a reusable constraint, failure mode, integration pattern, or candidate abstraction, or
+- `No promotion candidate yet`, with a short explanation of why the new behavior should remain local.
+
+This makes the reuse decision reviewable without forcing first-use code into the shared layer.
 
 ## 8. Promotion review
 
