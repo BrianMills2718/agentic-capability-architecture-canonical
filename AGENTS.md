@@ -66,6 +66,7 @@ Example decisions:
 - `REQUIRE_APPROVAL`
 - `BLOCK`
 
+
 ## Triggered behavior completeness
 
 When a requirement describes behavior that must happen **later or automatically**—for example reminders, scheduled syncs, retries, expirations, or periodic reports—a callable helper is not a complete implementation.
@@ -95,16 +96,12 @@ For reusable behavior, prefer:
 
 1. Pure unit tests for business logic.
 2. Framework integration tests for hooks/lifecycle behavior.
-3. Persistence tests when final database state matters.
+3. Persistence tests for the final document/database state.
 4. Compatibility tests across known consumers when changing a proven/core capability.
 
 Framework/Bench-only tests must still be collectable in the lightweight local bootstrap environment. If a test requires Frappe at import time, use `pytest.importorskip("frappe")` (or otherwise defer the framework import) so `python tools/check_bootstrap.py` can discover the test and skip it locally while real Bench CI executes it.
 
 Every bug fix that reveals a reusable failure mode should leave behind a regression test.
-
-### Frappe DocType packaging
-
-For a standard DocType shipped by a Frappe app, the DocType JSON must have its importable sibling Python controller module (`<doctype>.py`), even when the controller only subclasses `Document` and contains no custom logic. Do not assume the JSON definition alone is sufficient. The repository package preflight enforces this.
 
 ## Knowledge capture
 

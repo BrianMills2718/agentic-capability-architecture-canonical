@@ -201,13 +201,15 @@ rather than:
 > vibe code a new bespoke repository every time.
 
 The valuable accumulated base includes not only source code, but tests, schemas, interfaces, integration knowledge, migration knowledge, deployment patterns, failure cases, and architecture decisions.
+## Fresh-agent proof learning — iteration 1
 
-## Acceptance status — 2026-09-05
+The first independent GitHub Copilot cloud-agent run correctly reused Scheduling, Approvals, and Notifications and kept the 90-minute rule local, but it exposed two self-guidance gaps: it did not record a reuse assessment, and it implemented an email reminder callable without an actual scheduled trigger. The bootstrap now mechanically requires a per-project `LEARNINGS.md` reuse assessment and explicitly requires automatic/triggered requirements to include real framework wiring and tests.
+## Fresh-agent proof learning — iteration 2
 
-The packaged acceptance harness has been exercised end to end in a disposable rehearsal.
-A structurally correct Beta composition passed the external evaluator, while the untouched
-sandbox failed as expected. This validates the harness but is not the final fresh-agent proof
-because the implementing assistant already knew the architecture.
+The second fresh agent fixed the first run's missing learning record and missing scheduled trigger, but full-suite evaluation exposed a test-module basename collision between unit and compatibility directories. The repository now uses pytest importlib mode for modular test isolation, protects that contract with a regression test, and explicitly requires agents to run the exact full bootstrap gate before declaring work complete.
+## Fresh-agent proof learning — iteration 3
 
-Two bootstrap proof gates remain: real Frappe Bench lifecycle execution and an independent
-fresh-agent acceptance run.
+A green developer-shell test run is not sufficient evidence if nested app tests are omitted or local packages happen to be installed. The bootstrap now dynamically discovers every Frappe app, supplies all app roots through a clean test environment, executes nested app tests, and structurally validates Frappe module-package markers before wheel builds.
+### Local-vs-Bench test collection rule
+
+Nested app tests are now part of the local repository-wide test discovery. Tests that genuinely require a real Frappe site must remain collectable without Frappe installed, using `pytest.importorskip("frappe")` or deferred framework imports. This lets the local gate prove test discovery/import wiring while the real Bench CI gate proves lifecycle behavior.

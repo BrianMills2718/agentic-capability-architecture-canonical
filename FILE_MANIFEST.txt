@@ -12,6 +12,7 @@ capabilities/approvals/frappe_app/na_approvals/na_approvals/engine.py
 capabilities/approvals/frappe_app/na_approvals/na_approvals/exceptions.py
 capabilities/approvals/frappe_app/na_approvals/na_approvals/hooks.py
 capabilities/approvals/frappe_app/na_approvals/na_approvals/modules.txt
+capabilities/approvals/frappe_app/na_approvals/na_approvals/na_approvals/__init__.py
 capabilities/approvals/frappe_app/na_approvals/na_approvals/types.py
 capabilities/approvals/frappe_app/na_approvals/pyproject.toml
 capabilities/core/README.md
@@ -22,6 +23,7 @@ capabilities/notifications/frappe_app/na_notifications/na_notifications/__init__
 capabilities/notifications/frappe_app/na_notifications/na_notifications/email.py
 capabilities/notifications/frappe_app/na_notifications/na_notifications/hooks.py
 capabilities/notifications/frappe_app/na_notifications/na_notifications/modules.txt
+capabilities/notifications/frappe_app/na_notifications/na_notifications/na_notifications/__init__.py
 capabilities/notifications/frappe_app/na_notifications/pyproject.toml
 capabilities/scheduling/README.md
 capabilities/scheduling/capability.yml
@@ -38,8 +40,10 @@ capability_registry.yml
 clients/_template/config/README.md
 clients/_template/custom/README.md
 clients/_template/manifest.yml
+clients/acme_reference/LEARNINGS.md
 clients/acme_reference/README.md
 clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/__init__.py
+clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/acme_rules/__init__.py
 clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/appointment_rules.py
 clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/hooks.py
 clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/modules.txt
@@ -57,6 +61,7 @@ docs/EXPORT_CHECKLIST.md
 docs/FRAPPE_CI_PROOF.md
 docs/FRAPPE_INTEGRATION_RUNBOOK.md
 docs/FRAPPE_TEST_STATUS.md
+docs/FRESH_AGENT_PROOF.md
 docs/NEXT_PROOF.md
 docs/PROJECT_WORKFLOW.md
 docs/REFERENCE_IMPLEMENTATION.md
@@ -72,10 +77,10 @@ schemas/reuse_candidates.schema.json
 tests/acceptance/FRESH_AGENT_PROMPT.txt
 tests/acceptance/baseline_hashes.json
 tests/acceptance/shared_runtime_hashes.json
-tests/acceptance/test_acceptance_harness.py
 tests/compatibility/README.md
 tests/compatibility/test_frappe_ci_contract.py
 tests/compatibility/test_reference_manifest.py
+tests/compatibility/test_test_harness_contract.py
 tests/unit/test_acme_rule.py
 tests/unit/test_approval_resolver.py
 tests/unit/test_notifications.py
@@ -86,6 +91,7 @@ tools/create_acceptance_sandbox.py
 tools/evaluate_acceptance.py
 tools/export_zip.py
 tools/new_project.py
+tools/package_acceptance_test.py
 tools/record_reuse_candidate.py
 tools/run_frappe_reference_tests.sh
 tools/validate_project.py

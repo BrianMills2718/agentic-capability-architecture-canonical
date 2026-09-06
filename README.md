@@ -89,9 +89,12 @@ See `docs/REUSE_PROMOTION.md`.
 
 ## Proof status
 
-The bootstrap architecture and local reference implementation are complete enough to use. Two external proof gates remain:
+The real Frappe lifecycle proof is complete: a GitHub Actions Frappe version-15
+environment installed the reference apps and ran the lifecycle suite successfully
+(`6 tests`, `OK`).
 
-1. a green real-Frappe lifecycle run (`.github/workflows/frappe-integration.yml` or the local Bench runner), and
-2. a genuinely fresh coding-agent acceptance run.
+**One final proof gate remains:** a genuinely fresh coding-agent acceptance run
+using the untouched acceptance sandbox.
 
-See `docs/NEXT_PROOF.md` and `docs/DEFINITION_OF_DONE.md`.
+See `docs/NEXT_PROOF.md`, `docs/FRAPPE_TEST_STATUS.md`, and
+`docs/DEFINITION_OF_DONE.md`.

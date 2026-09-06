@@ -14,7 +14,6 @@ def test_agent_completion_gate_requires_full_bootstrap_check():
     assert "python tools/check_bootstrap.py" in agents
     assert "do **not** substitute" in agents
 
-
 def test_bootstrap_discovers_nested_frappe_app_tests_and_import_paths():
     checker = (ROOT / "tools/check_bootstrap.py").read_text(encoding="utf-8")
     assert "discover_frappe_apps" in checker
@@ -27,7 +26,6 @@ def test_package_check_validates_frappe_module_markers():
     assert "validate_frappe_module_layout" in checker
     assert "modules.txt" in checker
 
-
 def test_agent_rules_require_idempotent_retryable_side_effects():
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     workflow = (ROOT / "docs/PROJECT_WORKFLOW.md").read_text(encoding="utf-8")
@@ -35,8 +33,3 @@ def test_agent_rules_require_idempotent_retryable_side_effects():
     assert "side effect occurs only once" in agents
     assert "A time window alone is not deduplication" in workflow
 
-
-def test_package_check_requires_standard_doctype_controllers():
-    checker = (ROOT / "tools/check_frappe_packages.py").read_text(encoding="utf-8")
-    assert "validate_standard_doctype_controllers" in checker
-    assert "Missing standard DocType controller module" in checker

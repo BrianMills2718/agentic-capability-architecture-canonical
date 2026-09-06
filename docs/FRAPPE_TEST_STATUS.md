@@ -1,35 +1,44 @@
 # Frappe Test Status
 
-## Current status
+## Status: PASSED
 
-The Frappe integration suite is **authored and CI-packaged, but has not yet produced a green external Bench run in this workspace**.
+The real Frappe integration suite has been executed successfully.
 
-This execution environment does not provide the MariaDB/Redis/Docker services needed to run a real Frappe Bench lifecycle directly.
+### Evidence
 
-## Automated proof path
+- Repository: `BrianMills2718/test`
+- Branch: `chatgpt/frappe-proof-20260905`
+- Commit: `0b4e5db128793a831de769bb8f5fa1859f122b37`
+- GitHub Actions run: `34001408766`
+- Job: `appointment-lifecycle`
+- Frappe branch: `version-15`
+- Python: `3.11`
+- MariaDB service: `10.6`
+- Redis services: enabled
 
-The repository now contains `.github/workflows/frappe-integration.yml`, which creates a real Frappe version-15 test Bench with MariaDB and Redis and invokes the same `tools/run_frappe_reference_tests.sh` used for local Bench testing.
+The workflow successfully:
 
-See `docs/FRAPPE_CI_PROOF.md`.
+1. initialized a real Frappe Bench,
+2. created a fresh test site,
+3. editable-installed `na_scheduling`, `na_approvals`, and `acme_rules`,
+4. installed those apps on the site,
+5. enabled tests,
+6. executed the `acme_rules` integration suite.
 
-## What a green run proves
+Result:
 
-- `Appointment.validate` invokes the `acme_rules` `doc_events` hook.
-- ALLOW leaves the Appointment valid.
-- REQUIRE_APPROVAL sets approval fields.
-- BLOCK raises a Frappe validation error.
-- REQUIRE_APPROVAL fields persist on insert.
-- BLOCK prevents insert.
-- project-specific ALLOW does not clear a stricter shared requirement.
+```text
+......
+----------------------------------------------------------------------
+Ran 6 tests in 0.256s
 
-## Local Bench command
-
-From the root of an existing Frappe Bench:
-
-```bash
-CAPABILITY_BASE=/absolute/path/to/composable_capability_base \
-SITE=test.localhost \
-bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
+OK
 ```
 
-A confirmed green CI or local Bench run closes the remaining Frappe integration proof gate.
+## What this proves
+
+Inside a real Frappe site, the integration suite verified the reference
+Appointment lifecycle behaviors, including hook execution and persistence-level
+ALLOW / REQUIRE_APPROVAL / BLOCK handling.
+
+The real-Frappe proof gate is closed.

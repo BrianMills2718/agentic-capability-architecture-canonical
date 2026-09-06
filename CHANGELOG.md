@@ -1,3 +1,49 @@
+## 2026-09-05/06 — Fresh-agent iteration 4 exposed reminder idempotency gap
+
+- Fresh Copilot acceptance iteration 4 passed the automated evaluator but failed human review.
+- The hourly reminder implementation could resend the same appointment email on repeated scheduler runs.
+- Added a general contract: scheduled/retryable external side effects must use durable idempotency state/keys.
+- Added a regression requirement to execute the same scheduled job twice and prove the side effect occurs once.
+- Strengthened the hidden acceptance evaluator to require visible reminder deduplication plus a duplicate-delivery test.
+
+## 2026-09-05/06 — Fresh-agent iteration 3 exposed nested app test discovery gap
+
+- Third independent fresh-agent run included reuse learning and a real scheduler trigger.
+- External clean scoring failed because nested Beta app tests could not import `na_notifications`.
+- Reworked `check_bootstrap.py` to discover all Frappe app roots, set clean dynamic import paths, and run nested app tests automatically.
+- Strengthened `check_frappe_packages.py` to validate Frappe `modules.txt` package markers, not just wheel builds.
+- Updated external focused-test scoring to use the same clean app import environment.
+- Iteration 3 remains a recorded FAIL; iteration 4 is required.
+
+## 2026-09-05/06 — Fresh-agent iteration 2 exposed modular pytest collision
+
+- Second independent Copilot cloud-agent run fixed the reuse-assessment and scheduled-trigger gaps.
+- External full-suite evaluation failed because unit and compatibility tests reused the basename `test_beta_reference.py` under pytest's default import mode.
+- Switched the repository to `--import-mode=importlib` for modular test isolation.
+- Added a regression test for the test-harness contract.
+- Made the exact full `python tools/check_bootstrap.py` command a mandatory completion gate for agents.
+- Iteration 2 remains a recorded FAIL; iteration 3 is required.
+
+## 2026-09-05/06 — Fresh-agent iteration 1 exposed two bootstrap gaps
+
+- Launched an independent GitHub Copilot cloud coding-agent session from a clean sandbox.
+- Copilot reused shared capabilities and passed its own 19-test validation, but external acceptance failed because no reuse assessment was recorded.
+- Human review also found that reminder transport existed without an automatic scheduler/trigger.
+- Made `LEARNINGS.md` mandatory for every project and enforced it in `validate_project.py`.
+- Strengthened agent rules and project workflow for scheduled/triggered behavior.
+- Strengthened acceptance scoring to require reminder trigger/wiring.
+- Iteration 1 remains a recorded FAIL; a new fresh-agent run is required.
+
+## 2026-09-05/06 — Real Frappe lifecycle proof passed
+
+- Used the disposable connected GitHub repository `BrianMills2718/test`.
+- Ran the proof on branch `chatgpt/frappe-proof-20260905`.
+- GitHub Actions run `34001408766` provisioned Frappe version-15, MariaDB, and Redis.
+- Installed `na_scheduling`, `na_approvals`, and `acme_rules` into a fresh site.
+- Real Frappe lifecycle suite completed successfully: `Ran 6 tests in 0.256s` / `OK`.
+- Closed the real-Frappe integration and persistence proof gate.
+- Only the genuinely fresh coding-agent acceptance gate remains.
+
 ## 2026-09-05 — Acceptance harness rehearsal
 
 - Ran a disposable end-to-end rehearsal from the exact fresh-agent sandbox.
