@@ -1,0 +1,1 @@
+Trigger Frappe proof run for composable capability base.
