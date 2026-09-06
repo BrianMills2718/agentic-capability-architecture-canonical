@@ -11,7 +11,7 @@ concurrency:
 jobs:
   project-lifecycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 35
     services:
       redis-cache:
         image: redis:alpine
@@ -34,15 +34,39 @@ jobs:
       SITE_ACME: acme_test
       SITE_INTAKE: intake_test
       SITE_PROCUREMENT: procurement_test
+      SITE_ACCESS: access_test
       DB_ROOT_PASSWORD: root
       ADMIN_PASSWORD: admin
       CI: "Yes"
     steps:
       - uses: actions/checkout@v4
+
       - name: Reconstruct exact procurement proof payload
         run: |
           cat proof/procurement_payload.part* | base64 --decode > /tmp/procurement_payload.zip
+          unzip -t /tmp/procurement_payload.zip
           unzip -o /tmp/procurement_payload.zip -d "$GITHUB_WORKSPACE"
+
+      - name: Reconstruct and verify IT access third-use delta
+        run: |
+          cat \
+            proof/it_access_delta.part00 \
+            proof/it_access_delta.part01 \
+            proof/it_access_delta.part02 \
+            proof/it_access_delta.part03 \
+            proof/it_access_delta.part04 \
+            proof/it_access_delta.part05 \
+            proof/it_access_delta.fix06a \
+            proof/it_access_delta.fix06b \
+            proof/it_access_delta.part07 \
+            proof/it_access_delta.part08 \
+            proof/it_access_delta.part09 \
+            proof/it_access_delta.part10 \
+            | base64 --decode > /tmp/it_access_delta.zip
+          echo "5c03c8f41fe7cf85a61bfab7b540526851834de0ddca119e02bf57dd13d51233  /tmp/it_access_delta.zip" | sha256sum -c -
+          unzip -t /tmp/it_access_delta.zip
+          unzip -o /tmp/it_access_delta.zip -d "$GITHUB_WORKSPACE"
+
       - uses: actions/setup-python@v5
         with: {python-version: "3.11"}
       - uses: actions/setup-node@v4
@@ -51,6 +75,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mariadb-client
           python -m pip install --upgrade pip frappe-bench
+
       - name: Initialize Frappe version-15 Bench
         run: |
           bench init --frappe-branch version-15 --skip-redis-config-generation --skip-assets --python "$(which python)" "$BENCH_PATH"
@@ -60,12 +85,14 @@ jobs:
           bench set-config -g redis_cache redis://127.0.0.1:13000
           bench set-config -g redis_queue redis://127.0.0.1:11000
           bench set-config -g redis_socketio redis://127.0.0.1:11000
+
       - name: Create isolated project test sites
         working-directory: ${{ env.BENCH_PATH }}
         run: |
-          for site in "$SITE_ACME" "$SITE_INTAKE" "$SITE_PROCUREMENT"; do
+          for site in "$SITE_ACME" "$SITE_INTAKE" "$SITE_PROCUREMENT" "$SITE_ACCESS"; do
             bench new-site "$site" --db-host 127.0.0.1 --db-port 3306 --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD"
           done
+
       - name: Install project-specific compositions and run lifecycle tests
         working-directory: ${{ env.BENCH_PATH }}
         env:
