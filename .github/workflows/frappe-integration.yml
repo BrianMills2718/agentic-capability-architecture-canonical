@@ -1,0 +1,40 @@
+name: Frappe integration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  appointment-lifecycle:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: ["3306:3306"]
+      redis:
+        image: redis:alpine
+        ports: ["6379:6379"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install frappe-branch version-15
+        run: |
+          python -m pip install frappe-bench
+          bench init --frappe-branch version-15 --skip-redis-config-generation bench
+      - name: Create test site
+        working-directory: bench
+        run: bench new-site test.localhost --db-root-password root --admin-password admin
+      - name: Run reference integration tests
+        working-directory: bench
+        env:
+          CAPABILITY_BASE: ${{ github.workspace }}
+          SITE: test.localhost
+        run: bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
