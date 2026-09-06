@@ -3,9 +3,11 @@ name: Frappe integration
 "on":
   push:
   workflow_dispatch:
-
+concurrency:
+  group: frappe-integration-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  appointment-lifecycle:
+  project-lifecycle:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     services:
@@ -27,23 +29,23 @@ jobs:
           --health-retries=10
     env:
       BENCH_PATH: /home/runner/frappe-bench
-      SITE: test_site
+      SITE_ACME: acme_test
+      SITE_INTAKE: intake_test
       DB_ROOT_PASSWORD: root
       ADMIN_PASSWORD: admin
       CI: "Yes"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+        with: {python-version: "3.11"}
       - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
+        with: {node-version: "20"}
       - run: |
           sudo apt-get update
           sudo apt-get install -y mariadb-client
           python -m pip install --upgrade pip frappe-bench
-      - run: |
+      - name: Initialize Frappe version-15 Bench
+        run: |
           bench init --frappe-branch version-15 --skip-redis-config-generation --skip-assets --python "$(which python)" "$BENCH_PATH"
           mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
@@ -51,8 +53,13 @@ jobs:
           bench set-config -g redis_cache redis://127.0.0.1:13000
           bench set-config -g redis_queue redis://127.0.0.1:11000
           bench set-config -g redis_socketio redis://127.0.0.1:11000
-          bench new-site "$SITE" --db-host 127.0.0.1 --db-port 3306 --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD"
-      - name: Run real intake project lifecycle tests
+      - name: Create isolated project test sites
+        working-directory: ${{ env.BENCH_PATH }}
+        run: |
+          for site in "$SITE_ACME" "$SITE_INTAKE"; do
+            bench new-site "$site" --db-host 127.0.0.1 --db-port 3306 --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD"
+          done
+      - name: Install project-specific compositions and run lifecycle tests
         working-directory: ${{ env.BENCH_PATH }}
         env:
           CAPABILITY_BASE: ${{ github.workspace }}
