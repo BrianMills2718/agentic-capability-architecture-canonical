@@ -5,26 +5,28 @@ try:
     import frappe
     from frappe.tests.utils import FrappeTestCase
     from frappe.utils import add_to_date, now_datetime
-    from intake_booking.api import submit_intake
+    from intake_booking.api import approve_intake, submit_intake
 except ImportError:
     frappe = None
     FrappeTestCase = unittest.TestCase
-    add_to_date = now_datetime = submit_intake = None
+    add_to_date = now_datetime = approve_intake = submit_intake = None
 
 
 @unittest.skipIf(frappe is None, "real Frappe lifecycle test")
 class TestClientIntakeFlow(FrappeTestCase):
     def make_intake(self, *, email, duration):
-        return frappe.get_doc({
-            "doctype": "Service Intake",
-            "client_name": "Integration Client",
-            "email": email,
-            "service_type": "Consultation",
-            "request_summary": "Discuss an engagement",
-            "requested_start_time": add_to_date(now_datetime(), hours=24),
-            "requested_duration_minutes": duration,
-            "status": "Submitted",
-        })
+        return frappe.get_doc(
+            {
+                "doctype": "Service Intake",
+                "client_name": "Integration Client",
+                "email": email,
+                "service_type": "Consultation",
+                "request_summary": "Discuss an engagement",
+                "requested_start_time": add_to_date(now_datetime(), hours=24),
+                "requested_duration_minutes": duration,
+                "status": "Submitted",
+            }
+        )
 
     def test_desk_style_insert_books_short_consultation(self):
         intake = self.make_intake(email="desk@example.com", duration=60)
@@ -60,4 +62,25 @@ class TestClientIntakeFlow(FrappeTestCase):
         intake = frappe.get_doc("Service Intake", result["intake"])
         self.assertEqual(result["appointment"], intake.appointment)
         self.assertEqual(result["status"], "Booked")
+        send_email.assert_called_once()
+
+    def test_staff_can_approve_pending_consultation_idempotently(self):
+        intake = self.make_intake(email="approval@example.com", duration=90)
+        with patch("intake_booking.workflow.send_email"):
+            intake.insert()
+        intake.reload()
+        self.assertEqual(intake.status, "Pending Approval")
+
+        with patch("intake_booking.workflow.send_email") as send_email:
+            first = approve_intake(intake.name)
+            second = approve_intake(intake.name)
+
+        intake.reload()
+        appointment = frappe.get_doc("Appointment", intake.appointment)
+        self.assertEqual(first["status"], "Booked")
+        self.assertEqual(second["status"], "Booked")
+        self.assertEqual(appointment.status, "Confirmed")
+        self.assertEqual(intake.status, "Booked")
+        self.assertEqual(intake.approved_by, frappe.session.user)
+        self.assertTrue(intake.approved_at)
         send_email.assert_called_once()
