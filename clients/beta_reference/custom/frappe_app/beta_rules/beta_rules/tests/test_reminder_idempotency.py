@@ -15,7 +15,6 @@ class TestReminderIdempotency(FrappeTestCase):
             {
                 "doctype": "Appointment",
                 "customer": "reminder@example.com",
-                "customer_email": "reminder@example.com",
                 "start_time": add_to_date(now_datetime(), minutes=30),
                 "duration_minutes": 30,
                 "status": "Confirmed",
