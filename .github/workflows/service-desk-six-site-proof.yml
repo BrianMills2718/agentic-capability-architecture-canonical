@@ -64,8 +64,8 @@ jobs:
 
       - name: Reconstruct Service Desk payload
         run: |
-          cat proof/sdrun00 proof/sdrun01 proof/sdrun02 proof/sdrun03 | base64 --decode > /tmp/service_desk.zip
-          echo "6d53b6809831a89ddfc0952a7a8aa82d0036c3c53b210b24527f4d59ec58b34f  /tmp/service_desk.zip" | sha256sum -c -
+          cat proof/sdrun00 proof/sdrun01 proof/sdrun02 proof/sdrun03 proof/sdrun04 proof/sdrun05 | base64 --decode > /tmp/service_desk.zip
+          echo "7a821cdb98f00585d0d5ced31fc64853c72de2e4178b72e3cae9ff496bd45fe9  /tmp/service_desk.zip" | sha256sum -c -
           unzip -t /tmp/service_desk.zip
           unzip -o /tmp/service_desk.zip -d "$GITHUB_WORKSPACE"
 
