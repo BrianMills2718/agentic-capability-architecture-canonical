@@ -1,0 +1,25 @@
+project: beta_reference
+purpose: Reference project composing scheduling, approvals, and email reminders.
+
+capabilities:
+  core: "^0.1.0"
+  scheduling: "^0.1.0"
+  approvals: "^0.1.0"
+  notifications: "^0.1.0"
+
+configuration:
+  scheduling:
+    default_duration_minutes: 30
+    cancellation_enabled: true
+  reminders:
+    schedule: hourly
+    lead_time_minutes: 60
+
+custom_extensions:
+  - beta_rules
+
+acceptance_scenarios:
+  - normal appointments remain allowed
+  - appointments over 90 minutes require approval
+  - confirmed appointments receive an email reminder
+  - repeated reminder runs send only one email per appointment
