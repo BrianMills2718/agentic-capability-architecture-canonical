@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate and build every Frappe-style package without installing Frappe."""
 from pathlib import Path
+import json
 import re
 import shutil
 import subprocess
@@ -45,6 +46,25 @@ def validate_frappe_module_layout(app: Path) -> None:
                 )
 
 
+def validate_standard_doctype_controllers(app: Path) -> None:
+    """Standard Frappe DocTypes need their importable controller module."""
+    for definition in sorted(app.rglob("doctype/*/*.json")):
+        if any(part in {"build", "dist", "__pycache__"} for part in definition.parts):
+            continue
+        try:
+            metadata = json.loads(definition.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"Invalid DocType JSON {definition.relative_to(ROOT)}: {exc}") from exc
+        if metadata.get("doctype") != "DocType" or metadata.get("custom"):
+            continue
+        controller = definition.with_suffix(".py")
+        if not controller.exists():
+            raise SystemExit(
+                "Missing standard DocType controller module: "
+                f"{controller.relative_to(ROOT)} (required by {definition.relative_to(ROOT)})"
+            )
+
+
 def clean_generated(app: Path) -> None:
     for path in app.glob("*.egg-info"):
         if path.is_dir():
@@ -62,6 +82,7 @@ def main():
 
     for app in apps:
         validate_frappe_module_layout(app)
+        validate_standard_doctype_controllers(app)
 
     try:
         with tempfile.TemporaryDirectory(prefix="capability-wheels-") as out:
@@ -82,7 +103,7 @@ def main():
                     ],
                     check=True,
                 )
-        print(f"OK: {len(apps)} Frappe app packages have valid module layout and build successfully")
+        print(f"OK: {len(apps)} Frappe app packages have valid module/DocType layout and build successfully")
     finally:
         for app in apps:
             clean_generated(app)
