@@ -124,4 +124,4 @@ jobs:
         env:
           CAPABILITY_BASE: ${{ github.workspace }}/capability-base
         run: |
-          bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
+          bash "$GITHUB_WORKSPACE/run_frappe_reference_tests.sh"
