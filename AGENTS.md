@@ -79,6 +79,14 @@ The project must include an explicit trigger path, such as:
 
 Tests should prove both the business function and the trigger/wiring. A transport adapter like `send_email()` by itself does not satisfy a requirement for scheduled email reminders.
 
+### Idempotent side effects
+
+Scheduled and retryable jobs may run more than once. Any job that causes an external or user-visible side effect—email, SMS, payment, webhook, file delivery, notification, etc.—must be idempotent for the same logical event.
+
+Do not treat a scheduler interval or time-window query as deduplication. Use durable state or a durable idempotency key/unique delivery record so restarts, retries, overlapping windows, and delayed runs do not repeat the side effect.
+
+Tests must invoke the side-effecting job at least twice for the same eligible logical event and prove the external side effect occurs only once.
+
 ## Testing rules
 
 Tests are part of the capability, not optional cleanup.
@@ -87,7 +95,7 @@ For reusable behavior, prefer:
 
 1. Pure unit tests for business logic.
 2. Framework integration tests for hooks/lifecycle behavior.
-3. Persistence tests when final database state matters.
+3. Persistence tests for the final document/database state.
 4. Compatibility tests across known consumers when changing a proven/core capability.
 
 Framework/Bench-only tests must still be collectable in the lightweight local bootstrap environment. If a test requires Frappe at import time, use `pytest.importorskip("frappe")` (or otherwise defer the framework import) so `python tools/check_bootstrap.py` can discover the test and skip it locally while real Bench CI executes it.
