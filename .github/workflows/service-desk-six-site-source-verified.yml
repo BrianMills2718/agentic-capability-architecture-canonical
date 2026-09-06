@@ -64,7 +64,7 @@ jobs:
 
       - name: Reconstruct and verify Service Desk source tree
         run: |
-          cat proof/sdrun00 proof/sdrun01 proof/sdrun02 proof/sdrun03 proof/sdrun04 proof/sdrun05 | base64 --decode > /tmp/service_desk.zip
+          cat proof/sdrun00 proof/sdrun01 proof/sdrun02 proof/sdrun03 proof/sdrun04 proof/sdrun05 proof/sdrun06 proof/sdrun07 proof/sdrun08 | base64 --decode > /tmp/service_desk.zip
           sha256sum /tmp/service_desk.zip
           unzip -t /tmp/service_desk.zip
           unzip -o /tmp/service_desk.zip -d "$GITHUB_WORKSPACE"
