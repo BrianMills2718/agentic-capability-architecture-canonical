@@ -1,0 +1,1 @@
+Trigger isolated-site Frappe proof for client_intake_booking.
