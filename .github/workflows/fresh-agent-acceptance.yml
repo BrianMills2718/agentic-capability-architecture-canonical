@@ -39,6 +39,11 @@ jobs:
           )
           PY
 
+          git -C "$RUNNER_TEMP/fresh-agent" add FILE_MANIFEST.txt
+          if ! git -C "$RUNNER_TEMP/fresh-agent" diff --cached --quiet; then
+            git -C "$RUNNER_TEMP/fresh-agent" commit -q -m "Sanitize fresh-agent file manifest"
+          fi
+
           test ! -e "$RUNNER_TEMP/fresh-agent/tests/acceptance"
           test ! -e "$RUNNER_TEMP/fresh-agent/tools/evaluate_acceptance.py"
           test ! -e "$RUNNER_TEMP/fresh-agent/tools/create_acceptance_sandbox.py"
