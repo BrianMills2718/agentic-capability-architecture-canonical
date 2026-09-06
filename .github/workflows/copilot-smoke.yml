@@ -1,0 +1,28 @@
+name: Copilot CLI smoke
+
+on:
+  push:
+    branches:
+      - chatgpt/copilot-smoke-20260905
+
+permissions:
+  contents: read
+  copilot-requests: write
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+      - name: Fresh Copilot smoke request
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          copilot -p "Reply only with COPILOT_SMOKE_OK" -s --no-ask-user | tee copilot-smoke.txt
+          grep -q "COPILOT_SMOKE_OK" copilot-smoke.txt
