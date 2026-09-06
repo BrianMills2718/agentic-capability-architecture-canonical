@@ -1,0 +1,22 @@
+project: beta_reference
+purpose: Reference project for appointment scheduling, long-appointment approvals,
+  and email reminders.
+capabilities:
+  core: "^0.1.0"
+  scheduling: "^0.1.0"
+  approvals: "^0.1.0"
+  notifications: "^0.1.0"
+configuration:
+  scheduling:
+    default_duration_minutes: 30
+    cancellation_enabled: true
+custom_extensions:
+  - beta_rules
+notes:
+  - Appointments longer than 90 minutes require approval.
+  - Reminders are sent hourly through the project scheduler extension.
+acceptance_scenarios:
+  - normal appointments remain schedulable
+  - appointments over 90 minutes require approval
+  - due reminders are sent by the hourly scheduler
+  - repeated scheduler runs do not resend a reminder

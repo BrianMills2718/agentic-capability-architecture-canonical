@@ -1,0 +1,1 @@
+"""Beta Reminder Delivery DocType."""
