@@ -6,7 +6,7 @@ capabilities:
   scheduling: ^0.1.0
   approvals: ^0.1.0
   notifications: ^0.1.0
-configuration: {}
+configuration:
   scheduling:
     default_duration_minutes: 30
     cancellation_enabled: true
