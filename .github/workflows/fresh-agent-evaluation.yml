@@ -1,0 +1,29 @@
+name: Hidden fresh-agent acceptance evaluation
+
+on:
+  push:
+    branches:
+      - chatgpt/evaluate-beta-be00a63
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frozen agent result plus hidden control
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install evaluator and repository test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Run hidden acceptance evaluator
+        run: python .acceptance_control/evaluate_acceptance.py .
