@@ -1,0 +1,102 @@
+name: Service Desk six-site proof
+
+"on":
+  push:
+    branches:
+      - chatgpt/service-desk-proof-20260906
+  workflow_dispatch:
+
+concurrency:
+  group: service-desk-six-site-proof-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  project-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    services:
+      redis-cache:
+        image: redis:alpine
+        ports: [13000:6379]
+      redis-queue:
+        image: redis:alpine
+        ports: [11000:6379]
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: [3306:3306]
+        options: >-
+          --health-cmd="mariadb-admin ping -proot"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=10
+    env:
+      BENCH_PATH: /home/runner/frappe-bench
+      SITE_ACME: acme_test
+      SITE_INTAKE: intake_test
+      SITE_PROCUREMENT: procurement_test
+      SITE_ACCESS: access_test
+      SITE_MAINTENANCE: maintenance_test
+      SITE_SERVICE_DESK: service_desk_test
+      DB_ROOT_PASSWORD: root
+      ADMIN_PASSWORD: admin
+      CI: "Yes"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct prior proof payloads
+        run: |
+          cat proof/procurement_payload.part* | base64 --decode > /tmp/procurement_payload.zip
+          unzip -o /tmp/procurement_payload.zip -d "$GITHUB_WORKSPACE"
+          cat proof/it_access_delta.part00 proof/it_access_delta.part01 proof/it_access_delta.part02 proof/it_access_delta.part03 proof/it_access_delta.part04 proof/it_access_delta.part05 proof/it_access_delta.fix06a proof/it_access_delta.fix06b proof/it_access_delta.part07 proof/it_access_delta.part08 proof/it_access_delta.part09 proof/it_access_delta.part10 | base64 --decode > /tmp/it_access_delta.zip
+          echo "5c03c8f41fe7cf85a61bfab7b540526851834de0ddca119e02bf57dd13d51233  /tmp/it_access_delta.zip" | sha256sum -c -
+          unzip -o /tmp/it_access_delta.zip -d "$GITHUB_WORKSPACE"
+
+      - name: Reconstruct Facility Maintenance base and patch
+        run: |
+          cat proof/facility_v2_clean.part0 proof/facility_v2_clean.part1 proof/facility_v2_clean.part2 | base64 --decode > /tmp/facility_maintenance.zip
+          echo "267d5c088dec06533f29849b21cd716750219943c9b15ea6c3ba6d4a24994032  /tmp/facility_maintenance.zip" | sha256sum -c -
+          unzip -o /tmp/facility_maintenance.zip -d "$GITHUB_WORKSPACE"
+          base64 --decode proof/facility_v3_patch.b64 > /tmp/facility_v3_patch.zip
+          echo "205e13597aa5fe7a897cf9a3621b17929b9e4b94f12a7f2f8ac214008231f268  /tmp/facility_v3_patch.zip" | sha256sum -c -
+          unzip -o /tmp/facility_v3_patch.zip -d "$GITHUB_WORKSPACE"
+
+      - name: Reconstruct Service Desk payload
+        run: |
+          cat proof/sdrun00 proof/sdrun01 proof/sdrun02 proof/sdrun03 | base64 --decode > /tmp/service_desk.zip
+          echo "6d53b6809831a89ddfc0952a7a8aa82d0036c3c53b210b24527f4d59ec58b34f  /tmp/service_desk.zip" | sha256sum -c -
+          unzip -t /tmp/service_desk.zip
+          unzip -o /tmp/service_desk.zip -d "$GITHUB_WORKSPACE"
+
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - uses: actions/setup-node@v4
+        with: {node-version: "20"}
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y mariadb-client
+          python -m pip install --upgrade pip frappe-bench
+
+      - name: Initialize Frappe version-15 Bench
+        run: |
+          bench init --frappe-branch version-15 --skip-redis-config-generation --skip-assets --python "$(which python)" "$BENCH_PATH"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          cd "$BENCH_PATH"
+          bench set-config -g redis_cache redis://127.0.0.1:13000
+          bench set-config -g redis_queue redis://127.0.0.1:11000
+          bench set-config -g redis_socketio redis://127.0.0.1:11000
+
+      - name: Create six isolated project test sites
+        working-directory: ${{ env.BENCH_PATH }}
+        run: |
+          for site in "$SITE_ACME" "$SITE_INTAKE" "$SITE_PROCUREMENT" "$SITE_ACCESS" "$SITE_MAINTENANCE" "$SITE_SERVICE_DESK"; do
+            bench new-site "$site" --db-host 127.0.0.1 --db-port 3306 --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD"
+          done
+
+      - name: Install project-specific compositions and run lifecycle tests
+        working-directory: ${{ env.BENCH_PATH }}
+        env:
+          CAPABILITY_BASE: ${{ github.workspace }}
+        run: bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
