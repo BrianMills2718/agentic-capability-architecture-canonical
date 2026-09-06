@@ -14,7 +14,8 @@ These rules apply to coding agents working in this repository.
 8. If behavior appears reusable, mark it as a candidate; do not automatically promote it.
 9. Shared behavior must have tests before it is treated as reusable.
 10. Record plausible reusable behavior in `reuse_candidates.yml` rather than promoting it immediately.
-11. Preserve compatibility with existing consumers unless a breaking change is explicit.
+11. Every completed project MUST include `clients/<project>/LEARNINGS.md` with a reuse assessment. If nothing should be promoted yet, say so explicitly and explain why. Silence is not a reuse assessment.
+12. Preserve compatibility with existing consumers unless a breaking change is explicit.
 
 ## Reuse lifecycle
 
@@ -65,6 +66,19 @@ Example decisions:
 - `REQUIRE_APPROVAL`
 - `BLOCK`
 
+## Triggered behavior completeness
+
+When a requirement describes behavior that must happen **later or automatically**—for example reminders, scheduled syncs, retries, expirations, or periodic reports—a callable helper is not a complete implementation.
+
+The project must include an explicit trigger path, such as:
+
+- Frappe `scheduler_events`,
+- a cron/scheduled-job registration,
+- a durable delayed-job mechanism, or
+- another framework-native trigger that actually invokes the behavior.
+
+Tests should prove both the business function and the trigger/wiring. A transport adapter like `send_email()` by itself does not satisfy a requirement for scheduled email reminders.
+
 ## Testing rules
 
 Tests are part of the capability, not optional cleanup.
@@ -72,7 +86,7 @@ Tests are part of the capability, not optional cleanup.
 For reusable behavior, prefer:
 
 1. Pure unit tests for business logic.
-2. Framework integration tests for hooks/lifecycle behavior.
+2. Framework integration tests for Frappe hooks/lifecycle behavior.
 3. Persistence tests for the final document/database state.
 4. Compatibility tests across known consumers when changing a proven/core capability.
 
@@ -97,6 +111,13 @@ Useful reusable assets include:
 - Agent instructions
 
 Do not assume future agents will infer an important constraint from old code.
+
+Every project must finish with `clients/<project>/LEARNINGS.md`. Record either:
+
+- a plausible reuse candidate / reusable constraint / integration lesson, or
+- an explicit `No promotion candidate yet` assessment with the reason the behavior should remain local.
+
+This requirement is about preserving evidence, not forcing premature abstraction.
 
 ## Change discipline
 
