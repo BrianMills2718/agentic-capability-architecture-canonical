@@ -1,0 +1,10 @@
+project: example_project
+
+capabilities:
+  core: "^0.1.0"
+
+configuration: {}
+
+custom_extensions: []
+
+notes: []

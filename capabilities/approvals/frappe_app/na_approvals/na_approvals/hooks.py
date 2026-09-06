@@ -1,0 +1,6 @@
+app_name = "na_approvals"
+app_title = "NA Approvals"
+app_publisher = "Capability Base"
+app_description = "Deterministic approval rule resolution"
+app_email = ""
+app_license = "MIT"

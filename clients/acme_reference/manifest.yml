@@ -1,0 +1,21 @@
+project: acme_reference
+purpose: Reference project proving composition without shared-code modification.
+
+capabilities:
+  core: "^0.1.0"
+  scheduling: "^0.1.0"
+  approvals: "^0.1.0"
+
+configuration:
+  scheduling:
+    default_duration_minutes: 30
+    cancellation_enabled: true
+
+custom_extensions:
+  - acme_rules
+
+acceptance_scenarios:
+  - normal appointments remain allowed
+  - appointments over 120 minutes require approval
+  - a resolved BLOCK stops validation
+  - project-specific ALLOW cannot clear an existing shared approval requirement

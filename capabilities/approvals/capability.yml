@@ -1,0 +1,35 @@
+name: approvals
+status: candidate
+version: 0.1.0
+runtime: frappe
+
+provides:
+  - approval.resolve
+  - approval.require
+  - approval.block
+
+requires:
+  - core
+
+public_interfaces:
+  - na_approvals.engine.resolve
+  - na_approvals.engine.apply_resolution
+
+configuration:
+  decisions:
+    type: enum
+    values:
+      - ALLOW
+      - REQUIRE_APPROVAL
+      - BLOCK
+
+invariants:
+  - Explicit conflicts fail instead of being silently resolved.
+  - Equal-priority rules that disagree fail instead of depending on input order.
+  - BLOCK is stronger than ordinary ALLOW/REQUIRE priority competition.
+  - Project-specific ALLOW must not silently weaken an existing shared requirement.
+evidence:
+  materially_different_uses:
+    - acme_reference
+  third_use_checked: false
+

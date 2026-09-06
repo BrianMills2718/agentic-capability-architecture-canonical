@@ -1,0 +1,15 @@
+name: core
+status: core
+version: 0.1.0
+runtime: frappe
+foundation: true
+
+provides:
+  - identity
+  - configuration
+  - shared_conventions
+
+requires: []
+
+notes:
+  - Foundational capability; core status is not based on reuse-count promotion.
