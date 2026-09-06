@@ -43,9 +43,15 @@ jobs:
       - name: Checkout proof branch
         uses: actions/checkout@v4
 
-      - name: Reconstruct and extract capability-base snapshot
+      - name: Diagnose, reconstruct, and extract capability-base snapshot
         run: |
+          echo "Payload chunk sizes:"
+          wc -c payload.b64.part*
+          echo "Payload chunk SHA-256 values:"
+          sha256sum payload.b64.part*
           cat payload.b64.part* | base64 -d > frappe_proof_payload.tar.gz
+          echo "Reconstructed archive SHA-256:"
+          sha256sum frappe_proof_payload.tar.gz
           echo "900357df7be11d9aada844a1f43bb04b3a25b8e162d460c759417b3ac1157f64  frappe_proof_payload.tar.gz" | sha256sum -c -
           mkdir capability-base
           tar -xzf frappe_proof_payload.tar.gz -C capability-base
