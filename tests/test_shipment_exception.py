@@ -11,6 +11,13 @@ import pytest
 from shipment_exception.workflow import acknowledge, resolve
 
 
+def notification_recorder(notifications):
+    def notify(**kwargs):
+        notifications.append(kwargs)
+
+    return notify
+
+
 def test_acknowledge_changes_state_and_notifies():
     notifications = []
 
@@ -19,7 +26,7 @@ def test_acknowledge_changes_state_and_notifies():
         actor="operator@example.test",
         occurred_at="2026-09-06T18:00:00Z",
         already_applied=False,
-        notify=notifications.append,
+        notify=notification_recorder(notifications),
     )
 
     assert result.changed is True
@@ -44,7 +51,7 @@ def test_acknowledge_replay_is_noop_even_after_state_advanced():
         actor="operator@example.test",
         occurred_at="2026-09-06T18:00:00Z",
         already_applied=True,
-        notify=notifications.append,
+        notify=notification_recorder(notifications),
     )
 
     assert result.changed is False
@@ -62,7 +69,7 @@ def test_resolve_requires_resolution_and_notifies():
         occurred_at="2026-09-06T18:00:00Z",
         resolution="Replacement shipment dispatched",
         already_applied=False,
-        notify=notifications.append,
+        notify=notification_recorder(notifications),
     )
 
     assert result.changed is True
@@ -79,7 +86,7 @@ def test_resolve_replay_is_noop_without_duplicate_notification():
         occurred_at="2026-09-06T18:00:00Z",
         resolution="Replacement shipment dispatched",
         already_applied=True,
-        notify=notifications.append,
+        notify=notification_recorder(notifications),
     )
 
     assert result.changed is False
