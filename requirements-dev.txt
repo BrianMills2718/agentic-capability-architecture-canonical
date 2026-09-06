@@ -1,4 +1,0 @@
-build>=1,<2
-jsonschema>=4,<5
-pytest>=8,<10
-PyYAML>=6,<7

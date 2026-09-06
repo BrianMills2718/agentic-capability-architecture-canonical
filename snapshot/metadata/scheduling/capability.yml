@@ -1,0 +1,19 @@
+name: scheduling
+status: candidate
+version: 0.1.0
+runtime: frappe
+provides:
+- appointment.create
+- appointment.cancel
+- appointment.reschedule
+- availability.query
+requires:
+- core
+optional:
+- approvals
+- notifications
+public_interfaces:
+- na_scheduling.availability.TimeWindow
+- na_scheduling.availability.overlaps
+- na_scheduling.availability.find_conflicts
+- na_scheduling.availability.is_available

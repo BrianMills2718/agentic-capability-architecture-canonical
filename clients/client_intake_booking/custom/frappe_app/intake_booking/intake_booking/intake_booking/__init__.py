@@ -1,1 +1,0 @@
-"""Intake Booking Frappe module."""

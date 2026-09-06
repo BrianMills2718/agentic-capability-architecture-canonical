@@ -1,0 +1,73 @@
+registry_version: 1
+export_kind: portable_capability_snapshot
+selection:
+  requested:
+  - core
+  - approvals
+  - notifications
+  - scheduling
+  resolved:
+  - core
+  - approvals
+  - notifications
+  - scheduling
+capabilities:
+  core:
+    version: 0.1.0
+    maturity: core
+    package: na_core
+    path: vendor/na_core
+    metadata_path: metadata/core
+    sha256_tree: c654b37cc39e53dea1dc708edda6241c79490715c925302333fb40b72006a4bb
+    provides:
+    - identity
+    - configuration
+    - shared_conventions
+    - state.transition.plan
+    - state.transition.audit_payload
+    requires: []
+    optional: []
+  approvals:
+    version: 0.1.0
+    maturity: proven
+    package: na_approvals
+    path: vendor/na_approvals
+    metadata_path: metadata/approvals
+    sha256_tree: 09d30eec5dd124ac4f1a43f37fc66326cbb1f45efadd839980959dadf1e900da
+    provides:
+    - approval.resolve
+    - approval.require
+    - approval.block
+    - approval.transition.plan
+    requires:
+    - core
+    optional: []
+  notifications:
+    version: 0.1.0
+    maturity: proven
+    package: na_notifications
+    path: vendor/na_notifications
+    metadata_path: metadata/notifications
+    sha256_tree: 98bffa1d78bb6be41803139b7c01061c88d2224168368869d2f65be48cdd1b3f
+    provides:
+    - notification.email.send
+    requires:
+    - core
+    optional: []
+  scheduling:
+    version: 0.1.0
+    maturity: candidate
+    package: na_scheduling
+    path: vendor/na_scheduling
+    metadata_path: metadata/scheduling
+    sha256_tree: 150bab20997796508e3c4d37cc15da929c2e13e0c0a0ee2462d7a7360c1e2753
+    provides:
+    - appointment.create
+    - appointment.cancel
+    - appointment.reschedule
+    - availability.query
+    requires:
+    - core
+    optional:
+    - approvals
+    - notifications

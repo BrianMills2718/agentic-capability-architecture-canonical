@@ -1,6 +1,0 @@
-app_name = "na_notifications"
-app_title = "NA Notifications"
-app_publisher = "Capability Base"
-app_description = "Reusable notification transport capability"
-app_email = ""
-app_license = "MIT"

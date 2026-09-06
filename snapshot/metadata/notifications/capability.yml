@@ -1,0 +1,13 @@
+name: notifications
+status: proven
+version: 0.1.0
+runtime: frappe
+provides:
+- notification.email.send
+requires:
+- core
+public_interfaces:
+- na_notifications.email.send_email
+invariants:
+- Domain code owns trigger timing and recipients.
+- No-op lifecycle actions must not emit duplicate domain notifications.

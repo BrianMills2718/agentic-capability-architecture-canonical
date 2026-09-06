@@ -1,1 +1,0 @@
-Add a new project called `beta_reference`. It needs appointment scheduling, approvals for appointments over 90 minutes, and email reminders. Reuse what already exists where possible. Do not change existing project behavior.
