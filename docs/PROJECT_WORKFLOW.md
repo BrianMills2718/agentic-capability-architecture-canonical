@@ -81,10 +81,10 @@ Do not promote on first use.
 
 ## 9. Finish with validation
 
-Run:
+Run the exact repository-wide gate:
 
 ```bash
 python tools/check_bootstrap.py
 ```
 
-A project is not complete if it works only by weakening or bypassing existing shared contracts.
+Targeted checks do not substitute for this command. A project is not complete until the full gate passes, and it is not complete if it works only by weakening or bypassing existing shared contracts.
