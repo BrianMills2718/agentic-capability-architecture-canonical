@@ -64,11 +64,16 @@ jobs:
             repair.part02.00 repair.part02.01 repair.part02.02 repair.part02.03 \
             payload.b64.part03 payload.b64.part04 payload.b64.part05 payload.b64.part06 \
             > payload.all.b64
-          wc -c payload.all.b64
           base64 -d payload.all.b64 > frappe_proof_payload.tar.gz
           echo "900357df7be11d9aada844a1f43bb04b3a25b8e162d460c759417b3ac1157f64  frappe_proof_payload.tar.gz" | sha256sum -c -
           mkdir capability-base
           tar -xzf frappe_proof_payload.tar.gz -C capability-base
+
+          # Overlay the exact module-package markers now present in the permanent workspace.
+          install -D proof_overlay/module_init.py capability-base/capabilities/approvals/frappe_app/na_approvals/na_approvals/na_approvals/__init__.py
+          install -D proof_overlay/module_init.py capability-base/capabilities/notifications/frappe_app/na_notifications/na_notifications/na_notifications/__init__.py
+          install -D proof_overlay/module_init.py capability-base/clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/acme_rules/__init__.py
+
           test -f capability-base/tools/run_frappe_reference_tests.sh
           test -f capability-base/clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/tests/test_appointment_hook.py
 
@@ -97,11 +102,8 @@ jobs:
             --skip-assets \
             --python "$(which python)" \
             "$BENCH_PATH"
-
-          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" \
-            -e "SET GLOBAL character_set_server = 'utf8mb4'"
-          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" \
-            -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
 
       - name: Configure external Redis services
         working-directory: ${{ env.BENCH_PATH }}
