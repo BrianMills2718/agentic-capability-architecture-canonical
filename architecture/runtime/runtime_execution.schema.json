@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Runtime Execution Receipt",
+  "type": "object",
+  "required": ["schema_version", "source_system_spec", "steps"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "source_system_spec": {"type": ["object", "null"]},
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirement_id", "semantic_action", "selected_implementation", "status", "provenance"],
+        "properties": {
+          "requirement_id": {"type": "string", "minLength": 1},
+          "semantic_action": {"type": "string", "minLength": 1},
+          "selected_implementation": {"type": "string", "minLength": 1},
+          "status": {"enum": ["succeeded", "failed", "skipped"]},
+          "input_contracts": {"type": "object"},
+          "output_contracts": {"type": "object"},
+          "outputs": {"type": "object"},
+          "provenance": {"type": "object"},
+          "error": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
