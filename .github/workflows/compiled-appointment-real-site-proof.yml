@@ -6,6 +6,10 @@ name: compiled-appointment-real-site-proof
       - milestone-1-actionpack-publication
   workflow_dispatch:
 
+concurrency:
+  group: compiled-appointment-real-site-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   real-site-proof:
     runs-on: ubuntu-latest
