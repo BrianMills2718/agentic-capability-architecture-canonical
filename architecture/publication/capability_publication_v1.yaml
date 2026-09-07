@@ -1,0 +1,45 @@
+schema_version: "1.0"
+source_registry: architecture/primitive_model/primitive_registry.yml
+published_actions:
+  - semantic_action: policy.resolve
+    capability_owner: approvals
+    implementation_candidates:
+      - na_approvals.engine.resolve
+    selected_implementation: na_approvals.engine.resolve
+    owner_manifest: capabilities/approvals/capability.yml
+    semantic_contract:
+      inputs: [facts, rules]
+      outputs: [decision]
+      invariants:
+        - rule resolution and state mutation remain separable
+        - conflict behavior is explicit
+  - semantic_action: state.transition
+    capability_owner: core
+    implementation_candidates:
+      - na_core.transitions.plan_transition
+    selected_implementation: na_core.transitions.plan_transition
+    owner_manifest: capabilities/core/capability.yml
+    semantic_contract:
+      inputs: [state_ref, transition_spec, actor_ref]
+      outputs: [transition_result]
+      invariants:
+        - allowed source state is explicit
+        - changed/no-op semantics are explicit
+        - actor and occurrence time are auditable
+  - semantic_action: notification.send
+    capability_owner: notifications
+    implementation_candidates:
+      - na_notifications.email.send_email
+    selected_implementation: na_notifications.email.send_email
+    owner_manifest: capabilities/notifications/capability.yml
+    semantic_contract:
+      inputs: [recipients, subject, message]
+      outputs: [delivery_ref]
+      invariants:
+        - domain code owns trigger timing and recipients
+        - retryable workflows require durable idempotency semantics
+publication_rules:
+  - data-contracts owns typed composition validation, not implementation discovery
+  - capability architecture owns maturity, evidence, dependencies, and implementation resolution
+  - implementation references remain opaque to data-contracts composition core
+  - project-local business semantics are not promoted into shared primitive declarations
