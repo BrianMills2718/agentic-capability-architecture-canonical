@@ -33,7 +33,8 @@ def execute_compiled_appointment(*, appointment_name: str, actor: str, recipient
 
     resolution = resolve(results)
     decision = resolution.decision if resolution else Decision.ALLOW
-    appointment.db_set("approval_required", int(decision is Decision.REQUIRE_APPROVAL), update_modified=False)
+    requires_approval = decision is Decision.REQUIRE_APPROVAL
+    appointment.db_set("approval_required", int(requires_approval), update_modified=False)
     appointment.db_set("approval_reason", "; ".join(resolution.reasons) if resolution else "", update_modified=False)
 
     receipts = [{
@@ -45,28 +46,32 @@ def execute_compiled_appointment(*, appointment_name: str, actor: str, recipient
         "provenance": {"source_clause": SOURCE_CLAUSE, "semantic_rule": "rule:long_appointment_requires_approval"},
     }]
 
-    if decision is Decision.REQUIRE_APPROVAL:
-        transition = plan_transition(
-            current_state=appointment.status,
-            spec=TransitionSpec(
-                stage="appointment",
-                action="manager_approve",
-                allowed_from=frozenset({"Pending"}),
-                to_state="Confirmed",
-            ),
-            actor=actor,
-            occurred_at=now_datetime(),
-            reason=resolution.reasons[0],
-        )
-        appointment.db_set("status", transition.next_state, update_modified=False)
-        receipts.append({
-            "requirement_id": "req:appointment-approval-transition",
-            "semantic_action": "state.transition",
-            "selected_implementation": "na_core.transitions.plan_transition",
-            "status": "succeeded",
-            "outputs": {"transition_result": transition.next_state},
-            "provenance": {"source_clause": SOURCE_CLAUSE, "role_binding": ROLE_BINDING},
-        })
+    transition_actor = actor if requires_approval else "system:auto-policy"
+    transition_reason = resolution.reasons[0] if resolution else "No approval required."
+    transition = plan_transition(
+        current_state=appointment.status,
+        spec=TransitionSpec(
+            stage="appointment",
+            action="manager_approve" if requires_approval else "auto_confirm",
+            allowed_from=frozenset({"Pending"}),
+            to_state="Confirmed",
+        ),
+        actor=transition_actor,
+        occurred_at=now_datetime(),
+        reason=transition_reason,
+    )
+    appointment.db_set("status", transition.next_state, update_modified=False)
+    transition_provenance = {"source_clause": SOURCE_CLAUSE}
+    if requires_approval:
+        transition_provenance["role_binding"] = ROLE_BINDING
+    receipts.append({
+        "requirement_id": "req:appointment-approval-transition",
+        "semantic_action": "state.transition",
+        "selected_implementation": "na_core.transitions.plan_transition",
+        "status": "succeeded",
+        "outputs": {"transition_result": transition.next_state},
+        "provenance": transition_provenance,
+    })
 
     delivery = send_email(
         recipients=[recipient],
