@@ -15,6 +15,11 @@ Instead of asking a coding agent to regenerate an application from scratch, give
 
 The larger hypothesis is that many applications may be compositions of a relatively small number of configurable semantic primitives plus higher-order capabilities, while important domain semantics remain local.
 
+## Architecture at a glance
+
+- [`docs/ARCHITECTURE_CHARTER.md`](docs/ARCHITECTURE_CHARTER.md) — concise governing architecture: primitives, capabilities, project-local behavior, evidence, agent planning, and the federated commons.
+- [`docs/ARCHITECTURE_ONE_DIAGRAM.md`](docs/ARCHITECTURE_ONE_DIAGRAM.md) — one Mermaid diagram showing the end-to-end requirement → registry → composition → runtime → evidence → commons loop.
+
 ## Current layers
 
 ```text
@@ -26,6 +31,7 @@ typed project composition / state models
     ↓
 project-native implementation adapters
 ```
+
 ## Current registered capabilities
 
 ```text
@@ -53,6 +59,7 @@ The latest seven-site proof demonstrated isolated project compositions and prese
 See `docs/PRIMITIVE_CAPABILITY_THESIS.md` and the experimental files under `architecture/primitive_model/` where present.
 
 The visual graph is not intended to be the architecture. The underlying typed model is the source; node/port, state-transition, deployment, and evidence diagrams are views over it.
+
 ## Capability-network research
 
 The repository also contains the isolated fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/`.
@@ -61,14 +68,15 @@ That challenge exposes multiple portable capabilities and asks an independent co
 
 ## Start here
 
-- `AGENTS.md` — rules for coding agents
-- `capability_registry.yml` — current capability registry
-- `reuse_candidates.yml` — evidence pipeline for emerging reuse
-- `docs/WORKING_CONTEXT.md` — implementation history/context
-- `docs/SESSION_CONTEXT_2026-09-06.md` — current strategic handoff
-- `docs/ROADMAP.md` — current direction where present
-- `docs/PRIMITIVE_CAPABILITY_THESIS.md` — primitive/capability hypothesis
-- `docs/PROOF_LEDGER_EXTENDED.md` — proof references
+1. `docs/ARCHITECTURE_CHARTER.md` — governing one-page architecture.
+2. `docs/ARCHITECTURE_ONE_DIAGRAM.md` — visual architecture overview.
+3. `AGENTS.md` — rules for coding agents.
+4. `capability_registry.yml` — current capability registry.
+5. `reuse_candidates.yml` — evidence pipeline for emerging reuse.
+6. `docs/PRIMITIVE_CAPABILITY_THESIS.md` — deeper primitive/capability hypothesis.
+7. `docs/WORKING_CONTEXT.md` and `docs/SESSION_CONTEXT_2026-09-06.md` — implementation history and strategic handoff.
+8. `docs/PROOF_LEDGER_EXTENDED.md` — proof references.
+9. `docs/ROADMAP.md` — current direction where present.
 
 ## Status
 
