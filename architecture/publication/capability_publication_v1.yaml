@@ -6,6 +6,7 @@ published_actions:
     implementation_candidates:
       - na_approvals.engine.resolve
     selected_implementation: na_approvals.engine.resolve
+    composition_implementation_ref: na_approvals.engine.resolve/1
     owner_manifest: capabilities/approvals/capability.yml
     semantic_contract:
       inputs: [facts, rules]
@@ -18,6 +19,7 @@ published_actions:
     implementation_candidates:
       - na_core.transitions.plan_transition
     selected_implementation: na_core.transitions.plan_transition
+    composition_implementation_ref: na_core.transitions.plan_transition/1
     owner_manifest: capabilities/core/capability.yml
     semantic_contract:
       inputs: [state_ref, transition_spec, actor_ref]
@@ -31,6 +33,7 @@ published_actions:
     implementation_candidates:
       - na_notifications.email.send_email
     selected_implementation: na_notifications.email.send_email
+    composition_implementation_ref: na_notifications.email.send_email/1
     owner_manifest: capabilities/notifications/capability.yml
     semantic_contract:
       inputs: [recipients, subject, message]
