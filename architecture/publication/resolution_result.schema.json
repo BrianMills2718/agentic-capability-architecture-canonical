@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Provider Resolution Result",
+  "type": "object",
+  "required": ["schema_version", "source_system_spec", "bindings"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "source_system_spec": {"type": ["object", "null"]},
+    "publication_source": {"type": ["string", "null"]},
+    "bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "semantic_action",
+          "capability_owner",
+          "selected_implementation",
+          "owner_manifest",
+          "provenance",
+          "requirement_invariants"
+        ],
+        "properties": {
+          "requirement_id": {"type": "string", "minLength": 1},
+          "semantic_action": {"type": "string", "minLength": 1},
+          "capability_owner": {"type": "string", "minLength": 1},
+          "selected_implementation": {"type": "string", "minLength": 1},
+          "owner_manifest": {"type": "string", "minLength": 1},
+          "provenance": {"type": "object"},
+          "requirement_invariants": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
