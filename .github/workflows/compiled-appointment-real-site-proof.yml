@@ -47,9 +47,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mariadb-client
           python -m pip install --upgrade pip frappe-bench
-      - name: Initialize Frappe v15 site
+      - name: Initialize Frappe v15 site with assets
         run: |
-          bench init --frappe-branch version-15 --skip-redis-config-generation --skip-assets --python "$(which python)" "$BENCH_PATH"
+          bench init --frappe-branch version-15 --skip-redis-config-generation --python "$(which python)" "$BENCH_PATH"
           mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
           mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
           cd "$BENCH_PATH"
