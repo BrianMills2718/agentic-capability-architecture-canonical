@@ -2,11 +2,13 @@
 """Validate the maintained capability publication against owner manifests."""
 from pathlib import Path
 import argparse
+import re
 import sys
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PUBLICATION = ROOT / "architecture/publication/capability_publication_v1.yaml"
+VERSIONED_ID = re.compile(r"^[a-z][a-z0-9_.-]*/[1-9][0-9]*$")
 
 
 def validate(path: Path) -> list[str]:
@@ -24,10 +26,15 @@ def validate(path: Path) -> list[str]:
 
         owner = action.get("capability_owner")
         selected = action.get("selected_implementation")
+        composition_ref = action.get("composition_implementation_ref")
         manifest_rel = action.get("owner_manifest")
-        if not owner or not selected or not manifest_rel:
-            errors.append(f"{semantic_action}: missing owner, selected implementation, or owner manifest")
+        if not owner or not selected or not composition_ref or not manifest_rel:
+            errors.append(
+                f"{semantic_action}: missing owner, selected implementation, composition implementation ref, or owner manifest"
+            )
             continue
+        if not VERSIONED_ID.fullmatch(str(composition_ref)):
+            errors.append(f"{semantic_action}: invalid composition implementation ref {composition_ref!r}")
 
         manifest_path = ROOT / manifest_rel
         if not manifest_path.exists():
@@ -57,7 +64,10 @@ def main() -> int:
         return 1
     data = yaml.safe_load(path.read_text())
     for action in data["published_actions"]:
-        print(f"{action['semantic_action']} -> {action['selected_implementation']}")
+        print(
+            f"{action['semantic_action']} -> {action['selected_implementation']} "
+            f"[{action['composition_implementation_ref']}]"
+        )
     return 0
 
 
