@@ -2,6 +2,8 @@
 
 Research and working implementation for an agent-native software architecture in which each project leaves behind reusable capability, tests, evidence, and architectural knowledge for the next project.
 
+> **Canonical status:** this is the sole active capability-architecture lineage. Historical source/predecessor repos remain preserved for evidence, but new capability architecture development belongs here. See `architecture/lineage_inventory.yml` and issue #27.
+
 ## North star
 
 Instead of asking a coding agent to regenerate an application from scratch, give it a machine-readable capability base that lets it:
@@ -15,20 +17,25 @@ Instead of asking a coding agent to regenerate an application from scratch, give
 
 The larger hypothesis is that many applications may be compositions of a relatively small number of configurable semantic primitives plus higher-order capabilities, while important domain semantics remain local.
 
-**Part of a wider research cluster.** This repo (`BrianMills2718`, renamed
-from `test` on 2026-09-07) is one of **four** capability-architecture repos
-with real, unresolved duplication: this one,
-[`brianmills-spec/agentic-capability-architecture`](https://github.com/brianmills-spec/agentic-capability-architecture),
-[`brianmills-spec/composable-capability-architecture`](https://github.com/brianmills-spec/composable-capability-architecture),
-and
-[`brianmills-spec/capability-registry-discovery-proof-20260906`](https://github.com/brianmills-spec/capability-registry-discovery-proof-20260906).
-No repo has been picked as canonical yet, and a Downloads-recovered zip
-(`composable_capability_all_context_current.zip`) holds a more advanced
-snapshot than any of the four as of 2026-09-07. For the open decision on
-which repo wins, what happens to the rest, and how this cluster relates to
-the wider semantic/ontology cluster, see the baseline synthesis page in
-[`BrianMills2718/vision`](https://github.com/BrianMills2718/vision):
-[`wiki/synthesis/ontology-semantic-cluster-baseline-2026-09-07.md`](https://github.com/BrianMills2718/vision/blob/main/wiki/synthesis/ontology-semantic-cluster-baseline-2026-09-07.md).
+## Shared composition seam
+
+This repository owns reusable capability/primitive implementation metadata, maturity, evidence, dependencies, and resolution to implementation interfaces.
+
+It does **not** own the portable typed composition contract. The shared boundary is `BrianMills2718/data-contracts`, whose composition layer validates action/contract flow while treating implementation references as opaque. The requirement-to-runtime semantic compiler can lower target-neutral system meaning into that boundary; this repository resolves the required behavior to existing providers.
+
+The first proven cross-repo slice is:
+
+```text
+Semantic SystemSpec
+    ↓
+behavior requirements
+    ↓
+data-contracts composition validation
+    ↓
+capability resolution here
+    ↓
+existing provider interfaces
+```
 
 ## Architecture at a glance
 
@@ -75,23 +82,24 @@ See `docs/PRIMITIVE_CAPABILITY_THESIS.md` and the experimental files under `arch
 
 The visual graph is not intended to be the architecture. The underlying typed model is the source; node/port, state-transition, deployment, and evidence diagrams are views over it.
 
+Alternative build-time semantic-model experiments from historical lineages are preserved as research evidence and are not a second canonical composition contract.
+
 ## Capability-network research
 
-The repository also contains the isolated fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/`.
+The repository contains the isolated fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/`.
 
-That challenge exposes multiple portable capabilities and asks an independent coding agent to discover and select the relevant ones before coding. It is intended to test whether the architecture works without conversational coaching.
+Historical federated-capability-network context from the composable predecessor is provenance-preserved at `docs/research/COMPOSABLE_LINEAGE_NETWORK_GATE_2026-09-06.md`.
 
 ## Start here
 
 1. `docs/ARCHITECTURE_CHARTER.md` — governing one-page architecture.
-2. `docs/ARCHITECTURE_ONE_DIAGRAM.md` — visual architecture overview.
-3. `AGENTS.md` — rules for coding agents.
-4. `capability_registry.yml` — current capability registry.
-5. `reuse_candidates.yml` — evidence pipeline for emerging reuse.
-6. `docs/PRIMITIVE_CAPABILITY_THESIS.md` — deeper primitive/capability hypothesis.
-7. `docs/WORKING_CONTEXT.md` and `docs/SESSION_CONTEXT_2026-09-06.md` — implementation history and strategic handoff.
+2. `architecture/lineage_inventory.yml` — canonical/superseded repo lineage and preserved evidence.
+3. `docs/ARCHITECTURE_ONE_DIAGRAM.md` — visual architecture overview.
+4. `AGENTS.md` — rules for coding agents.
+5. `capability_registry.yml` — current capability registry.
+6. `architecture/primitive_model/primitive_registry.yml` — experimental semantic primitive vocabulary and implementation evidence.
+7. `reuse_candidates.yml` — evidence pipeline for emerging reuse.
 8. `docs/PROOF_LEDGER_EXTENDED.md` — proof references.
-9. `docs/ROADMAP.md` — current direction where present.
 
 ## Status
 
