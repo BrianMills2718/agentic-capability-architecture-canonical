@@ -3,8 +3,8 @@
 
 This is a deterministic boundary resolver, not a planner. It matches exact semantic
 action identities, checks named input/output compatibility, and emits provider-bound
-resolution records including target-neutral payload contract IDs. Runtime execution
-remains out of scope.
+resolution records including target-neutral payload contract IDs and a versioned opaque
+composition implementation identity. Runtime execution remains out of scope.
 """
 from __future__ import annotations
 
@@ -88,6 +88,7 @@ def resolve(requirements: dict, publication: dict) -> dict:
                 "semantic_action": semantic_action,
                 "capability_owner": action["capability_owner"],
                 "selected_implementation": action["selected_implementation"],
+                "composition_implementation_ref": action["composition_implementation_ref"],
                 "owner_manifest": action["owner_manifest"],
                 "input_contracts": input_contracts,
                 "output_contracts": output_contracts,
