@@ -1,0 +1,74 @@
+schema_version: 0.1
+canonical_repo: BrianMills2718/agentic-capability-architecture-canonical
+purpose: Track capability-architecture repo lineage, unique-material review, and consolidation disposition.
+
+lineages:
+  - repository: BrianMills2718/agentic-capability-architecture-canonical
+    role: canonical
+    status: active
+    evidence:
+      - commit: 6efa3a90bd82fdf63d7f0152086d47510429c3b4
+        note: Imported canonical private capability architecture repository.
+      - commit: 0817edafe9b69e01daf5a896c196c15082b0758e
+        note: Restored files that FILE_MANIFEST claimed but repo was missing; also documented a later recovered snapshot needing selective review.
+    disposition: retain_as_sole_active_lineage
+
+  - repository: brianmills-spec/agentic-capability-architecture
+    role: source_lineage
+    status: audit_before_freeze
+    evidence:
+      - commit: f46e2fd39c97b443352d42f1dee5b7a69a056ebb
+        note: Added private migration export used by canonical import lineage.
+      - commit: 1840e734bcae54a3f06e7cee25484cb25c977bc8
+        note: Added semantic architecture v0.1 and build-time experiment after canonical import; must be reviewed as potentially unique material.
+      - commit: 24a414e9ac504490f4de775ae89b6e10232498a5
+        note: Later cross-link-only update.
+    known_shared_artifacts:
+      - capability_registry.yml
+    review_targets:
+      - architecture
+      - experiments
+      - docs
+      - proof
+    disposition: migrate_unique_evidence_then_freeze
+
+  - repository: brianmills-spec/composable-capability-architecture
+    role: predecessor_snapshot
+    status: audit_before_freeze
+    evidence:
+      - commit: 53b0279a9a49b4cd8ab1ec76dca94545033e1ffe
+        note: Latest known cross-link update.
+      - note: Root artifact SHAs show substantial direct overlap with the source lineage, including identical AGENTS.md, FILE_MANIFEST.txt, capability_registry.yml, and capability/client trees.
+      - note: Canonical commit 0817edafe9b69e01daf5a896c196c15082b0758e records that the recovered composable-capability zip contains a materially later snapshot with additional client/docs/tests that should be selectively reconciled.
+    known_shared_artifacts:
+      - AGENTS.md
+      - FILE_MANIFEST.txt
+      - capability_registry.yml
+      - capabilities
+      - clients
+    review_targets:
+      - later recovered snapshot referenced by canonical history
+      - proof trigger artifacts
+      - unique docs/tests/clients not already present canonically
+    disposition: migrate_unique_material_then_freeze
+
+  - repository: brianmills-spec/capability-registry-discovery-proof-20260906
+    role: experiment_evidence
+    status: preserve
+    evidence:
+      - path: AGENT_RULES.md
+      - path: TASK.md
+      - path: snapshot/
+    disposition: preserve_as_reproducible_proof; optionally mirror into canonical proof/ with source provenance; do_not_treat_as_active_architecture
+
+rules:
+  - do_not_bulk_copy_whole_trees
+  - every_migrated_unit_records_source_repo_source_commit_or_path
+  - preserve_conflicting_experiments_as_evidence_when_not_canonicalized
+  - freeze_noncanonical_lineages_only_after_unique_material_review
+  - keep_milestone1_contract_and_provider_gates_green_during_consolidation
+
+next_reviews:
+  - compare source_lineage semantic architecture/build-time experiment against canonical architecture/primitive_model and milestone1 publication work
+  - inspect recovered composable later-snapshot inventory noted in canonical commit 0817edafe9b69e01daf5a896c196c15082b0758e
+  - verify whether discovery-proof snapshot is already mirrored under canonical proof/fresh_agent_registry_discovery before copying anything
