@@ -23,7 +23,6 @@ Promotion is evidence-driven. Raw project count is insufficient; uses should be 
 - **Approvals** — deterministic approval-decision semantics, proven across distinct domains.
 - **Notifications** — small shared transport boundary; domain code owns timing, recipients, and copy.
 - **Scheduling** — appointment behavior plus newer neutral time-window availability semantics; still candidate pending stronger cross-domain evidence.
-
 ## Real project pressure
 
 The architecture has been exercised through six production-shaped projects:
@@ -55,7 +54,6 @@ notification.send
 artifact.attach
 value.aggregate
 ```
-
 The current preferred interpretation is a hybrid:
 
 ```text
@@ -81,7 +79,6 @@ Do not infer from the experiments that:
 - a capability interface is necessarily a primitive.
 
 Procurement fulfillment and IT access provisioning/revocation were intentionally retained as domain-native actions rather than forced into a generic `execute` primitive.
-
 ## Portable capability network
 
 A later experiment exported capability metadata and package source outside the monorepo so an independent consumer could verify hashes, resolve dependencies, install capability packages, and compose them without source-repository context.
@@ -90,7 +87,7 @@ The next network-level test is stronger: a fresh agent should receive only a por
 
 The isolated challenge is stored under:
 
-`proof/fresh_agent_registry_discovery/`
+`proof/fresh_agent_registry_discovery/challenge/`
 
 ## Strategic phase
 

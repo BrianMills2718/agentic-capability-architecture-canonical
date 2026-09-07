@@ -1,0 +1,41 @@
+name: approvals
+status: proven
+version: 0.1.0
+runtime: frappe
+provides:
+- approval.resolve
+- approval.require
+- approval.block
+- approval.transition.plan
+requires:
+- core
+public_interfaces:
+- na_approvals.engine.resolve
+- na_approvals.engine.apply_resolution
+- na_approvals.transitions.TransitionSpec (compatibility re-export from na_core.transitions)
+- na_approvals.transitions.TransitionResult (compatibility re-export from na_core.transitions)
+- na_approvals.transitions.plan_transition (compatibility re-export from na_core.transitions)
+- na_approvals.transitions.audit_payload (compatibility re-export from na_core.transitions)
+configuration:
+  decisions:
+    type: enum
+    values:
+    - ALLOW
+    - REQUIRE_APPROVAL
+    - BLOCK
+invariants:
+- Explicit conflicts fail instead of being silently resolved.
+- Equal-priority rules that disagree fail instead of depending on input order.
+- BLOCK is stronger than ordinary ALLOW/REQUIRE priority competition.
+- Project-specific ALLOW must not silently weaken an existing shared requirement.
+- Approval transition planning is pure; project code owns authorization, persistence, and notifications.
+- Durable already-applied evidence produces an idempotent no-op even if later domain workflow progress has occurred.
+evidence:
+  materially_different_uses:
+  - acme_reference
+  - internal_procurement
+  - it_access_control
+  third_use_checked: true
+notes:
+- The canonical transition primitive now lives in Core as na_core.transitions; the approval namespace is retained
+  for backward compatibility.

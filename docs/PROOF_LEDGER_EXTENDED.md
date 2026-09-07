@@ -19,7 +19,6 @@ This file records proof identifiers referenced during development. GitHub Action
 ## Cross-repository portability
 
 - `34047230770` — independent consumer repository resolved portable capabilities, verified package hashes, installed dependency closure, and passed 7/7 consumer tests.
-
 ## Evidence interpretation
 
 Passing tests prove bounded implementation claims, not universal architectural correctness.
@@ -35,6 +34,6 @@ The strongest recurring evidence so far is:
 
 ## Pending proof
 
-The fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/` still needs a genuinely separate coding agent run.
+The fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/` still needs a genuinely separate coding agent run.
 
 That test should establish whether an agent can discover, select, reject, and compose portable capabilities without receiving the source monorepo or this conversation.

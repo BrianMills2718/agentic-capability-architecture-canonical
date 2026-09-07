@@ -1,0 +1,49 @@
+name: core
+status: core
+version: 0.1.0
+runtime: frappe
+foundation: true
+provides:
+- identity
+- configuration
+- shared_conventions
+- state.transition.plan
+- state.transition.audit_payload
+requires: []
+notes:
+- Foundational capability; core status is not based on reuse-count promotion.
+- The domain-neutral transition primitive moved from the approval namespace after prospective Service Desk planning
+  exposed a false dependency on Approvals; na_approvals.transitions remains a compatibility re-export.
+runtime_path: capabilities/core/frappe_app/na_core
+public_interfaces:
+- na_core.transitions.TransitionSpec
+- na_core.transitions.TransitionResult
+- na_core.transitions.plan_transition
+- na_core.transitions.audit_payload
+evidence:
+  origin: Prospective Service Desk primitive-model planning exposed state.transition as domain-neutral rather than
+    approval-owned.
+  real_runtime_proof: GitHub Actions run 34044617169, six isolated Frappe v15 sites.
+  compatibility: na_approvals.transitions re-exports na_core.transitions so existing approval consumers remain compatible.
+  independent_repository_portability:
+    status: passed
+    repository: BrianMills2718/cc_testing
+    branch: chatgpt/capability-portability-proof-20260906
+    commit: 625018a45b6a15f4d1b288aaa11701054c50fe3a
+    run: '34047230770'
+    result: 7 passed; registry resolved core,notifications; source digests verified after package installation
+  fresh_agent_registry_discovery:
+    status: passed
+    repository: BrianMills2718/Struct
+    base_sha: 2a37ff12b818b41e69e5ac70fe425c90768173ad
+    issue: 1
+    pull_request: 2
+    agent: GitHub Copilot coding agent
+    implementation_sha: 4a11479be9519947a6df6fa5d1dc163cb3fe30be
+    selected:
+    - core
+    - notifications
+    rejected:
+    - approvals
+    - scheduling
+    result: 3 agent-authored tests passed; independent hidden evaluator passed

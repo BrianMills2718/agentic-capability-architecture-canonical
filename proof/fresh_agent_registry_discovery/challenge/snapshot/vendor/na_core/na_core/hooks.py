@@ -1,0 +1,6 @@
+app_name = "na_core"
+app_title = "NA Core"
+app_publisher = "Composable Capability Base"
+app_description = "Foundational semantic primitives for composable projects"
+app_email = ""
+app_license = "MIT"

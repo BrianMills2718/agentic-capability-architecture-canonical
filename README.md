@@ -26,7 +26,6 @@ typed project composition / state models
     ↓
 project-native implementation adapters
 ```
-
 ## Current registered capabilities
 
 ```text
@@ -51,13 +50,12 @@ The latest seven-site proof demonstrated isolated project compositions and prese
 
 ## Primitive-model research
 
-See `docs/PRIMITIVE_CAPABILITY_THESIS.md`.
+See `docs/PRIMITIVE_CAPABILITY_THESIS.md` and the experimental files under `architecture/primitive_model/` where present.
 
 The visual graph is not intended to be the architecture. The underlying typed model is the source; node/port, state-transition, deployment, and evidence diagrams are views over it.
-
 ## Capability-network research
 
-The repository also contains the isolated fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/`.
+The repository also contains the isolated fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/`.
 
 That challenge exposes multiple portable capabilities and asks an independent coding agent to discover and select the relevant ones before coding. It is intended to test whether the architecture works without conversational coaching.
 
@@ -68,9 +66,9 @@ That challenge exposes multiple portable capabilities and asks an independent co
 - `reuse_candidates.yml` — evidence pipeline for emerging reuse
 - `docs/WORKING_CONTEXT.md` — implementation history/context
 - `docs/SESSION_CONTEXT_2026-09-06.md` — current strategic handoff
+- `docs/ROADMAP.md` — current direction where present
 - `docs/PRIMITIVE_CAPABILITY_THESIS.md` — primitive/capability hypothesis
 - `docs/PROOF_LEDGER_EXTENDED.md` — proof references
-- `docs/SOURCE_MATERIALS.md` — provenance for related source material
 
 ## Status
 

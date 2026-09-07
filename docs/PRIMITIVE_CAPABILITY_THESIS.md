@@ -27,7 +27,6 @@ domain implementation
 ## Good primitive criteria
 
 A useful primitive should be semantically meaningful, bounded, configurable without hiding consequential behavior, testable independently, composable through typed contracts, explicit about failure/idempotency/effects, and stable across materially different domains.
-
 ## Proposed hybrid model
 
 ```text

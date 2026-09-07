@@ -1,0 +1,65 @@
+name: scheduling
+status: candidate
+version: 0.1.0
+runtime: frappe
+provides:
+- appointment.create
+- appointment.cancel
+- appointment.reschedule
+- availability.query
+requires:
+- core
+optional:
+- approvals
+- notifications
+configuration:
+  default_duration_minutes:
+    type: integer
+    default: 30
+  cancellation_enabled:
+    type: boolean
+    default: true
+public_model:
+  Appointment:
+    fields:
+    - customer
+    - start_time
+    - duration_minutes
+    - status
+    - approval_required
+    - approval_reason
+evidence:
+  materially_different_uses:
+  - appointment_booking
+  - shared_resource_reservation
+  project_uses:
+  - acme_reference
+  - client_intake_booking
+  - resource_reservation
+  third_use_checked: false
+  cross_domain_result:
+    temporal_availability_core:
+      status: cross_domain_exercised
+      shared_interface: na_scheduling.availability
+      evidence:
+      - Appointment validation reuses the shared duration invariant.
+      - Resource Reservation uses shared half-open interval/conflict semantics for rooms/equipment/vehicles.
+      - Seven-site Frappe v15 run 34046554727 passed Resource Reservation 5/5 while all prior project suites remained
+        green.
+  promotion_decision:
+    decision: remain_candidate
+    reason: Project 6 proves a reusable temporal availability core, but the current Scheduling capability still
+      combines that neutral core with the booking-specific Appointment model. A third scheduling domain or an explicit
+      capability split should be proven before promoting the whole capability.
+public_interfaces:
+- na_scheduling.availability.TimeWindow
+- na_scheduling.availability.overlaps
+- na_scheduling.availability.find_conflicts
+- na_scheduling.availability.is_available
+- na_scheduling.availability.validate_duration_minutes
+invariants:
+- Time windows use half-open interval semantics [start, end).
+- Back-to-back windows do not overlap.
+- Duration must be greater than zero.
+- Resource identity and persistence querying are not owned by the neutral temporal core.
+- Appointment remains a booking-oriented public model rather than a universal reservation record.
