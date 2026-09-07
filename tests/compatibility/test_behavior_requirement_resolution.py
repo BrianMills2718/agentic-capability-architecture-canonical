@@ -5,6 +5,10 @@ import yaml
 from tools.resolve_behavior_requirements import ResolutionError, resolve
 
 
+def _io(name: str, contract_id: str) -> dict:
+    return {"name": name, "contract_id": contract_id}
+
+
 def requirements_fixture():
     return {
         "schema_version": "1.0",
@@ -14,8 +18,8 @@ def requirements_fixture():
                 "id": "req:approval",
                 "semantic_action": "policy.resolve",
                 "purpose": "resolve policy",
-                "inputs": [{"facts": "x"}, {"rules": "y"}],
-                "required_outputs": ["decision"],
+                "inputs": [_io("facts", "test.facts/1"), _io("rules", "test.rules/1")],
+                "required_outputs": [_io("decision", "test.decision/1")],
                 "invariants": ["domain invariant preserved"],
                 "provenance": {"source_clause": "clause:test"},
             },
@@ -24,11 +28,12 @@ def requirements_fixture():
                 "semantic_action": "state.transition",
                 "purpose": "transition state",
                 "inputs": [
-                    {"state_ref": "x"},
-                    {"transition_spec": "y"},
-                    {"actor_ref": "z"},
+                    _io("decision", "test.decision/1"),
+                    _io("state_ref", "test.state/1"),
+                    _io("transition_spec", "test.transition-spec/1"),
+                    _io("actor_ref", "test.actor/1"),
                 ],
-                "required_outputs": ["transition_result"],
+                "required_outputs": [_io("transition_result", "test.transition/1")],
                 "provenance": {"source_clause": "clause:test"},
             },
             {
@@ -36,11 +41,12 @@ def requirements_fixture():
                 "semantic_action": "notification.send",
                 "purpose": "notify",
                 "inputs": [
-                    {"recipients": "x"},
-                    {"subject": "y"},
-                    {"message": "z"},
+                    _io("transition_result", "test.transition/1"),
+                    _io("recipients", "test.recipients/1"),
+                    _io("subject", "test.subject/1"),
+                    _io("message", "test.message/1"),
                 ],
-                "required_outputs": ["delivery_ref"],
+                "required_outputs": [_io("delivery_ref", "test.delivery/1")],
                 "provenance": {"source_clause": "clause:test"},
             },
         ],
@@ -53,16 +59,19 @@ def publication_fixture():
     )
 
 
-def test_resolves_all_published_actions_and_preserves_provenance():
+def test_resolves_all_published_actions_and_preserves_contracts_and_provenance():
     result = resolve(requirements_fixture(), publication_fixture())
     assert [b["semantic_action"] for b in result["bindings"]] == [
         "policy.resolve",
         "state.transition",
         "notification.send",
     ]
-    assert result["bindings"][0]["selected_implementation"] == "na_approvals.engine.resolve"
-    assert result["bindings"][0]["provenance"]["source_clause"] == "clause:test"
-    assert result["bindings"][0]["requirement_invariants"] == ["domain invariant preserved"]
+    first = result["bindings"][0]
+    assert first["selected_implementation"] == "na_approvals.engine.resolve"
+    assert first["provenance"]["source_clause"] == "clause:test"
+    assert first["requirement_invariants"] == ["domain invariant preserved"]
+    assert first["input_contracts"] == {"facts": "test.facts/1", "rules": "test.rules/1"}
+    assert first["output_contracts"] == {"decision": "test.decision/1"}
 
 
 def test_unknown_action_fails_typed():
@@ -78,7 +87,7 @@ def test_unknown_action_fails_typed():
 
 def test_missing_input_fails_typed():
     reqs = requirements_fixture()
-    reqs["requirements"][0]["inputs"] = [{"facts": "x"}]
+    reqs["requirements"][0]["inputs"] = [_io("facts", "test.facts/1")]
     try:
         resolve(reqs, publication_fixture())
     except ResolutionError as exc:
@@ -90,7 +99,10 @@ def test_missing_input_fails_typed():
 
 def test_missing_output_fails_typed():
     reqs = requirements_fixture()
-    reqs["requirements"][0]["required_outputs"] = ["decision", "audit_ref"]
+    reqs["requirements"][0]["required_outputs"] = [
+        _io("decision", "test.decision/1"),
+        _io("audit_ref", "test.audit/1"),
+    ]
     try:
         resolve(reqs, publication_fixture())
     except ResolutionError as exc:
