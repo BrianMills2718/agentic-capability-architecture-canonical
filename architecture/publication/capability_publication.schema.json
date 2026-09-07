@@ -12,12 +12,13 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["semantic_action", "capability_owner", "selected_implementation", "owner_manifest", "semantic_contract"],
+        "required": ["semantic_action", "capability_owner", "selected_implementation", "composition_implementation_ref", "owner_manifest", "semantic_contract"],
         "properties": {
           "semantic_action": {"type": "string", "minLength": 1},
           "capability_owner": {"type": "string", "minLength": 1},
           "implementation_candidates": {"type": "array", "items": {"type": "string", "minLength": 1}},
           "selected_implementation": {"type": "string", "minLength": 1},
+          "composition_implementation_ref": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*/[1-9][0-9]*$"},
           "owner_manifest": {"type": "string", "minLength": 1},
           "semantic_contract": {
             "type": "object",
