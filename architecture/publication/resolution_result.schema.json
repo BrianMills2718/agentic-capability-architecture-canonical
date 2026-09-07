@@ -19,6 +19,7 @@
           "composition_implementation_ref",
           "owner_manifest",
           "input_contracts",
+          "input_sources",
           "output_contracts",
           "provenance",
           "requirement_invariants"
@@ -33,6 +34,29 @@
           "input_contracts": {
             "type": "object",
             "additionalProperties": {"type": "string", "minLength": 1}
+          },
+          "input_sources": {
+            "type": "object",
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "required": ["kind"],
+                  "properties": {"kind": {"const": "external"}},
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "required": ["kind", "requirement_id", "output_name"],
+                  "properties": {
+                    "kind": {"const": "requirement_output"},
+                    "requirement_id": {"type": "string", "minLength": 1},
+                    "output_name": {"type": "string", "minLength": 1}
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            }
           },
           "output_contracts": {
             "type": "object",
