@@ -1,100 +1,79 @@
-# Composable Capability Base
+# Agentic Capability Architecture
 
-A starter system for building software projects against an accumulating library of reusable capabilities.
+Research and working implementation for an agent-native software architecture in which each project leaves behind reusable capability, tests, evidence, and architectural knowledge for the next project.
 
-## Goal
+## North star
 
-Every project should leave behind reusable code, tests, schemas, interfaces, integration knowledge, and agent instructions that make the next project faster and safer.
+Instead of asking a coding agent to regenerate an application from scratch, give it a machine-readable capability base that lets it:
 
-The system separates:
+1. inspect what already exists;
+2. reuse, configure, and compose proven behavior;
+3. identify genuinely local gaps;
+4. implement only those gaps;
+5. validate compatibility and runtime behavior;
+6. contribute new reuse evidence back to the capability base.
 
-1. **Shared capabilities** — reusable functionality.
-2. **Client/project configuration** — differences expressed as settings.
-3. **Client/project custom extensions** — genuinely unique behavior.
+The larger hypothesis is that many applications may be compositions of a relatively small number of configurable semantic primitives plus higher-order capabilities, while important domain semantics remain local.
 
-The default workflow is:
-
-Requirement → inspect capability base → configure → compose → extend locally if necessary → test → record learning → promote only when reuse is demonstrated.
-
-## Initial structure
+## Current layers
 
 ```text
-capabilities/
-    core/
-    approvals/
-    notifications/
-    scheduling/
-    _template/
-
-clients/
-    _template/
-        manifest.yml
-        config/
-        custom/
-
-tests/
-    compatibility/
-
-docs/
-    WORKING_CONTEXT.md
-    ARCHITECTURE.md
-    DECISIONS.md
-
-AGENTS.md
-capability_registry.yml
+semantic primitives
+    ↓
+evidence-backed capabilities
+    ↓
+typed project composition / state models
+    ↓
+project-native implementation adapters
 ```
 
-This repository is intentionally small. It should grow from real projects rather than trying to become a universal framework up front.
+## Current registered capabilities
 
-## Current reference implementation
-
-The repository now includes a minimal end-to-end reference project:
-
-- shared `na_scheduling` Frappe app,
-- shared `na_approvals` rule engine/Frappe app,
-- `acme_reference` project manifest,
-- ACME-specific `acme_rules` extension,
-- pure and compatibility tests,
-- Frappe integration tests ready for a Bench test site.
-
-Run all local checks that do not require Frappe:
-
-```bash
-python tools/check_bootstrap.py
+```text
+core            CORE
+approvals       PROVEN
+notifications   PROVEN
+scheduling      CANDIDATE
 ```
 
-Create a fresh handoff ZIP:
+## Real projects
 
-```bash
-python tools/export_zip.py
-```
+The repository contains production-shaped Frappe implementations for:
 
-See `docs/REFERENCE_IMPLEMENTATION.md` and `docs/PROJECT_WORKFLOW.md` for the intended workflow.
+1. Client Intake + Booking
+2. Internal Procurement
+3. IT Access Control
+4. Facility Maintenance
+5. Service Desk
+6. Shared Resource Reservation
 
-## Reuse discipline
+The latest seven-site proof demonstrated isolated project compositions and preserved older regression suites while adding the non-appointment Resource Reservation use case.
 
-Create a new project layer with:
+## Primitive-model research
 
-```bash
-python tools/new_project.py my_project --capabilities core,scheduling,approvals
-```
+See `docs/PRIMITIVE_CAPABILITY_THESIS.md`.
 
-Record a potentially reusable idea without prematurely moving it into shared code:
+The visual graph is not intended to be the architecture. The underlying typed model is the source; node/port, state-transition, deployment, and evidence diagrams are views over it.
 
-```bash
-python tools/record_reuse_candidate.py --id scheduling.example --project my_project --description "Example reusable behavior"
-```
+## Capability-network research
 
-See `docs/REUSE_PROMOTION.md`.
+The repository also contains the isolated fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/`.
 
-## Proof status
+That challenge exposes multiple portable capabilities and asks an independent coding agent to discover and select the relevant ones before coding. It is intended to test whether the architecture works without conversational coaching.
 
-The real Frappe lifecycle proof is complete: a GitHub Actions Frappe version-15
-environment installed the reference apps and ran the lifecycle suite successfully
-(`6 tests`, `OK`).
+## Start here
 
-**One final proof gate remains:** a genuinely fresh coding-agent acceptance run
-using the untouched acceptance sandbox.
+- `AGENTS.md` — rules for coding agents
+- `capability_registry.yml` — current capability registry
+- `reuse_candidates.yml` — evidence pipeline for emerging reuse
+- `docs/WORKING_CONTEXT.md` — implementation history/context
+- `docs/SESSION_CONTEXT_2026-09-06.md` — current strategic handoff
+- `docs/PRIMITIVE_CAPABILITY_THESIS.md` — primitive/capability hypothesis
+- `docs/PROOF_LEDGER_EXTENDED.md` — proof references
+- `docs/SOURCE_MATERIALS.md` — provenance for related source material
 
-See `docs/NEXT_PROOF.md`, `docs/FRAPPE_TEST_STATUS.md`, and
-`docs/DEFINITION_OF_DONE.md`.
+## Status
+
+This is an experimental research/code repository, not a claim that one universal primitive language or workflow engine has been validated.
+
+The governing discipline is: **do not force everything to be reusable; make everything eligible to become reusable, then promote only after materially different uses provide evidence.**
