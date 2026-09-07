@@ -9,7 +9,27 @@ from compiled_appointment_proof.adapter import execute_compiled_appointment
 
 
 class TestCompiledAppointmentRealSite(FrappeTestCase):
+    def ensure_outgoing_email_account(self):
+        name = "Compiled Appointment Proof Mail"
+        if frappe.db.exists("Email Account", name):
+            return frappe.get_doc("Email Account", name)
+        account = frappe.get_doc({
+            "doctype": "Email Account",
+            "email_account_name": name,
+            "email_id": "compiled-proof@example.test",
+            "enable_outgoing": 1,
+            "default_outgoing": 1,
+            "smtp_server": "localhost",
+            "smtp_port": "25",
+            "no_smtp_authentication": 1,
+            "use_tls": 0,
+            "use_ssl_for_outgoing": 0,
+        })
+        account.insert(ignore_permissions=True)
+        return account
+
     def make_appointment(self, *, duration: int):
+        self.ensure_outgoing_email_account()
         doc = frappe.get_doc({
             "doctype": "Appointment",
             "customer": f"compiled-{duration}@example.test",
@@ -53,6 +73,7 @@ class TestCompiledAppointmentRealSite(FrappeTestCase):
 
     def test_exactly_90_auto_confirms_without_approval_then_reminds(self):
         appointment = self.make_appointment(duration=90)
+        before_queue = frappe.db.count("Email Queue")
         result = execute_compiled_appointment(
             appointment_name=appointment.name,
             actor="Administrator",
@@ -64,6 +85,7 @@ class TestCompiledAppointmentRealSite(FrappeTestCase):
         self.assertEqual(result["receipts"][0]["outputs"]["decision"], "ALLOW")
         self.assertNotIn("role_binding", result["receipts"][1]["provenance"])
         self.assertEqual(result["receipts"][2]["semantic_action"], "notification.send")
+        self.assertGreater(frappe.db.count("Email Queue"), before_queue)
 
 
 if __name__ == "__main__":
