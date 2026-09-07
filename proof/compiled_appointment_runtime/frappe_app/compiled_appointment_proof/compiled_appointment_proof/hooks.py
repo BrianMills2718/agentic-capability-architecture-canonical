@@ -1,0 +1,6 @@
+app_name = "compiled_appointment_proof"
+app_title = "Compiled Appointment Proof"
+app_publisher = "BrianMills2718"
+app_description = "Proof-only runtime adapter for the compiled appointment requirement"
+app_email = "noreply@example.invalid"
+app_license = "MIT"
