@@ -3,8 +3,9 @@
 
 This is a deterministic boundary resolver, not a planner. It matches exact semantic
 action identities, checks named input/output compatibility, and emits provider-bound
-resolution records including target-neutral payload contract IDs and a versioned opaque
-composition implementation identity. Runtime execution remains out of scope.
+resolution records including target-neutral payload contract IDs, explicit input-source
+provenance, and a versioned opaque composition implementation identity. Runtime
+execution remains out of scope.
 """
 from __future__ import annotations
 
@@ -34,6 +35,18 @@ def _named_contracts(requirement: dict, field: str) -> dict[str, str]:
         contract_id = item.get("contract_id")
         if name and contract_id:
             result[str(name)] = str(contract_id)
+    return result
+
+
+def _input_sources(requirement: dict) -> dict[str, dict]:
+    result: dict[str, dict] = {}
+    for item in requirement.get("inputs") or ():
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        source = item.get("source")
+        if name and isinstance(source, dict):
+            result[str(name)] = source
     return result
 
 
@@ -67,10 +80,16 @@ def resolve(requirements: dict, publication: dict) -> dict:
         contract = action.get("semantic_contract") or {}
         required_inputs = set(str(v) for v in contract.get("inputs") or ())
         input_contracts = _named_contracts(requirement, "inputs")
+        input_sources = _input_sources(requirement)
         missing_inputs = sorted(required_inputs - set(input_contracts))
         if missing_inputs:
             raise ResolutionError(
                 "INPUT_CONTRACT_MISMATCH", req_id, f"missing inputs: {', '.join(missing_inputs)}"
+            )
+        missing_sources = sorted(set(input_contracts) - set(input_sources))
+        if missing_sources:
+            raise ResolutionError(
+                "INPUT_SOURCE_MISSING", req_id, f"inputs without source: {', '.join(missing_sources)}"
             )
 
         output_contracts = _named_contracts(requirement, "required_outputs")
@@ -91,6 +110,7 @@ def resolve(requirements: dict, publication: dict) -> dict:
                 "composition_implementation_ref": action["composition_implementation_ref"],
                 "owner_manifest": action["owner_manifest"],
                 "input_contracts": input_contracts,
+                "input_sources": input_sources,
                 "output_contracts": output_contracts,
                 "provenance": requirement.get("provenance") or {},
                 "requirement_invariants": requirement.get("invariants") or [],
