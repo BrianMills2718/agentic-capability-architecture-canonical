@@ -51,7 +51,7 @@ class TestCompiledAppointmentRealSite(FrappeTestCase):
         )
         self.assertGreater(frappe.db.count("Email Queue"), before_queue)
 
-    def test_exactly_90_does_not_require_approval(self):
+    def test_exactly_90_auto_confirms_without_approval_then_reminds(self):
         appointment = self.make_appointment(duration=90)
         result = execute_compiled_appointment(
             appointment_name=appointment.name,
@@ -60,8 +60,10 @@ class TestCompiledAppointmentRealSite(FrappeTestCase):
         )
         saved = frappe.get_doc("Appointment", appointment.name)
         self.assertEqual(saved.approval_required, 0)
-        self.assertEqual(saved.status, "Pending")
+        self.assertEqual(saved.status, "Confirmed")
         self.assertEqual(result["receipts"][0]["outputs"]["decision"], "ALLOW")
+        self.assertNotIn("role_binding", result["receipts"][1]["provenance"])
+        self.assertEqual(result["receipts"][2]["semantic_action"], "notification.send")
 
 
 if __name__ == "__main__":
