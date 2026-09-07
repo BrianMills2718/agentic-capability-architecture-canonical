@@ -1,0 +1,14 @@
+{
+  "doctype": "DocType",
+  "name": "Purchase Request Item",
+  "module": "Procurement Requests",
+  "istable": 1,
+  "engine": "InnoDB",
+  "field_order": ["description", "quantity", "unit_price", "line_total"],
+  "fields": [
+    {"fieldname": "description", "fieldtype": "Data", "label": "Description", "reqd": 1},
+    {"fieldname": "quantity", "fieldtype": "Float", "label": "Quantity", "default": "1", "reqd": 1},
+    {"fieldname": "unit_price", "fieldtype": "Currency", "label": "Unit Price", "reqd": 1},
+    {"fieldname": "line_total", "fieldtype": "Currency", "label": "Line Total", "read_only": 1}
+  ]
+}

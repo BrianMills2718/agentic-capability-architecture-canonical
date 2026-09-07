@@ -1,0 +1,19 @@
+project: internal_procurement
+
+capabilities:
+  core: "^0.1.0"
+  approvals: "^0.1.0"
+  notifications: "^0.1.0"
+
+configuration:
+  approval:
+    finance_threshold: 500
+    currency: USD
+
+custom_extensions:
+  - procurement_requests
+
+notes:
+  - Scheduling intentionally excluded to stress the capability base outside the booking domain.
+  - Purchase workflow remains project-local.
+  - approval_action_workflow is being tested for a second materially different use before promotion.

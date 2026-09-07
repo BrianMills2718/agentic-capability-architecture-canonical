@@ -1,0 +1,9 @@
+app_name = "service_desk_requests"
+app_title = "Service Desk"
+app_publisher = "Composable Capability Base"
+app_description = "Support request intake, assignment, SLA and resolution"
+app_email = ""
+app_license = "Proprietary"
+required_apps = ["na_core", "na_notifications"]
+after_install = "service_desk_requests.install.after_install"
+scheduler_events = {"hourly": ["service_desk_requests.sla.notify_overdue_requests"]}

@@ -1,0 +1,34 @@
+project: resource_reservation
+purpose: Reserve shared rooms/equipment/vehicles by time window, prevent overlapping
+  active reservations, support reschedule/cancel, and notify requesters.
+capabilities:
+  core: ^0.1.0
+  scheduling: ^0.1.0
+  notifications: ^0.1.0
+configuration:
+  reservation:
+    default_duration_minutes: 60
+    resource_types:
+    - Room
+    - Equipment
+    - Vehicle
+custom_extensions:
+- resource_reservations
+acceptance_scenarios:
+- A user can create a draft reservation for an active resource and reserve it if the
+  requested time window is free.
+- Two active reservations for the same resource cannot overlap.
+- Back-to-back reservations are allowed.
+- Reservations for different resources can overlap.
+- A reserved booking can be rescheduled only if the new window is available.
+- A cancelled reservation releases the slot.
+- Reserve, reschedule, and cancel are idempotent for repeated identical actions.
+- The project uses Scheduling without installing Approvals.
+- The primitive model is authored and validated before project implementation.
+notes:
+- Project 6 is the first materially non-appointment scheduling domain.
+- Prospective primitive-model pressure intentionally distinguishes capability interfaces
+  from primitive operations.
+- The project should not force the Appointment DocType to represent rooms/equipment/vehicles.
+- Scheduling promotion depends on evidence about the shared behavior actually reused,
+  not raw project count.

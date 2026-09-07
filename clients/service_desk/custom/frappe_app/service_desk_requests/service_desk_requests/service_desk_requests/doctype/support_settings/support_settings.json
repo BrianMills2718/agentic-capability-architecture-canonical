@@ -1,0 +1,43 @@
+{
+  "doctype": "DocType",
+  "name": "Support Settings",
+  "module": "Service Desk Requests",
+  "issingle": 1,
+  "fields": [
+    {
+      "fieldname": "urgent_hours",
+      "label": "Urgent SLA Hours",
+      "fieldtype": "Int",
+      "default": 2,
+      "reqd": 1
+    },
+    {
+      "fieldname": "high_hours",
+      "label": "High SLA Hours",
+      "fieldtype": "Int",
+      "default": 8,
+      "reqd": 1
+    },
+    {
+      "fieldname": "normal_hours",
+      "label": "Normal SLA Hours",
+      "fieldtype": "Int",
+      "default": 24,
+      "reqd": 1
+    },
+    {
+      "fieldname": "low_hours",
+      "label": "Low SLA Hours",
+      "fieldtype": "Int",
+      "default": 72,
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

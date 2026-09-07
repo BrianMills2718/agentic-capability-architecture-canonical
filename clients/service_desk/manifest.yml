@@ -1,0 +1,31 @@
+project: service_desk
+purpose: Support-request intake, triage, assignment, SLA tracking, requester follow-up,
+  resolution, closure, attachments, and notifications.
+capabilities:
+  core: ^0.1.0
+  notifications: ^0.1.0
+configuration:
+  sla_hours:
+    Urgent: 2
+    High: 8
+    Normal: 24
+    Low: 72
+custom_extensions:
+- service_desk_requests
+acceptance_scenarios:
+- A requester can create a support request with structured fields and an optional
+  attachment.
+- A dispatcher can triage priority/category and assign an owner.
+- Assignment calculates an SLA due time server-side.
+- The assigned agent can start work, request more information, resolve, and a requester/dispatcher
+  can close.
+- Waiting on Requester pauses active work but does not erase the original SLA evidence.
+- An overdue scan sends at most one overdue notification per unresolved breach.
+- The project runs without approvals or appointment scheduling.
+- The primitive composition is authored and validated before implementation.
+notes:
+- 'Prospective primitive-model experiment: architecture model must validate before
+  project code is written.'
+- Third materially different use test for structured_request_intake.
+- Second materially different use test for assignment_sla_tracking and attachment_evidence.
+- Approvals and Scheduling intentionally excluded.

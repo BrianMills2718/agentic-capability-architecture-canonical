@@ -1,0 +1,50 @@
+{
+  "doctype": "DocType",
+  "name": "Purchase Request",
+  "module": "Procurement Requests",
+  "autoname": "format:PR-{#####}",
+  "engine": "InnoDB",
+  "field_order": [
+    "requester",
+    "department",
+    "justification",
+    "preferred_vendor",
+    "items",
+    "total_amount",
+    "status",
+    "current_approval_stage",
+    "approval_events",
+    "submitted_at",
+    "approved_at",
+    "rejected_at",
+    "rejection_reason",
+    "purchased_at",
+    "received_at",
+    "closed_at"
+  ],
+  "fields": [
+    {"fieldname": "requester", "fieldtype": "Link", "label": "Requester", "options": "User", "reqd": 1},
+    {"fieldname": "department", "fieldtype": "Data", "label": "Department", "reqd": 1},
+    {"fieldname": "justification", "fieldtype": "Small Text", "label": "Justification", "reqd": 1},
+    {"fieldname": "preferred_vendor", "fieldtype": "Data", "label": "Preferred Vendor"},
+    {"fieldname": "items", "fieldtype": "Table", "label": "Items", "options": "Purchase Request Item", "reqd": 1},
+    {"fieldname": "total_amount", "fieldtype": "Currency", "label": "Total Amount", "read_only": 1},
+    {"fieldname": "status", "fieldtype": "Select", "label": "Status", "options": "Draft\nPending Manager Approval\nPending Finance Approval\nReady to Purchase\nPurchased\nReceived\nClosed\nRejected", "default": "Draft", "reqd": 1, "read_only": 1},
+    {"fieldname": "current_approval_stage", "fieldtype": "Data", "label": "Current Approval Stage", "read_only": 1},
+    {"fieldname": "approval_events", "fieldtype": "Table", "label": "Approval & Transition Audit", "options": "Approval Event", "read_only": 1},
+    {"fieldname": "submitted_at", "fieldtype": "Datetime", "label": "Submitted At", "read_only": 1},
+    {"fieldname": "approved_at", "fieldtype": "Datetime", "label": "Approved At", "read_only": 1},
+    {"fieldname": "rejected_at", "fieldtype": "Datetime", "label": "Rejected At", "read_only": 1},
+    {"fieldname": "rejection_reason", "fieldtype": "Small Text", "label": "Rejection Reason", "read_only": 1},
+    {"fieldname": "purchased_at", "fieldtype": "Datetime", "label": "Purchased At", "read_only": 1},
+    {"fieldname": "received_at", "fieldtype": "Datetime", "label": "Received At", "read_only": 1},
+    {"fieldname": "closed_at", "fieldtype": "Datetime", "label": "Closed At", "read_only": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1, "create": 1, "delete": 1},
+    {"role": "Procurement Requester", "read": 1, "write": 1, "create": 1},
+    {"role": "Procurement Manager", "read": 1, "write": 1},
+    {"role": "Procurement Finance", "read": 1, "write": 1},
+    {"role": "Procurement Officer", "read": 1, "write": 1}
+  ]
+}

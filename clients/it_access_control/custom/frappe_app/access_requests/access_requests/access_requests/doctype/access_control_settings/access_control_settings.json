@@ -1,0 +1,26 @@
+{
+  "doctype": "DocType",
+  "name": "Access Control Settings",
+  "module": "Access Requests",
+  "issingle": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "security_approval_levels"
+  ],
+  "fields": [
+    {
+      "fieldname": "security_approval_levels",
+      "fieldtype": "Small Text",
+      "label": "Security Approval Levels",
+      "default": "Sensitive\nPrivileged",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1
+    }
+  ]
+}

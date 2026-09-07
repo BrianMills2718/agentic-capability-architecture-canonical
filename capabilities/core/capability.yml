@@ -3,13 +3,21 @@ status: core
 version: 0.1.0
 runtime: frappe
 foundation: true
-
 provides:
-  - identity
-  - configuration
-  - shared_conventions
-
+- identity
+- configuration
+- shared_conventions
+- state.transition.plan
+- state.transition.audit_payload
 requires: []
-
 notes:
-  - Foundational capability; core status is not based on reuse-count promotion.
+- Foundational capability; core status is not based on reuse-count promotion.
+- The domain-neutral transition primitive moved from the approval namespace after
+  prospective Service Desk planning exposed a false dependency on Approvals; na_approvals.transitions
+  remains a compatibility re-export.
+runtime_path: capabilities/core/frappe_app/na_core
+public_interfaces:
+- na_core.transitions.TransitionSpec
+- na_core.transitions.TransitionResult
+- na_core.transitions.plan_transition
+- na_core.transitions.audit_payload

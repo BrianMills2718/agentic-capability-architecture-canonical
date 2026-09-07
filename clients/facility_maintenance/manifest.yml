@@ -1,0 +1,30 @@
+project: facility_maintenance
+purpose: Internal facility/equipment maintenance intake, SLA dispatch, completion,
+  and overdue notifications.
+capabilities:
+  core: ^0.1.0
+  notifications: ^0.1.0
+configuration:
+  sla_hours:
+    Urgent: 4
+    High: 24
+    Normal: 72
+    Low: 120
+custom_extensions:
+- maintenance_requests
+acceptance_scenarios:
+- A requester can log a maintenance issue with structured fields and an optional photo.
+- A dispatcher assigns a technician and the server calculates an SLA due time from
+  priority.
+- Only the assigned technician can start and complete the request.
+- Completion records resolution and notifies the requester.
+- The hourly overdue job sends at most one overdue notification per due-time breach.
+- The project runs without approvals or appointment scheduling.
+notes:
+- Approvals intentionally excluded.
+- Scheduling intentionally excluded; Frappe scheduler is infrastructure, not the shared
+  appointment capability.
+- This is the second materially different use test for structured_client_intake, expected
+  to refine it toward a generic structured_request_intake candidate.
+- Attachment handling uses Frappe's native File/Attach substrate and remains project-local
+  evidence.

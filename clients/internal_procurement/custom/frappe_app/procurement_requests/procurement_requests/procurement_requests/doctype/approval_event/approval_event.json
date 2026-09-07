@@ -1,0 +1,17 @@
+{
+  "doctype": "DocType",
+  "name": "Approval Event",
+  "module": "Procurement Requests",
+  "istable": 1,
+  "engine": "InnoDB",
+  "field_order": ["stage", "action", "actor", "occurred_at", "from_status", "to_status", "reason"],
+  "fields": [
+    {"fieldname": "stage", "fieldtype": "Data", "label": "Stage", "reqd": 1},
+    {"fieldname": "action", "fieldtype": "Data", "label": "Action", "reqd": 1},
+    {"fieldname": "actor", "fieldtype": "Link", "label": "Actor", "options": "User", "reqd": 1},
+    {"fieldname": "occurred_at", "fieldtype": "Datetime", "label": "Occurred At", "reqd": 1},
+    {"fieldname": "from_status", "fieldtype": "Data", "label": "From Status", "reqd": 1},
+    {"fieldname": "to_status", "fieldtype": "Data", "label": "To Status", "reqd": 1},
+    {"fieldname": "reason", "fieldtype": "Small Text", "label": "Reason"}
+  ]
+}

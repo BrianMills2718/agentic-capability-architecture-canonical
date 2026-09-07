@@ -4,3 +4,4 @@ app_publisher = "Capability Base"
 app_description = "Reusable notification transport capability"
 app_email = ""
 app_license = "MIT"
+required_apps = ["na_core"]

@@ -1,0 +1,89 @@
+{
+  "doctype": "DocType",
+  "name": "Resource Reservation",
+  "module": "Resource Reservations",
+  "autoname": "format:RSV-{#####}",
+  "track_changes": 1,
+  "fields": [
+    {
+      "fieldname": "requester",
+      "label": "Requester",
+      "fieldtype": "Link",
+      "options": "User",
+      "reqd": 1
+    },
+    {
+      "fieldname": "resource",
+      "label": "Resource",
+      "fieldtype": "Link",
+      "options": "Reservable Resource",
+      "reqd": 1
+    },
+    {
+      "fieldname": "purpose",
+      "label": "Purpose",
+      "fieldtype": "Small Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "start_time",
+      "label": "Start Time",
+      "fieldtype": "Datetime",
+      "reqd": 1
+    },
+    {
+      "fieldname": "duration_minutes",
+      "label": "Duration Minutes",
+      "fieldtype": "Int",
+      "default": 60,
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Select",
+      "options": "Draft\nReserved\nCancelled",
+      "default": "Draft",
+      "read_only": 1
+    },
+    {
+      "fieldname": "reserved_at",
+      "label": "Reserved At",
+      "fieldtype": "Datetime",
+      "read_only": 1
+    },
+    {
+      "fieldname": "rescheduled_at",
+      "label": "Rescheduled At",
+      "fieldtype": "Datetime",
+      "read_only": 1
+    },
+    {
+      "fieldname": "cancelled_at",
+      "label": "Cancelled At",
+      "fieldtype": "Datetime",
+      "read_only": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    },
+    {
+      "role": "All",
+      "read": 1,
+      "write": 1,
+      "create": 1
+    },
+    {
+      "role": "Reservation Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1
+    }
+  ]
+}

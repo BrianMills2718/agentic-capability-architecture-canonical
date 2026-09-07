@@ -1,0 +1,15 @@
+{
+  "doctype": "DocType",
+  "name": "Procurement Settings",
+  "module": "Procurement Requests",
+  "issingle": 1,
+  "engine": "InnoDB",
+  "field_order": ["finance_threshold", "currency"],
+  "fields": [
+    {"fieldname": "finance_threshold", "fieldtype": "Currency", "label": "Finance Approval Threshold", "default": "500", "reqd": 1},
+    {"fieldname": "currency", "fieldtype": "Data", "label": "Currency", "default": "USD", "reqd": 1}
+  ],
+  "permissions": [
+    {"role": "System Manager", "read": 1, "write": 1}
+  ]
+}
