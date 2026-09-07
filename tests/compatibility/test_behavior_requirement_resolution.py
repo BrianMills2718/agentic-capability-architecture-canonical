@@ -144,3 +144,47 @@ def test_duplicate_publication_fails_typed():
         assert exc.code == "AMBIGUOUS_PUBLICATION"
     else:
         raise AssertionError("expected typed resolution failure")
+
+
+def test_shipment_exception_reuses_only_core_and_notifications():
+    requirements = {
+        "schema_version": "1.0",
+        "source_system_spec": {"id": "spec:shipment-exception-v1", "path": "shipment.yml"},
+        "requirements": [
+            {
+                "id": "req:shipment-transition",
+                "semantic_action": "state.transition",
+                "purpose": "acknowledge shipment exception",
+                "inputs": [
+                    _io("state_ref", "shipment.state/1", _external()),
+                    _io("transition_spec", "shipment.transition-spec/1", _external()),
+                    _io("actor_ref", "shipment.actor/1", _external()),
+                ],
+                "required_outputs": [_io("transition_result", "shipment.transition-result/1")],
+                "provenance": {"source_clause": "clause:shipment-exception-acknowledge"},
+            },
+            {
+                "id": "req:shipment-notify",
+                "semantic_action": "notification.send",
+                "purpose": "notify shipment owner",
+                "inputs": [
+                    _io("recipients", "notification.recipients/1", _external()),
+                    _io("subject", "notification.subject/1", _external()),
+                    _io("message", "notification.message/1", _external()),
+                    _io("transition_result", "shipment.transition-result/1", _from("req:shipment-transition", "transition_result")),
+                ],
+                "required_outputs": [_io("delivery_ref", "notification.delivery-ref/1")],
+                "provenance": {"source_clause": "clause:shipment-exception-notify"},
+            },
+        ],
+    }
+    result = resolve(requirements, publication_fixture())
+    assert [binding["semantic_action"] for binding in result["bindings"]] == [
+        "state.transition",
+        "notification.send",
+    ]
+    assert [binding["capability_owner"] for binding in result["bindings"]] == [
+        "core",
+        "notifications",
+    ]
+    assert all(binding["capability_owner"] not in {"approvals", "scheduling"} for binding in result["bindings"])
