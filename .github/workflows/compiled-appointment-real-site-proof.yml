@@ -66,8 +66,9 @@ jobs:
           ln -s "$CAPABILITY_BASE/capabilities/notifications/frappe_app/na_notifications" apps/na_notifications
           ln -s "$CAPABILITY_BASE/proof/compiled_appointment_runtime/frappe_app/compiled_appointment_proof" apps/compiled_appointment_proof
           env/bin/pip install -e apps/na_core -e apps/na_scheduling -e apps/na_approvals -e apps/na_notifications -e apps/compiled_appointment_proof
+          sed -i -e '$a\' sites/apps.txt
           for app in na_core na_scheduling na_approvals na_notifications compiled_appointment_proof; do
-            grep -qxF "$app" sites/apps.txt || echo "$app" >> sites/apps.txt
+            grep -qxF "$app" sites/apps.txt || printf '%s\n' "$app" >> sites/apps.txt
             bench --site "$SITE" install-app "$app"
           done
           bench --site "$SITE" set-config allow_tests true
