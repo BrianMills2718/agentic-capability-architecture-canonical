@@ -5,7 +5,9 @@ published_actions:
   - primitive_id: policy.resolve
     capability_owner: approvals
     implementation_candidates:
-      - approval.resolve
+      - na_approvals.engine.resolve
+    selected_implementation: na_approvals.engine.resolve
+    owner_manifest: capabilities/approvals/capability.yml
     semantic_contract:
       inputs:
         - facts
@@ -18,7 +20,9 @@ published_actions:
   - primitive_id: state.transition
     capability_owner: core
     implementation_candidates:
-      - na_core.transitions
+      - na_core.transitions.plan_transition
+    selected_implementation: na_core.transitions.plan_transition
+    owner_manifest: capabilities/core/capability.yml
     semantic_contract:
       inputs:
         - state_ref
@@ -33,8 +37,9 @@ published_actions:
   - primitive_id: notification.send
     capability_owner: notifications
     implementation_candidates:
-      - notification.email.send
       - na_notifications.email.send_email
+    selected_implementation: na_notifications.email.send_email
+    owner_manifest: capabilities/notifications/capability.yml
     semantic_contract:
       inputs:
         - recipients
@@ -50,5 +55,9 @@ publication_rules:
   - capability architecture owns maturity, evidence, dependencies, and implementation resolution
   - implementation references remain opaque to the composition core
   - project-local business semantics are not promoted into shared primitive declarations
+resolution_gate:
+  - every selected_implementation must appear in the owner capability manifest public_interfaces
+  - the owner manifest must match capability_owner
+  - missing or unpublished selected implementations fail before runtime execution
 negative_control:
   description: Remove notification.send publication or make its declared input contract incompatible; composition must fail before runtime selection/execution.
