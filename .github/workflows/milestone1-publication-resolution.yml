@@ -23,3 +23,5 @@ jobs:
         run: python tools/resolve_milestone1_publication.py
       - name: Run focused provider smoke
         run: python -m pytest -q tests/compatibility/test_milestone1_runtime_smoke.py
+      - name: Run runtime execution receipt proof
+        run: python -m pytest -q tests/compatibility/test_runtime_execution_receipts.py
