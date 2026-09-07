@@ -15,6 +15,21 @@ Instead of asking a coding agent to regenerate an application from scratch, give
 
 The larger hypothesis is that many applications may be compositions of a relatively small number of configurable semantic primitives plus higher-order capabilities, while important domain semantics remain local.
 
+**Part of a wider research cluster.** This repo (`BrianMills2718`, renamed
+from `test` on 2026-09-07) is one of **four** capability-architecture repos
+with real, unresolved duplication: this one,
+[`brianmills-spec/agentic-capability-architecture`](https://github.com/brianmills-spec/agentic-capability-architecture),
+[`brianmills-spec/composable-capability-architecture`](https://github.com/brianmills-spec/composable-capability-architecture),
+and
+[`brianmills-spec/capability-registry-discovery-proof-20260906`](https://github.com/brianmills-spec/capability-registry-discovery-proof-20260906).
+No repo has been picked as canonical yet, and a Downloads-recovered zip
+(`composable_capability_all_context_current.zip`) holds a more advanced
+snapshot than any of the four as of 2026-09-07. For the open decision on
+which repo wins, what happens to the rest, and how this cluster relates to
+the wider semantic/ontology cluster, see the baseline synthesis page in
+[`BrianMills2718/vision`](https://github.com/BrianMills2718/vision):
+[`wiki/synthesis/ontology-semantic-cluster-baseline-2026-09-07.md`](https://github.com/BrianMills2718/vision/blob/main/wiki/synthesis/ontology-semantic-cluster-baseline-2026-09-07.md).
+
 ## Architecture at a glance
 
 - [`docs/ARCHITECTURE_CHARTER.md`](docs/ARCHITECTURE_CHARTER.md) — concise governing architecture: primitives, capabilities, project-local behavior, evidence, agent planning, and the federated commons.
