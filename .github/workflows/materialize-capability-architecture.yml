@@ -1,0 +1,65 @@
+name: Materialize capability architecture source
+
+on:
+  push:
+    branches:
+      - chatgpt/resource-reservation-proof-20260906
+    paths:
+      - '.github/workflows/materialize-capability-architecture.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chatgpt/resource-reservation-proof-20260906
+          fetch-depth: 0
+
+      - name: Reconstruct project source from validated proof payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat proof/procurement_payload.part* | base64 --decode > /tmp/procurement_payload.zip
+          unzip -o /tmp/procurement_payload.zip -d "$GITHUB_WORKSPACE"
+
+          cat proof/it_access_delta.part00 proof/it_access_delta.part01 proof/it_access_delta.part02 proof/it_access_delta.part03 proof/it_access_delta.part04 proof/it_access_delta.part05 proof/it_access_delta.fix06a proof/it_access_delta.fix06b proof/it_access_delta.part07 proof/it_access_delta.part08 proof/it_access_delta.part09 proof/it_access_delta.part10 | base64 --decode > /tmp/it_access_delta.zip
+          echo "5c03c8f41fe7cf85a61bfab7b540526851834de0ddca119e02bf57dd13d51233  /tmp/it_access_delta.zip" | sha256sum -c -
+          unzip -o /tmp/it_access_delta.zip -d "$GITHUB_WORKSPACE"
+
+          cat proof/facility_v2_clean.part0 proof/facility_v2_clean.part1 proof/facility_v2_clean.part2 | base64 --decode > /tmp/facility_maintenance.zip
+          echo "267d5c088dec06533f29849b21cd716750219943c9b15ea6c3ba6d4a24994032  /tmp/facility_maintenance.zip" | sha256sum -c -
+          unzip -o /tmp/facility_maintenance.zip -d "$GITHUB_WORKSPACE"
+
+          base64 --decode proof/facility_v3_patch.b64 > /tmp/facility_v3_patch.zip
+          echo "205e13597aa5fe7a897cf9a3621b17929b9e4b94f12a7f2f8ac214008231f268  /tmp/facility_v3_patch.zip" | sha256sum -c -
+          unzip -o /tmp/facility_v3_patch.zip -d "$GITHUB_WORKSPACE"
+
+          cat proof/service_desk_core.part* | base64 --decode > /tmp/service_desk_core.zip
+          echo "d491fa522283b1abf66cbd3fd0d9012c2bac7c151d8e1441f8b87dda0911a307  /tmp/service_desk_core.zip" | sha256sum -c -
+          unzip -o /tmp/service_desk_core.zip -d "$GITHUB_WORKSPACE"
+
+          cat proof/resource_reservation_delta_v2.part00 proof/resource_reservation_delta_v2.part01 proof/resource_reservation_delta_v2.part02 proof/resource_reservation_delta_v2.part03 proof/resource_reservation_delta_v2.part04a proof/resource_reservation_delta_v2.tail00 proof/resource_reservation_delta_v2.tail01 proof/resource_reservation_delta_v2.tail02 proof/resource_reservation_delta_v2.tail03 proof/resource_reservation_delta_v2.tail04 | base64 --decode > /tmp/resource_reservation_delta.zip
+          echo "078ce74deff6d841e50fb1a32d96a46df04ab952a55eaa3ac547fda7938db585  /tmp/resource_reservation_delta.zip" | sha256sum -c -
+          unzip -o /tmp/resource_reservation_delta.zip -d "$GITHUB_WORKSPACE"
+
+      - name: Remove transport-only proof payload chunks
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f proof/*.part* proof/*.b64 proof/*.trigger proof/*.fix* proof/*.small* proof/*tail*
+          rm -f .github/workflows/materialize-capability-architecture.yml
+          rm -f .github/workflows/export-reconstructed-source.yml
+
+      - name: Commit materialized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "BrianMills2718"
+          git config user.email "69022071+BrianMills2718@users.noreply.github.com"
+          git add -A
+          git commit -m "Materialize complete capability architecture source"
+          git push origin HEAD:chatgpt/resource-reservation-proof-20260906
