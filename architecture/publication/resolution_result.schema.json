@@ -16,6 +16,7 @@
           "semantic_action",
           "capability_owner",
           "selected_implementation",
+          "composition_implementation_ref",
           "owner_manifest",
           "input_contracts",
           "output_contracts",
@@ -27,6 +28,7 @@
           "semantic_action": {"type": "string", "minLength": 1},
           "capability_owner": {"type": "string", "minLength": 1},
           "selected_implementation": {"type": "string", "minLength": 1},
+          "composition_implementation_ref": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*/[1-9][0-9]*$"},
           "owner_manifest": {"type": "string", "minLength": 1},
           "input_contracts": {
             "type": "object",
