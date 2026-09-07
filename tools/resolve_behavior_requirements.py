@@ -3,7 +3,8 @@
 
 This is a deterministic boundary resolver, not a planner. It matches exact semantic
 action identities, checks named input/output compatibility, and emits provider-bound
-resolution records. Runtime execution remains out of scope.
+resolution records including target-neutral payload contract IDs. Runtime execution
+remains out of scope.
 """
 from __future__ import annotations
 
@@ -24,12 +25,16 @@ class ResolutionError(ValueError):
         self.detail = detail
 
 
-def _input_names(requirement: dict) -> set[str]:
-    names: set[str] = set()
-    for item in requirement.get("inputs") or ():
-        if isinstance(item, dict):
-            names.update(str(key) for key in item)
-    return names
+def _named_contracts(requirement: dict, field: str) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for item in requirement.get(field) or ():
+        if not isinstance(item, dict):
+            continue
+        name = item.get("name")
+        contract_id = item.get("contract_id")
+        if name and contract_id:
+            result[str(name)] = str(contract_id)
+    return result
 
 
 def _publication_index(publication: dict) -> dict[str, list[dict]]:
@@ -61,14 +66,15 @@ def resolve(requirements: dict, publication: dict) -> dict:
         action = candidates[0]
         contract = action.get("semantic_contract") or {}
         required_inputs = set(str(v) for v in contract.get("inputs") or ())
-        available_inputs = _input_names(requirement)
-        missing_inputs = sorted(required_inputs - available_inputs)
+        input_contracts = _named_contracts(requirement, "inputs")
+        missing_inputs = sorted(required_inputs - set(input_contracts))
         if missing_inputs:
             raise ResolutionError(
                 "INPUT_CONTRACT_MISMATCH", req_id, f"missing inputs: {', '.join(missing_inputs)}"
             )
 
-        required_outputs = set(str(v) for v in requirement.get("required_outputs") or ())
+        output_contracts = _named_contracts(requirement, "required_outputs")
+        required_outputs = set(output_contracts)
         provided_outputs = set(str(v) for v in contract.get("outputs") or ())
         missing_outputs = sorted(required_outputs - provided_outputs)
         if missing_outputs:
@@ -83,6 +89,8 @@ def resolve(requirements: dict, publication: dict) -> dict:
                 "capability_owner": action["capability_owner"],
                 "selected_implementation": action["selected_implementation"],
                 "owner_manifest": action["owner_manifest"],
+                "input_contracts": input_contracts,
+                "output_contracts": output_contracts,
                 "provenance": requirement.get("provenance") or {},
                 "requirement_invariants": requirement.get("invariants") or [],
             }
