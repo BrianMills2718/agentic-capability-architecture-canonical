@@ -1,0 +1,253 @@
+schema_version: 1
+project: internal_procurement
+status: experimental
+purpose: Submit a multi-line purchase request, route manager/finance approvals, audit decisions, notify actors,
+  and fulfill purchase/receive/close.
+capabilities:
+- core
+- approvals
+- notifications
+state_models:
+- id: purchase_request
+  semantic_type: PurchaseRequest
+  state_field: status
+  states:
+  - Draft
+  - Pending Manager Approval
+  - Pending Finance Approval
+  - Ready to Purchase
+  - Purchased
+  - Received
+  - Closed
+  - Rejected
+nodes:
+- id: capture_request
+  kind: primitive
+  operation: request.capture
+  adapter: Frappe Purchase Request + child items
+  inputs:
+  - name: payload
+    semantic_type: PurchaseRequestInput
+  outputs:
+  - name: request
+    semantic_type: PurchaseRequest
+    state: Draft
+  evidence:
+  - clients/internal_procurement/manifest.yml
+- id: calculate_total
+  kind: primitive
+  operation: value.aggregate
+  adapter: Purchase Request server-side line/total calculation
+  inputs:
+  - name: items
+    semantic_type: PurchaseRequestItem[]
+  outputs:
+  - name: total
+    semantic_type: Money
+    unit: USD
+  configuration:
+    formula: sum(quantity * unit_price)
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/procurement_requests/doctype/purchase_request/purchase_request.py
+- id: submit_request
+  kind: primitive
+  operation: state.transition
+  adapter: procurement_requests.workflow.submit_request
+  inputs:
+  - name: request
+    semantic_type: PurchaseRequest
+    state: Draft
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: submitted
+    semantic_type: PurchaseRequest
+    state: Pending Manager Approval
+  guards:
+  - request has at least one item
+  - actor is request owner or System Manager
+  transitions:
+  - state_model: purchase_request
+    from: Draft
+    to: Pending Manager Approval
+  effects:
+  - records submission audit event
+  idempotency:
+    mode: submitted_at_noop
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/workflow.py
+- id: authorize_manager
+  kind: primitive
+  operation: actor.authorize
+  adapter: procurement_requests.permissions
+  inputs:
+  - name: actor
+    semantic_type: User
+  - name: request
+    semantic_type: PurchaseRequest
+  outputs:
+  - name: authorization
+    semantic_type: AuthorizationResult
+  guards:
+  - Manager role
+  - actor is not requester
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/permissions.py
+- id: resolve_finance_requirement
+  kind: capability
+  operation: policy.resolve
+  adapter: procurement_requests.policy -> na_approvals resolver
+  inputs:
+  - name: total
+    semantic_type: Money
+  outputs:
+  - name: decision
+    semantic_type: ApprovalDecision
+  configuration:
+    finance_threshold: 500
+    currency: USD
+  evidence:
+  - clients/internal_procurement/manifest.yml
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/policy.py
+- id: manager_approval
+  kind: primitive
+  operation: state.transition
+  adapter: na_approvals.transitions via procurement_requests.workflow.approve_manager
+  inputs:
+  - name: request
+    semantic_type: PurchaseRequest
+    state: Pending Manager Approval
+  - name: decision
+    semantic_type: ApprovalDecision
+  outputs:
+  - name: routed
+    semantic_type: PurchaseRequest
+  transitions:
+  - state_model: purchase_request
+    from: Pending Manager Approval
+    to: Pending Finance Approval
+    branch_when: finance_required
+  - state_model: purchase_request
+    from: Pending Manager Approval
+    to: Ready to Purchase
+    branch_when: not finance_required
+  effects:
+  - appends Approval Event audit row
+  idempotency:
+    mode: durable_audit_event
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/workflow.py
+- id: finance_approval
+  kind: primitive
+  operation: state.transition
+  adapter: na_approvals.transitions via procurement_requests.workflow.approve_finance
+  inputs:
+  - name: request
+    semantic_type: PurchaseRequest
+    state: Pending Finance Approval
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: approved
+    semantic_type: PurchaseRequest
+    state: Ready to Purchase
+  guards:
+  - Finance role
+  - actor is not requester
+  transitions:
+  - state_model: purchase_request
+    from: Pending Finance Approval
+    to: Ready to Purchase
+  effects:
+  - appends Approval Event audit row
+  idempotency:
+    mode: durable_audit_event
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/workflow.py
+- id: fulfill_purchase
+  kind: local_action
+  operation: procurement.fulfill
+  adapter: mark_purchased / mark_received / close_request
+  inputs:
+  - name: request
+    semantic_type: PurchaseRequest
+    state: Ready to Purchase
+  outputs:
+  - name: closed
+    semantic_type: PurchaseRequest
+    state: Closed
+  transitions:
+  - state_model: purchase_request
+    from: Ready to Purchase
+    to: Purchased
+  - state_model: purchase_request
+    from: Purchased
+    to: Received
+  - state_model: purchase_request
+    from: Received
+    to: Closed
+  effects:
+  - records purchase/receive/close timestamps
+  - procurement-domain fulfillment
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/workflow.py
+- id: notify_workflow
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via procurement_requests.notifications
+  inputs:
+  - name: event
+    semantic_type: ProcurementWorkflowEvent
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/internal_procurement/custom/frappe_app/procurement_requests/procurement_requests/notifications.py
+connections:
+- from: capture_request.request
+  to: submit_request.request
+  semantic_type: PurchaseRequest
+- from: calculate_total.total
+  to: resolve_finance_requirement.total
+  semantic_type: Money
+- from: submit_request.submitted
+  to: authorize_manager.request
+  semantic_type: PurchaseRequest
+- from: resolve_finance_requirement.decision
+  to: manager_approval.decision
+  semantic_type: ApprovalDecision
+- from: manager_approval.routed
+  to: finance_approval.request
+  semantic_type: PurchaseRequest
+  condition: finance_required
+- from: manager_approval.routed
+  to: fulfill_purchase.request
+  semantic_type: PurchaseRequest
+  condition: not finance_required
+- from: finance_approval.approved
+  to: fulfill_purchase.request
+  semantic_type: PurchaseRequest
+deployment:
+  runtime: Frappe v15
+  site: procurement_test
+  apps:
+  - na_approvals
+  - na_notifications
+  - procurement_requests
+  excluded_apps:
+  - na_scheduling
+  - acme_rules
+  - intake_booking
+  - access_requests
+  - maintenance_requests
+local_semantics:
+- finance threshold and currency
+- Manager/Finance/Procurement Officer role meanings
+- purchase line-item schema and total calculation
+- purchase/receive/close fulfillment semantics
+- procurement notification copy
+known_gaps:
+- sequential multi-stage authorization/segregation rules are human-readable guards rather than typed policy expressions
+- audit persistence shape is project-native and only referenced, not normalized

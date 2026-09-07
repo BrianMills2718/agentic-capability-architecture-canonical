@@ -1,0 +1,5 @@
+{
+  "clients/acme_reference/manifest.yml": "afca7d9f920a56b2028f5dbbda1ab06b01c04147279ec7d6231b3f1cc6a97085",
+  "clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/appointment_rules.py": "ebd9264a67bce12523de6c3df17b055974c18b091f848e2b20867de477dadbcc",
+  "clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/hooks.py": "423c89b5b60222def9146cab6a541a9be9403982d9d7e66c705d77aa39f43578"
+}

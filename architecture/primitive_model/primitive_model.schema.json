@@ -1,0 +1,231 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Experimental Primitive Composition Model",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "status",
+    "purpose",
+    "capabilities",
+    "state_models",
+    "nodes",
+    "connections",
+    "deployment",
+    "local_semantics",
+    "known_gaps"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "experimental"
+      ]
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "state_models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "semantic_type",
+          "states"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "semantic_type": {
+            "type": "string"
+          },
+          "state_field": {
+            "type": "string"
+          },
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "operation",
+          "inputs",
+          "outputs",
+          "evidence"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "primitive",
+              "capability",
+              "local_action"
+            ]
+          },
+          "operation": {
+            "type": "string"
+          },
+          "adapter": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "trigger": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "guards": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "effects": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "transitions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "state_model",
+                "from",
+                "to"
+              ],
+              "properties": {
+                "state_model": {
+                  "type": "string"
+                },
+                "from": {
+                  "type": [
+                    "string",
+                    "array"
+                  ]
+                },
+                "to": {
+                  "type": "string"
+                },
+                "branch_when": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "idempotency": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "configuration": {
+            "type": [
+              "object",
+              "null"
+            ]
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capability_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "semantic_type"
+        ],
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "semantic_type": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deployment": {
+      "type": "object",
+      "required": [
+        "runtime",
+        "site",
+        "apps",
+        "excluded_apps"
+      ]
+    },
+    "local_semantics": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "known_gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

@@ -1,0 +1,247 @@
+schema_version: 1
+project: it_access_control
+status: experimental
+purpose: Request access, route manager/security approvals, provision entitlement, revoke it, and notify relevant
+  users.
+capabilities:
+- core
+- approvals
+- notifications
+state_models:
+- id: access_request
+  semantic_type: AccessRequest
+  state_field: status
+  states:
+  - Draft
+  - Pending Manager Approval
+  - Pending Security Approval
+  - Ready to Provision
+  - Provisioned
+  - Revoked
+  - Rejected
+nodes:
+- id: capture_request
+  kind: primitive
+  operation: request.capture
+  adapter: Frappe Access Request
+  inputs:
+  - name: payload
+    semantic_type: AccessRequestInput
+  outputs:
+  - name: request
+    semantic_type: AccessRequest
+    state: Draft
+  evidence:
+  - clients/it_access_control/manifest.yml
+- id: submit_request
+  kind: primitive
+  operation: state.transition
+  adapter: access_requests.workflow.submit_request
+  inputs:
+  - name: request
+    semantic_type: AccessRequest
+    state: Draft
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: submitted
+    semantic_type: AccessRequest
+    state: Pending Manager Approval
+  guards:
+  - requester/target and actor constraints enforced project-locally
+  transitions:
+  - state_model: access_request
+    from: Draft
+    to: Pending Manager Approval
+  idempotency:
+    mode: submitted_at_noop
+  evidence:
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/workflow.py
+- id: resolve_security_requirement
+  kind: capability
+  operation: policy.resolve
+  adapter: access_requests.policy -> na_approvals resolver
+  inputs:
+  - name: access_level
+    semantic_type: AccessLevel
+  outputs:
+  - name: decision
+    semantic_type: ApprovalDecision
+  configuration:
+    security_approval_levels:
+    - Sensitive
+    - Privileged
+  evidence:
+  - clients/it_access_control/manifest.yml
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/policy.py
+- id: manager_approval
+  kind: primitive
+  operation: state.transition
+  adapter: na_approvals.transitions via access_requests.workflow.approve_manager
+  inputs:
+  - name: request
+    semantic_type: AccessRequest
+    state: Pending Manager Approval
+  - name: decision
+    semantic_type: ApprovalDecision
+  outputs:
+  - name: routed
+    semantic_type: AccessRequest
+  guards:
+  - Manager role
+  - actor not requester or target
+  transitions:
+  - state_model: access_request
+    from: Pending Manager Approval
+    to: Pending Security Approval
+    branch_when: security_required
+  - state_model: access_request
+    from: Pending Manager Approval
+    to: Ready to Provision
+    branch_when: not security_required
+  effects:
+  - appends approval audit event
+  idempotency:
+    mode: durable_audit_event
+  evidence:
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/workflow.py
+- id: security_approval
+  kind: primitive
+  operation: state.transition
+  adapter: na_approvals.transitions via access_requests.workflow.approve_security
+  inputs:
+  - name: request
+    semantic_type: AccessRequest
+    state: Pending Security Approval
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: approved
+    semantic_type: AccessRequest
+    state: Ready to Provision
+  guards:
+  - Security role
+  - actor not requester or target
+  - security approver differs from manager approver
+  transitions:
+  - state_model: access_request
+    from: Pending Security Approval
+    to: Ready to Provision
+  effects:
+  - appends approval audit event
+  idempotency:
+    mode: durable_audit_event
+  evidence:
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/workflow.py
+- id: provision_access
+  kind: local_action
+  operation: access.provision
+  adapter: access_requests.workflow.mark_provisioned
+  inputs:
+  - name: request
+    semantic_type: AccessRequest
+    state: Ready to Provision
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: provisioned
+    semantic_type: AccessRequest
+    state: Provisioned
+  guards:
+  - Provisioner role
+  - segregation-of-duties constraints
+  transitions:
+  - state_model: access_request
+    from: Ready to Provision
+    to: Provisioned
+  effects:
+  - records provisioned_at
+  - represents domain entitlement fulfillment
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/workflow.py
+- id: revoke_access
+  kind: local_action
+  operation: access.revoke
+  adapter: access_requests.workflow.revoke_access
+  inputs:
+  - name: request
+    semantic_type: AccessRequest
+    state: Provisioned
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: revoked
+    semantic_type: AccessRequest
+    state: Revoked
+  transitions:
+  - state_model: access_request
+    from: Provisioned
+    to: Revoked
+  effects:
+  - records revoked_at/reason
+  - represents domain entitlement revocation
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/workflow.py
+- id: notify_workflow
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via access_requests.notifications
+  inputs:
+  - name: event
+    semantic_type: AccessWorkflowEvent
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/it_access_control/custom/frappe_app/access_requests/access_requests/notifications.py
+connections:
+- from: capture_request.request
+  to: submit_request.request
+  semantic_type: AccessRequest
+- from: resolve_security_requirement.decision
+  to: manager_approval.decision
+  semantic_type: ApprovalDecision
+- from: submit_request.submitted
+  to: manager_approval.request
+  semantic_type: AccessRequest
+- from: manager_approval.routed
+  to: security_approval.request
+  semantic_type: AccessRequest
+  condition: security_required
+- from: manager_approval.routed
+  to: provision_access.request
+  semantic_type: AccessRequest
+  condition: not security_required
+- from: security_approval.approved
+  to: provision_access.request
+  semantic_type: AccessRequest
+- from: provision_access.provisioned
+  to: revoke_access.request
+  semantic_type: AccessRequest
+deployment:
+  runtime: Frappe v15
+  site: access_test
+  apps:
+  - na_approvals
+  - na_notifications
+  - access_requests
+  excluded_apps:
+  - na_scheduling
+  - acme_rules
+  - intake_booking
+  - procurement_requests
+  - maintenance_requests
+local_semantics:
+- access level sensitivity classification
+- Manager/Security/Provisioner role meanings
+- segregation of duties between approval and provisioning actors
+- entitlement provisioning/revocation semantics
+- access notification copy
+known_gaps:
+- segregation-of-duties constraints need a richer typed constraint model before executable compilation
+- the primitive graph references but does not model the external entitlement system that would exist in a production
+  adapter

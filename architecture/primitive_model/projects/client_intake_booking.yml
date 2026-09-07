@@ -1,0 +1,197 @@
+schema_version: 1
+project: client_intake_booking
+status: experimental
+purpose: Capture a client request, create a shared Appointment, route long consultations through approval, and notify
+  the client.
+capabilities:
+- core
+- scheduling
+- approvals
+- notifications
+state_models:
+- id: intake
+  semantic_type: ServiceIntake
+  state_field: status
+  states:
+  - Submitted
+  - Pending Approval
+  - Booked
+  - Cancelled
+- id: appointment
+  semantic_type: Appointment
+  state_field: status
+  states:
+  - Pending
+  - Confirmed
+  - Cancelled
+nodes:
+- id: capture_intake
+  kind: primitive
+  operation: request.capture
+  adapter: Frappe DocType Service Intake
+  inputs:
+  - name: payload
+    semantic_type: ServiceIntakeInput
+  outputs:
+  - name: intake
+    semantic_type: ServiceIntake
+    state: Submitted
+  evidence:
+  - clients/client_intake_booking/manifest.yml
+- id: create_appointment
+  kind: capability
+  operation: resource.create
+  adapter: intake_booking.workflow.process_new_intake -> Appointment
+  inputs:
+  - name: intake
+    semantic_type: ServiceIntake
+    state: Submitted
+  outputs:
+  - name: appointment
+    semantic_type: Appointment
+    state: Pending
+  effects:
+  - creates shared Appointment from requested time/duration
+  evidence:
+  - clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/workflow.py
+- id: resolve_booking_approval
+  kind: capability
+  operation: policy.resolve
+  adapter: shared Appointment approval rule / na_approvals
+  inputs:
+  - name: appointment
+    semantic_type: Appointment
+  outputs:
+  - name: decision
+    semantic_type: ApprovalDecision
+  configuration:
+    require_over_minutes: 60
+  evidence:
+  - clients/client_intake_booking/manifest.yml
+  - clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/appointment_rules.py
+- id: book_or_hold
+  kind: primitive
+  operation: state.transition
+  adapter: intake_booking.workflow.process_new_intake
+  inputs:
+  - name: intake
+    semantic_type: ServiceIntake
+  - name: decision
+    semantic_type: ApprovalDecision
+  outputs:
+  - name: updated_intake
+    semantic_type: ServiceIntake
+  transitions:
+  - state_model: intake
+    from: Submitted
+    to: Pending Approval
+    branch_when: appointment.approval_required
+  - state_model: intake
+    from: Submitted
+    to: Booked
+    branch_when: not appointment.approval_required
+  effects:
+  - confirms Appointment when approval is not required
+  idempotency:
+    mode: linked_record_guard
+    evidence: existing intake.appointment returns no-op
+  evidence:
+  - clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/workflow.py
+- id: link_appointment
+  kind: primitive
+  operation: record.link
+  adapter: intake.db_set('appointment', appointment.name)
+  inputs:
+  - name: intake
+    semantic_type: ServiceIntake
+  - name: appointment
+    semantic_type: Appointment
+  outputs:
+  - name: link
+    semantic_type: IntakeAppointmentLink
+  evidence:
+  - clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/workflow.py
+- id: notify_submission
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications.email.send_email
+  inputs:
+  - name: intake
+    semantic_type: ServiceIntake
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/workflow.py
+- id: approve_long_booking
+  kind: primitive
+  operation: state.transition
+  adapter: na_approvals.transitions via intake_booking.workflow.approve_pending_intake
+  inputs:
+  - name: intake
+    semantic_type: ServiceIntake
+    state: Pending Approval
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: updated_intake
+    semantic_type: ServiceIntake
+    state: Booked
+  guards:
+  - linked Appointment exists
+  - Appointment approval_required is true
+  transitions:
+  - state_model: intake
+    from: Pending Approval
+    to: Booked
+  effects:
+  - confirms linked Appointment
+  - records approved_by/approved_at
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/workflow.py
+connections:
+- from: capture_intake.intake
+  to: create_appointment.intake
+  semantic_type: ServiceIntake
+- from: create_appointment.appointment
+  to: resolve_booking_approval.appointment
+  semantic_type: Appointment
+- from: resolve_booking_approval.decision
+  to: book_or_hold.decision
+  semantic_type: ApprovalDecision
+- from: capture_intake.intake
+  to: book_or_hold.intake
+  semantic_type: ServiceIntake
+- from: create_appointment.appointment
+  to: link_appointment.appointment
+  semantic_type: Appointment
+- from: capture_intake.intake
+  to: link_appointment.intake
+  semantic_type: ServiceIntake
+- from: book_or_hold.updated_intake
+  to: notify_submission.intake
+  semantic_type: ServiceIntake
+deployment:
+  runtime: Frappe v15
+  site: intake_test
+  apps:
+  - na_scheduling
+  - na_approvals
+  - na_notifications
+  - intake_booking
+  excluded_apps:
+  - acme_rules
+  - procurement_requests
+  - access_requests
+  - maintenance_requests
+local_semantics:
+- service types and allowed durations
+- approval threshold of >60 minutes
+- client-facing confirmation copy
+- approval action also confirms a linked Appointment
+known_gaps:
+- actor authorization is currently represented as guards/implementation evidence rather than a typed authorization
+  expression
+- transaction coupling between intake, appointment, and queued email is not formally expressed in this metamodel

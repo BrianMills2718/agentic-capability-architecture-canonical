@@ -1,0 +1,19 @@
+{
+  "experiment": "resource_reservation_clean_prospective_baseline",
+  "created_at_utc": "2026-09-06T16:29:19.976906+00:00",
+  "status": "pre_implementation",
+  "inputs": {
+    "clients/resource_reservation/manifest.yml": "13f859a98c5d228ce7efe0c0d1f38afddab41b4fbbd7f5c4d41b123fcc1665c0",
+    "clients/resource_reservation/docs/MVP.md": "357cf8cb8b37fffd0ee0fe450119fe9f47b37deec24b2ec652c3f388e501f0ff",
+    "architecture/primitive_model/primitive_registry.yml": "6f999ca232e9985ed8ed980b9f1c00f27767b1c19a21f9d859947d72a7e51377",
+    "capability_registry.yml": "dfdb8173f80722f57ea3f86efc545aaf64b10111296da2e534ddd4776a6b0d23"
+  },
+  "model": {
+    "architecture/primitive_model/projects/resource_reservation.yml": "c80f134307c1232858021989ba855e6d6d290d7c59ead9932a7b81191b6c4691"
+  },
+  "assertions": [
+    "No clients/resource_reservation/custom implementation directory existed when this baseline was created.",
+    "No new primitive was added for availability.query; the plan models it as a Scheduling capability interface.",
+    "The shared Appointment DocType is not used as the project-local resource reservation record."
+  ]
+}

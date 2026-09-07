@@ -1,0 +1,151 @@
+schema_version: 1
+status: experimental
+primitives:
+  request.capture:
+    class: action
+    purpose: Create or persist a structured domain request from declared input.
+    inputs:
+    - request_payload
+    outputs:
+    - request_ref
+    invariants:
+    - domain schema remains project/capability owned
+    - creation is distinguishable from later lifecycle transitions
+  data.validate:
+    class: action
+    purpose: Validate typed data against domain constraints without silently changing
+      its meaning.
+    inputs:
+    - typed_value
+    outputs:
+    - validated_value
+    - validation_result
+    invariants:
+    - validation failure is explicit
+  policy.resolve:
+    class: action
+    purpose: Resolve configured rules into a decision without directly performing
+      domain mutation.
+    inputs:
+    - facts
+    - rules
+    outputs:
+    - decision
+    invariants:
+    - rule resolution and state mutation remain separable
+    - conflict behavior is explicit
+  actor.authorize:
+    class: action
+    purpose: Determine whether an actor may perform a bounded action in the current
+      context.
+    inputs:
+    - actor_ref
+    - action_ref
+    - context
+    outputs:
+    - authorization_result
+    invariants:
+    - UI visibility is not authorization
+    - denial is explicit
+  state.transition:
+    class: action
+    purpose: Plan/apply a bounded lifecycle transition with explicit before/after
+      state.
+    inputs:
+    - state_ref
+    - transition_spec
+    - actor_ref
+    outputs:
+    - transition_result
+    invariants:
+    - allowed source state is explicit
+    - changed/no-op semantics are explicit
+    - actor and occurrence time are auditable
+    real_implementation: na_core.transitions (na_approvals.transitions compatibility
+      re-export)
+  resource.create:
+    class: action
+    purpose: Create a related resource through another capability or project-local
+      adapter.
+    inputs:
+    - resource_spec
+    outputs:
+    - resource_ref
+    invariants:
+    - resource semantics remain owned by the target capability/domain
+  record.link:
+    class: action
+    purpose: Persist an explicit relation between two durable records/artifacts.
+    inputs:
+    - source_ref
+    - target_ref
+    - relation
+    outputs:
+    - link_ref
+    invariants:
+    - relation type is explicit
+  actor.assign:
+    class: action
+    purpose: Assign responsibility for a work item to an actor.
+    inputs:
+    - work_ref
+    - actor_ref
+    outputs:
+    - assignment
+    invariants:
+    - assignment actor and time are auditable
+  time.deadline:
+    class: action
+    purpose: Calculate a deadline from a reference time and configured policy.
+    inputs:
+    - reference_time
+    - policy_facts
+    outputs:
+    - deadline
+    invariants:
+    - deadline policy is explicit/configurable
+  event.scan:
+    class: trigger
+    purpose: Select eligible durable records on a recurring/event-driven condition.
+    inputs:
+    - query_or_condition
+    outputs:
+    - eligible_refs
+    invariants:
+    - selection condition is explicit
+    - triggering is distinct from the action it enables
+  notification.send:
+    class: action
+    purpose: Send or enqueue a user-visible notification through a shared transport
+      adapter.
+    inputs:
+    - recipients
+    - subject
+    - message
+    outputs:
+    - delivery_ref
+    invariants:
+    - domain code owns trigger timing and recipients
+    - retryable workflows require durable idempotency semantics
+    real_implementation: na_notifications.email.send_email
+  artifact.attach:
+    class: action
+    purpose: Associate evidence/file material with a domain record using the runtime-native
+      file substrate.
+    inputs:
+    - record_ref
+    - artifact_ref
+    outputs:
+    - attachment_ref
+    invariants:
+    - domain meaning of the attachment remains local
+  value.aggregate:
+    class: action
+    purpose: Compute a deterministic derived value from typed inputs.
+    inputs:
+    - values
+    - formula
+    outputs:
+    - derived_value
+    invariants:
+    - formula and units are explicit

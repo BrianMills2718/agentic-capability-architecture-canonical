@@ -1,0 +1,281 @@
+schema_version: 1
+project: facility_maintenance
+status: experimental
+purpose: Capture maintenance work, attach evidence, dispatch a technician, calculate SLA, complete work, and send
+  one overdue alert.
+capabilities:
+- core
+- notifications
+state_models:
+- id: maintenance_request
+  semantic_type: MaintenanceRequest
+  state_field: status
+  states:
+  - New
+  - Assigned
+  - In Progress
+  - Completed
+  - Closed
+nodes:
+- id: capture_request
+  kind: primitive
+  operation: request.capture
+  adapter: Frappe Maintenance Request
+  inputs:
+  - name: payload
+    semantic_type: MaintenanceRequestInput
+  outputs:
+  - name: request
+    semantic_type: MaintenanceRequest
+    state: New
+  evidence:
+  - clients/facility_maintenance/manifest.yml
+- id: attach_issue_evidence
+  kind: primitive
+  operation: artifact.attach
+  adapter: Frappe Attach fields
+  inputs:
+  - name: request
+    semantic_type: MaintenanceRequest
+  - name: artifact
+    semantic_type: File
+  outputs:
+  - name: attachment
+    semantic_type: AttachmentRef
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/maintenance_requests/doctype/maintenance_request/maintenance_request.json
+- id: authorize_dispatch
+  kind: primitive
+  operation: actor.authorize
+  adapter: maintenance_requests.permissions.require_role
+  inputs:
+  - name: actor
+    semantic_type: User
+  - name: request
+    semantic_type: MaintenanceRequest
+  outputs:
+  - name: authorization
+    semantic_type: AuthorizationResult
+  guards:
+  - Maintenance Dispatcher role
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/permissions.py
+- id: assign_technician
+  kind: primitive
+  operation: actor.assign
+  adapter: maintenance_requests.workflow.assign
+  inputs:
+  - name: request
+    semantic_type: MaintenanceRequest
+  - name: technician
+    semantic_type: User
+  outputs:
+  - name: assignment
+    semantic_type: WorkAssignment
+  - name: assigned_at
+    semantic_type: Datetime
+  effects:
+  - sets assigned_to/assigned_by/assigned_at
+  - moves request to Assigned
+  transitions:
+  - state_model: maintenance_request
+    from:
+    - New
+    - Assigned
+    to: Assigned
+  idempotency:
+    mode: same_assignment_noop
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/workflow.py
+- id: calculate_sla
+  kind: primitive
+  operation: time.deadline
+  adapter: maintenance_requests.sla.calculate_due_at
+  inputs:
+  - name: assigned_at
+    semantic_type: Datetime
+  - name: priority
+    semantic_type: Priority
+  outputs:
+  - name: due_at
+    semantic_type: Datetime
+  configuration:
+    Urgent: 4
+    High: 24
+    Normal: 72
+    Low: 120
+    unit: hours
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/sla.py
+- id: start_work
+  kind: primitive
+  operation: state.transition
+  adapter: maintenance_requests.workflow.start
+  inputs:
+  - name: request
+    semantic_type: MaintenanceRequest
+    state: Assigned
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: started
+    semantic_type: MaintenanceRequest
+    state: In Progress
+  guards:
+  - actor is assigned technician
+  transitions:
+  - state_model: maintenance_request
+    from: Assigned
+    to: In Progress
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/workflow.py
+- id: complete_work
+  kind: primitive
+  operation: state.transition
+  adapter: maintenance_requests.workflow.complete
+  inputs:
+  - name: request
+    semantic_type: MaintenanceRequest
+    state: In Progress
+  - name: resolution
+    semantic_type: Text
+  outputs:
+  - name: completed
+    semantic_type: MaintenanceRequest
+    state: Completed
+  guards:
+  - actor is assigned technician
+  - resolution is non-empty
+  transitions:
+  - state_model: maintenance_request
+    from: In Progress
+    to: Completed
+  effects:
+  - records completed_at/resolution
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/workflow.py
+- id: close_request
+  kind: primitive
+  operation: state.transition
+  adapter: maintenance_requests.workflow.close
+  inputs:
+  - name: request
+    semantic_type: MaintenanceRequest
+    state: Completed
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: closed
+    semantic_type: MaintenanceRequest
+    state: Closed
+  guards:
+  - requester, dispatcher, or System Manager
+  transitions:
+  - state_model: maintenance_request
+    from: Completed
+    to: Closed
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/workflow.py
+- id: scan_overdue
+  kind: primitive
+  operation: event.scan
+  adapter: maintenance_requests.sla.notify_overdue_requests
+  inputs:
+  - name: due_at
+    semantic_type: Datetime
+  outputs:
+  - name: eligible
+    semantic_type: MaintenanceRequest[]
+  trigger:
+    type: schedule
+    cadence: hourly
+  guards:
+  - status in Assigned/In Progress
+  - due_at < now
+  - overdue_notified_at is unset
+  idempotency:
+    mode: durable_marker
+    marker: overdue_notified_at
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/hooks.py
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/sla.py
+- id: notify_assignment
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via maintenance_requests.notifications
+  inputs:
+  - name: assignment
+    semantic_type: WorkAssignment
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/notifications.py
+- id: notify_overdue
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via maintenance_requests.notifications.notify_overdue
+  inputs:
+  - name: requests
+    semantic_type: MaintenanceRequest[]
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  idempotency:
+    mode: durable_marker
+    marker: overdue_notified_at
+  evidence:
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/notifications.py
+  - clients/facility_maintenance/custom/frappe_app/maintenance_requests/maintenance_requests/sla.py
+connections:
+- from: capture_request.request
+  to: attach_issue_evidence.request
+  semantic_type: MaintenanceRequest
+- from: capture_request.request
+  to: authorize_dispatch.request
+  semantic_type: MaintenanceRequest
+- from: capture_request.request
+  to: assign_technician.request
+  semantic_type: MaintenanceRequest
+- from: calculate_sla.due_at
+  to: scan_overdue.due_at
+  semantic_type: Datetime
+- from: assign_technician.assigned_at
+  to: calculate_sla.assigned_at
+  semantic_type: Datetime
+- from: assign_technician.assignment
+  to: notify_assignment.assignment
+  semantic_type: WorkAssignment
+- from: scan_overdue.eligible
+  to: notify_overdue.requests
+  semantic_type: MaintenanceRequest[]
+deployment:
+  runtime: Frappe v15
+  site: maintenance_test
+  apps:
+  - na_notifications
+  - maintenance_requests
+  excluded_apps:
+  - na_scheduling
+  - na_approvals
+  - acme_rules
+  - intake_booking
+  - procurement_requests
+  - access_requests
+local_semantics:
+- maintenance category/location/asset meanings
+- priority-to-SLA configuration
+- dispatcher and technician role meanings
+- resolution and completion-photo semantics
+- overdue notification recipient/copy policy
+known_gaps:
+- assignment both changes state and produces an assignment object; the first metamodel does not yet formalize multi-effect
+  atomicity
+- the scheduler query is represented descriptively rather than as a typed condition language
+- attachment is modeled as an operation even though Frappe currently exposes it primarily as field/storage substrate

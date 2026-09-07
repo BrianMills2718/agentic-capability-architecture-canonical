@@ -1,0 +1,241 @@
+schema_version: 1
+project: resource_reservation
+status: experimental
+purpose: Reserve project-local resources against shared time-window availability semantics, with reschedule/cancel
+  and notifications.
+capabilities:
+- core
+- scheduling
+- notifications
+state_models:
+- id: reservation
+  semantic_type: ResourceReservation
+  state_field: status
+  states:
+  - Draft
+  - Reserved
+  - Cancelled
+nodes:
+- id: capture_reservation
+  kind: primitive
+  operation: request.capture
+  adapter: Frappe Resource Reservation DocType
+  inputs:
+  - name: payload
+    semantic_type: ResourceReservationInput
+  outputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  evidence:
+  - clients/resource_reservation/manifest.yml
+  - clients/resource_reservation/docs/MVP.md
+- id: check_initial_availability
+  kind: capability
+  capability_ref: scheduling
+  operation: availability.query
+  adapter: resource_reservations.availability.query_availability -> na_scheduling.availability
+  inputs:
+  - name: resource
+    semantic_type: ReservableResourceRef
+  - name: start_time
+    semantic_type: Datetime
+  - name: duration_minutes
+    semantic_type: DurationMinutes
+  outputs:
+  - name: availability
+    semantic_type: AvailabilityResult
+  guards:
+  - resource is active
+  evidence:
+  - clients/resource_reservation/docs/MVP.md
+  - capabilities/scheduling/capability.yml
+- id: reserve
+  kind: primitive
+  operation: state.transition
+  adapter: resource_reservations.workflow.reserve -> na_core.transitions
+  inputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  - name: availability
+    semantic_type: AvailabilityResult
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: reserved
+    semantic_type: ResourceReservation
+  guards:
+  - availability.free == true
+  - actor is requester or Reservation Manager
+  transitions:
+  - state_model: reservation
+    from: Draft
+    to: Reserved
+  effects:
+  - records reserved_at
+  idempotency:
+    mode: target_state_same_window_noop
+  evidence:
+  - clients/resource_reservation/docs/MVP.md
+- id: notify_reserved
+  kind: capability
+  operation: notification.send
+  adapter: resource_reservations.notifications.notify_requester -> na_notifications.email.send_email
+  inputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/resource_reservation/manifest.yml
+- id: check_reschedule_availability
+  kind: capability
+  capability_ref: scheduling
+  operation: availability.query
+  adapter: resource_reservations.availability.query_availability -> na_scheduling.availability
+  inputs:
+  - name: resource
+    semantic_type: ReservableResourceRef
+  - name: start_time
+    semantic_type: Datetime
+  - name: duration_minutes
+    semantic_type: DurationMinutes
+  - name: exclude
+    semantic_type: ResourceReservationRef
+  outputs:
+  - name: availability
+    semantic_type: AvailabilityResult
+  evidence:
+  - clients/resource_reservation/docs/MVP.md
+  - capabilities/scheduling/capability.yml
+- id: reschedule
+  kind: primitive
+  operation: state.transition
+  adapter: resource_reservations.workflow.reschedule -> na_core.transitions
+  inputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  - name: availability
+    semantic_type: AvailabilityResult
+  - name: actor
+    semantic_type: User
+  - name: new_start_time
+    semantic_type: Datetime
+  - name: new_duration_minutes
+    semantic_type: DurationMinutes
+  outputs:
+  - name: rescheduled
+    semantic_type: ResourceReservation
+  guards:
+  - availability.free == true
+  - actor is requester or Reservation Manager
+  transitions:
+  - state_model: reservation
+    from: Reserved
+    to: Reserved
+  effects:
+  - updates start_time/duration_minutes
+  - records rescheduled_at
+  idempotency:
+    mode: same_window_noop
+  evidence:
+  - clients/resource_reservation/docs/MVP.md
+- id: notify_rescheduled
+  kind: capability
+  operation: notification.send
+  adapter: resource_reservations.notifications.notify_requester -> na_notifications.email.send_email
+  inputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/resource_reservation/manifest.yml
+- id: cancel
+  kind: primitive
+  operation: state.transition
+  adapter: resource_reservations.workflow.cancel -> na_core.transitions
+  inputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: cancelled
+    semantic_type: ResourceReservation
+  guards:
+  - actor is requester or Reservation Manager
+  transitions:
+  - state_model: reservation
+    from: Reserved
+    to: Cancelled
+  effects:
+  - records cancelled_at
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/resource_reservation/docs/MVP.md
+- id: notify_cancelled
+  kind: capability
+  operation: notification.send
+  adapter: resource_reservations.notifications.notify_requester -> na_notifications.email.send_email
+  inputs:
+  - name: reservation
+    semantic_type: ResourceReservation
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/resource_reservation/manifest.yml
+connections:
+- from: capture_reservation.reservation
+  to: reserve.reservation
+  semantic_type: ResourceReservation
+- from: check_initial_availability.availability
+  to: reserve.availability
+  semantic_type: AvailabilityResult
+- from: reserve.reserved
+  to: notify_reserved.reservation
+  semantic_type: ResourceReservation
+- from: check_reschedule_availability.availability
+  to: reschedule.availability
+  semantic_type: AvailabilityResult
+- from: reschedule.rescheduled
+  to: notify_rescheduled.reservation
+  semantic_type: ResourceReservation
+- from: reschedule.rescheduled
+  to: cancel.reservation
+  semantic_type: ResourceReservation
+- from: cancel.cancelled
+  to: notify_cancelled.reservation
+  semantic_type: ResourceReservation
+deployment:
+  runtime: Frappe v15
+  site: resource_reservation_test
+  apps:
+  - na_core
+  - na_scheduling
+  - na_notifications
+  - resource_reservations
+  excluded_apps:
+  - na_approvals
+  - acme_rules
+  - intake_booking
+  - procurement_requests
+  - access_requests
+  - maintenance_requests
+  - service_desk_requests
+local_semantics:
+- resource identity/type/location/active state
+- same-resource candidate selection
+- requester and Reservation Manager authorization
+- reservation purpose and notification copy
+known_gaps:
+- availability.query is a capability-level contract implemented as project-local candidate selection plus shared
+  na_scheduling interval/conflict semantics; there is no universal persistence query
+- resource identity intentionally stays outside Scheduling
+- the shared Appointment DocType remains booking-specific and is not reused as a generic reservation record
+- workflow serialization uses a project-local SELECT ... FOR UPDATE lock on the resource row; true concurrent-load
+  proof is still separate from ordinary lifecycle proof
+- timezone and recurring-reservation semantics remain deferred

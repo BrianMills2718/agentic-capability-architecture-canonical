@@ -1,0 +1,386 @@
+schema_version: 1
+project: service_desk
+status: experimental
+purpose: Support-request intake, triage, assignment, SLA tracking, requester follow-up, resolution, closure, attachments,
+  and notifications.
+capabilities:
+- core
+- notifications
+state_models:
+- id: support_request
+  semantic_type: SupportRequest
+  state_field: status
+  states:
+  - New
+  - Triaged
+  - Assigned
+  - In Progress
+  - Waiting on Requester
+  - Resolved
+  - Closed
+nodes:
+- id: capture_request
+  kind: primitive
+  operation: request.capture
+  adapter: Frappe Support Request
+  inputs:
+  - name: payload
+    semantic_type: SupportRequestInput
+  outputs:
+  - name: request
+    semantic_type: SupportRequest
+  evidence:
+  - clients/service_desk/manifest.yml
+- id: attach_evidence
+  kind: primitive
+  operation: artifact.attach
+  adapter: Frappe Attach field
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: artifact
+    semantic_type: File
+  outputs:
+  - name: attachment
+    semantic_type: AttachmentRef
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: triage_request
+  kind: primitive
+  operation: state.transition
+  adapter: service_desk_requests.workflow.triage
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: triaged
+    semantic_type: SupportRequest
+  guards:
+  - Support Dispatcher role
+  - priority/category are valid project values
+  effects:
+  - records triaged priority/category
+  transitions:
+  - state_model: support_request
+    from: New
+    to: Triaged
+  idempotency:
+    mode: same_triage_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: authorize_assignment
+  kind: primitive
+  operation: actor.authorize
+  adapter: service_desk_requests.permissions.require_role
+  inputs:
+  - name: actor
+    semantic_type: User
+  - name: request
+    semantic_type: SupportRequest
+  outputs:
+  - name: authorization
+    semantic_type: AuthorizationResult
+  guards:
+  - Support Dispatcher role
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: assign_agent
+  kind: primitive
+  operation: actor.assign
+  adapter: service_desk_requests.workflow.assign
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: agent
+    semantic_type: User
+  outputs:
+  - name: assignment
+    semantic_type: WorkAssignment
+  - name: assigned_at
+    semantic_type: Datetime
+  - name: assigned_request
+    semantic_type: SupportRequest
+  effects:
+  - sets assigned_to/assigned_by/assigned_at
+  transitions:
+  - state_model: support_request
+    from:
+    - Triaged
+    - Assigned
+    to: Assigned
+  idempotency:
+    mode: same_assignment_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: calculate_sla
+  kind: primitive
+  operation: time.deadline
+  adapter: service_desk_requests.sla.calculate_due_at
+  inputs:
+  - name: assigned_at
+    semantic_type: Datetime
+  - name: priority
+    semantic_type: Priority
+  outputs:
+  - name: due_at
+    semantic_type: Datetime
+  configuration:
+    Urgent: 2
+    High: 8
+    Normal: 24
+    Low: 72
+    unit: hours
+  evidence:
+  - clients/service_desk/manifest.yml
+- id: start_work
+  kind: primitive
+  operation: state.transition
+  adapter: service_desk_requests.workflow.start
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: started
+    semantic_type: SupportRequest
+  guards:
+  - actor is assigned Support Agent
+  transitions:
+  - state_model: support_request
+    from: Assigned
+    to: In Progress
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: wait_for_requester
+  kind: primitive
+  operation: state.transition
+  adapter: service_desk_requests.workflow.wait_for_requester
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: waiting
+    semantic_type: SupportRequest
+  guards:
+  - actor is assigned Support Agent
+  effects:
+  - records waiting_since
+  transitions:
+  - state_model: support_request
+    from: In Progress
+    to: Waiting on Requester
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: resume_work
+  kind: primitive
+  operation: state.transition
+  adapter: service_desk_requests.workflow.resume
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: resumed
+    semantic_type: SupportRequest
+  guards:
+  - requester
+  - assigned agent
+  - dispatcher
+  - or System Manager
+  effects:
+  - records resumed_at
+  transitions:
+  - state_model: support_request
+    from: Waiting on Requester
+    to: In Progress
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: resolve_request
+  kind: primitive
+  operation: state.transition
+  adapter: service_desk_requests.workflow.resolve
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: resolution
+    semantic_type: Text
+  outputs:
+  - name: resolved
+    semantic_type: SupportRequest
+  guards:
+  - actor is assigned Support Agent
+  - resolution is non-empty
+  effects:
+  - records resolved_at/resolution
+  transitions:
+  - state_model: support_request
+    from:
+    - In Progress
+    - Waiting on Requester
+    to: Resolved
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: close_request
+  kind: primitive
+  operation: state.transition
+  adapter: service_desk_requests.workflow.close
+  inputs:
+  - name: request
+    semantic_type: SupportRequest
+  - name: actor
+    semantic_type: User
+  outputs:
+  - name: closed
+    semantic_type: SupportRequest
+  guards:
+  - requester
+  - dispatcher
+  - or System Manager
+  effects:
+  - records closed_at
+  transitions:
+  - state_model: support_request
+    from: Resolved
+    to: Closed
+  idempotency:
+    mode: target_state_noop
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: scan_overdue
+  kind: primitive
+  operation: event.scan
+  adapter: service_desk_requests.sla.notify_overdue_requests
+  inputs:
+  - name: due_at
+    semantic_type: Datetime
+  outputs:
+  - name: eligible
+    semantic_type: SupportRequest[]
+  trigger:
+    type: schedule
+    cadence: hourly
+  guards:
+  - status in Assigned/In Progress
+  - due_at < now
+  - overdue_notified_at is unset
+  idempotency:
+    mode: durable_marker
+    marker: overdue_notified_at
+  evidence:
+  - clients/service_desk/docs/MVP.md
+- id: notify_assignment
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via service_desk_requests.notifications.notify_user
+  inputs:
+  - name: assignment
+    semantic_type: WorkAssignment
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/service_desk/manifest.yml
+- id: notify_requester
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via service_desk_requests.notifications.notify_user
+  inputs:
+  - name: event
+    semantic_type: SupportWorkflowEvent
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  evidence:
+  - clients/service_desk/manifest.yml
+- id: notify_overdue
+  kind: capability
+  operation: notification.send
+  adapter: na_notifications via service_desk_requests.notifications.notify_overdue
+  inputs:
+  - name: requests
+    semantic_type: SupportRequest[]
+  outputs:
+  - name: delivery
+    semantic_type: NotificationDelivery
+  idempotency:
+    mode: durable_marker
+    marker: overdue_notified_at
+  evidence:
+  - clients/service_desk/manifest.yml
+connections:
+- from: capture_request.request
+  to: attach_evidence.request
+  semantic_type: SupportRequest
+- from: capture_request.request
+  to: triage_request.request
+  semantic_type: SupportRequest
+- from: triage_request.triaged
+  to: authorize_assignment.request
+  semantic_type: SupportRequest
+- from: triage_request.triaged
+  to: assign_agent.request
+  semantic_type: SupportRequest
+- from: assign_agent.assigned_at
+  to: calculate_sla.assigned_at
+  semantic_type: Datetime
+- from: assign_agent.assignment
+  to: notify_assignment.assignment
+  semantic_type: WorkAssignment
+- from: assign_agent.assigned_request
+  to: start_work.request
+  semantic_type: SupportRequest
+- from: start_work.started
+  to: wait_for_requester.request
+  semantic_type: SupportRequest
+- from: wait_for_requester.waiting
+  to: resume_work.request
+  semantic_type: SupportRequest
+- from: resume_work.resumed
+  to: resolve_request.request
+  semantic_type: SupportRequest
+- from: calculate_sla.due_at
+  to: scan_overdue.due_at
+  semantic_type: Datetime
+- from: scan_overdue.eligible
+  to: notify_overdue.requests
+  semantic_type: SupportRequest[]
+deployment:
+  runtime: Frappe v15
+  site: service_desk_test
+  apps:
+  - na_notifications
+  - service_desk_requests
+  excluded_apps:
+  - na_scheduling
+  - na_approvals
+  - acme_rules
+  - intake_booking
+  - procurement_requests
+  - access_requests
+  - maintenance_requests
+local_semantics:
+- support category taxonomy
+- priority/SLA policy
+- Support Dispatcher and Support Agent role meanings
+- Waiting on Requester semantics
+- resolution and closure policy
+- support notification copy
+known_gaps:
+- authorization/relationship guards remain descriptive strings rather than typed constraints
+- waiting-on-requester SLA pause/reset policy is deliberately not generalized; MVP preserves original due_at and
+  excludes waiting tickets from overdue scans
+- comment/conversation semantics are deferred rather than forced into a primitive
