@@ -17,6 +17,8 @@ jobs:
         run: python -m pip install pyyaml pytest
       - name: Validate maintained capability publication
         run: python tools/validate_capability_publication.py
+      - name: Validate generic behavior requirement resolution
+        run: python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py
       - name: Validate milestone publication compatibility
         run: python tools/resolve_milestone1_publication.py
       - name: Run focused provider smoke
