@@ -1,0 +1,72 @@
+name: compiled-appointment-real-site-proof
+
+"on":
+  push:
+    branches:
+      - milestone-1-actionpack-publication
+  workflow_dispatch:
+
+jobs:
+  real-site-proof:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      redis-cache:
+        image: redis:alpine
+        ports: [13000:6379]
+      redis-queue:
+        image: redis:alpine
+        ports: [11000:6379]
+      mariadb:
+        image: mariadb:10.6
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports: [3306:3306]
+        options: >-
+          --health-cmd="mariadb-admin ping -proot"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=10
+    env:
+      BENCH_PATH: /home/runner/frappe-bench
+      SITE: compiled_appointment_test
+      DB_ROOT_PASSWORD: root
+      ADMIN_PASSWORD: admin
+      CAPABILITY_BASE: ${{ github.workspace }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Bench prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mariadb-client
+          python -m pip install --upgrade pip frappe-bench
+      - name: Initialize Frappe v15 site
+        run: |
+          bench init --frappe-branch version-15 --skip-redis-config-generation --skip-assets --python "$(which python)" "$BENCH_PATH"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -p"$DB_ROOT_PASSWORD" -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          cd "$BENCH_PATH"
+          bench set-config -g redis_cache redis://127.0.0.1:13000
+          bench set-config -g redis_queue redis://127.0.0.1:11000
+          bench set-config -g redis_socketio redis://127.0.0.1:11000
+          bench new-site "$SITE" --db-host 127.0.0.1 --db-port 3306 --db-root-password "$DB_ROOT_PASSWORD" --admin-password "$ADMIN_PASSWORD"
+      - name: Install shared capabilities and proof adapter
+        working-directory: ${{ env.BENCH_PATH }}
+        run: |
+          ln -s "$CAPABILITY_BASE/capabilities/core/frappe_app/na_core" apps/na_core
+          ln -s "$CAPABILITY_BASE/capabilities/scheduling/frappe_app/na_scheduling" apps/na_scheduling
+          ln -s "$CAPABILITY_BASE/capabilities/approvals/frappe_app/na_approvals" apps/na_approvals
+          ln -s "$CAPABILITY_BASE/capabilities/notifications/frappe_app/na_notifications" apps/na_notifications
+          ln -s "$CAPABILITY_BASE/proof/compiled_appointment_runtime/frappe_app/compiled_appointment_proof" apps/compiled_appointment_proof
+          env/bin/pip install -e apps/na_core -e apps/na_scheduling -e apps/na_approvals -e apps/na_notifications -e apps/compiled_appointment_proof
+          for app in na_core na_scheduling na_approvals na_notifications compiled_appointment_proof; do
+            grep -qxF "$app" sites/apps.txt || echo "$app" >> sites/apps.txt
+            bench --site "$SITE" install-app "$app"
+          done
+          bench --site "$SITE" set-config allow_tests true
+      - name: Run exact compiled runtime proof
+        working-directory: ${{ env.BENCH_PATH }}
+        run: bench --site "$SITE" run-tests --app compiled_appointment_proof
