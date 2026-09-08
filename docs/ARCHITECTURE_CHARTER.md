@@ -2,7 +2,7 @@
 
 ## Mission
 
-Build a **cumulative software-delivery ecosystem** in which coding agents **select and reuse the best existing capability before generating new implementation**, preserve consequential project-local semantics, and leave behind capability knowledge and evidence that make later projects easier to build.
+Build a **cumulative, composable software-delivery ecosystem** in which coding agents **select and reuse the best existing capability before generating new implementation**, preserve consequential project-local semantics, and leave behind capability knowledge and evidence that make later projects easier to build.
 
 The durable asset is not a large private library. It is **machine-understandable capability knowledge plus evidence about what exists, what it actually does, when it fits, when it fails, and how it composes**.
 

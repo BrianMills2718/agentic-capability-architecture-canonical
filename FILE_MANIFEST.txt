@@ -1,3 +1,4 @@
+.github/workflows/bootstrap.yml
 .github/workflows/export-capability-snapshot.yml
 .github/workflows/facility-maintenance-proof.yml
 .github/workflows/facility-maintenance-v3-proof.yml
@@ -8,7 +9,9 @@
 ACCEPTANCE_PROMPT.txt
 AGENTS.md
 CHANGELOG.md
+Makefile
 README.md
+architecture/lineage_inventory.yml
 architecture/primitive_model/README.md
 architecture/primitive_model/experiments/resource_reservation_precode_baseline.json
 architecture/primitive_model/experiments/resource_reservation_precode_model.yml
@@ -81,6 +84,7 @@ clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/tests/__init__.py
 clients/acme_reference/custom/frappe_app/acme_rules/acme_rules/tests/test_appointment_hook.py
 clients/acme_reference/custom/frappe_app/acme_rules/pyproject.toml
 clients/acme_reference/manifest.yml
+clients/client_intake_booking/LEARNINGS.md
 clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/__init__.py
 clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/api.py
 clients/client_intake_booking/custom/frappe_app/intake_booking/intake_booking/appointment_rules.py
@@ -250,6 +254,7 @@ docs/ARCHITECTURE_CHARTER.md
 docs/ARCHITECTURE_ONE_DIAGRAM.md
 docs/DECISIONS.md
 docs/DEFINITION_OF_DONE.md
+docs/ENGAGEMENT_OPERATING_SYSTEM.md
 docs/EXPORT_CHECKLIST.md
 docs/FRAPPE_CI_PROOF.md
 docs/FRAPPE_INTEGRATION_RUNBOOK.md
@@ -259,6 +264,7 @@ docs/NEXT_PROOF.md
 docs/PRIMITIVE_CAPABILITY_THESIS.md
 docs/PROJECT_WORKFLOW.md
 docs/PROOF_LEDGER_EXTENDED.md
+docs/README.md
 docs/REFERENCE_IMPLEMENTATION.md
 docs/REUSE_PROMOTION.md
 docs/SESSION_CONTEXT_2026-09-06.md
@@ -325,6 +331,10 @@ pytest.ini
 requirements-dev.txt
 reuse_candidates.yml
 schemas/capability.schema.json
+schemas/capability_plan.schema.json
+schemas/engagement.schema.json
+schemas/engagement_metrics.schema.json
+schemas/evidence_proposal.schema.json
 schemas/project_manifest.schema.json
 schemas/registry.schema.json
 schemas/reuse_candidates.schema.json
@@ -338,11 +348,16 @@ tests/compatibility/test_reference_manifest.py
 tests/compatibility/test_test_harness_contract.py
 tests/unit/test_acme_rule.py
 tests/unit/test_approval_resolver.py
+tests/unit/test_capability_catalog.py
+tests/unit/test_engagement_tools.py
 tests/unit/test_notifications.py
+tools/capability_catalog.py
 tools/check_bootstrap.py
+tools/check_documentation_contract.py
 tools/check_frappe_packages.py
 tools/check_reuse_evidence.py
 tools/create_acceptance_sandbox.py
+tools/engagement.py
 tools/evaluate_acceptance.py
 tools/export_zip.py
 tools/lib/bench_apps_registry.sh

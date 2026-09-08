@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate registry, capability manifests, project manifests, and reuse log against JSON Schemas."""
+"""Validate repository JSON Schemas and checked-in YAML contracts."""
 from pathlib import Path
 import json
 import yaml
@@ -23,6 +23,12 @@ def validate(path, schema_path, errors):
 
 def main():
     errors = []
+    for schema_path in sorted((ROOT / "schemas").glob("*.json")):
+        try:
+            Draft202012Validator.check_schema(load_json(schema_path))
+        except Exception as exc:
+            errors.append(f"{schema_path.relative_to(ROOT)}: invalid JSON Schema: {exc}")
+
     validate(ROOT / "capability_registry.yml", ROOT / "schemas/registry.schema.json", errors)
     validate(ROOT / "reuse_candidates.yml", ROOT / "schemas/reuse_candidates.schema.json", errors)
 

@@ -1,6 +1,6 @@
 # Agentic Capability Architecture
 
-Research and working implementation for an agent-native **cumulative capability ecosystem**: capability selection, reuse, evidence, and evidence-backed promotion that make later projects easier to build.
+Research and working implementation for an agent-native **cumulative, composable capability ecosystem**: capability discovery, selection, composition, reuse, evidence, and evidence-backed promotion that make later projects easier to build.
 
 > **Global navigation:** start at the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md), then use the [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
 >
@@ -46,6 +46,10 @@ stronger capability ecosystem for the next project
 ```
 
 Ecosystem growth therefore means more than a larger internal codebase. It includes better knowledge of native/platform features, external OSS/SaaS, standards, internal capabilities, honest interfaces, compatibility constraints, failures, and successful compositions. Sometimes the best cumulative contribution is evidence that an existing external capability should be reused—or that a behavior should remain project-local.
+
+### Paid/client engagements
+
+For contractor or client work, use `python tools/engagement.py new ...` to create an isolated engagement workspace. The contractor consumes a read-only capability snapshot, records a capability/composition plan before coding, keeps client work product local, and produces only sanitized generalized evidence for human review. See [`docs/ENGAGEMENT_OPERATING_SYSTEM.md`](docs/ENGAGEMENT_OPERATING_SYSTEM.md).
 
 ## Governing stance
 

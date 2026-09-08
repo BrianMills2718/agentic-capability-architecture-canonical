@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Engagement Contract",
+  "type": "object",
+  "required": ["schema_version", "engagement_id", "task", "requirements", "deliverables", "constraints", "research", "capability_snapshot", "ip_boundary", "completion"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "engagement_id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*$"},
+    "client_reference": {"type": "string"},
+    "task": {
+      "type": "object",
+      "required": ["title", "source"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "source": {"const": "TASK.md"}
+      },
+      "additionalProperties": false
+    },
+    "requirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "acceptance"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+          "description": {"type": "string", "minLength": 1},
+          "acceptance": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "deliverables": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "constraints": {"type": "array", "items": {"type": "string"}},
+    "research": {
+      "type": "object",
+      "required": ["external_allowed"],
+      "properties": {"external_allowed": {"type": "boolean"}},
+      "additionalProperties": false
+    },
+    "capability_snapshot": {
+      "type": "object",
+      "required": ["baseline_commit", "registry", "mode"],
+      "properties": {
+        "baseline_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "registry": {"const": "snapshot/capability_registry.yml"},
+        "mode": {"const": "read_only"}
+      },
+      "additionalProperties": false
+    },
+    "ip_boundary": {
+      "type": "object",
+      "required": ["client_work_product_stays_local", "canonical_capabilities_are_background", "prohibit_client_code_into_canonical"],
+      "properties": {
+        "client_work_product_stays_local": {"const": true},
+        "canonical_capabilities_are_background": {"const": true},
+        "prohibit_client_code_into_canonical": {"const": true}
+      },
+      "additionalProperties": false
+    },
+    "completion": {
+      "type": "object",
+      "required": ["required_files", "acceptance_commands"],
+      "properties": {
+        "required_files": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "acceptance_commands": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

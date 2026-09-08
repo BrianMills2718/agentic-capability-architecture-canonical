@@ -44,6 +44,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 | --- | --- |
 | [`FRAPPE_INTEGRATION_RUNBOOK.md`](FRAPPE_INTEGRATION_RUNBOOK.md) | Current local real-Bench regression invocation; the executable script owns the app/site matrix. |
 | [`EXPORT_CHECKLIST.md`](EXPORT_CHECKLIST.md) | Current post-bootstrap export/handoff checklist. |
+| [`ENGAGEMENT_OPERATING_SYSTEM.md`](ENGAGEMENT_OPERATING_SYSTEM.md) | Paid/client engagement workflow: isolated contractor kit, capability/composition plan, local delivery, metrics, and sanitized evidence closeout. |
 
 ## Experimental and research material
 

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Engagement Evidence Proposal",
+  "type": "object",
+  "required": ["schema_version", "engagement_id", "outcome", "reuse_observations", "rejected_fits", "compatibility_findings", "candidate_capabilities", "keep_local", "sanitization"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "engagement_id": {"type": "string"},
+    "outcome": {"enum": ["pending", "success", "partial", "failure"]},
+    "reuse_observations": {"type": "array", "items": {"type": "string"}},
+    "rejected_fits": {"type": "array", "items": {"type": "string"}},
+    "compatibility_findings": {"type": "array", "items": {"type": "string"}},
+    "candidate_capabilities": {"type": "array", "items": {"type": "string"}},
+    "keep_local": {"type": "array", "items": {"type": "string"}},
+    "sanitization": {
+      "type": "object",
+      "required": ["contains_client_confidential", "contains_client_owned_code", "reviewer_required"],
+      "properties": {
+        "contains_client_confidential": {"type": "boolean"},
+        "contains_client_owned_code": {"type": "boolean"},
+        "reviewer_required": {"const": true}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

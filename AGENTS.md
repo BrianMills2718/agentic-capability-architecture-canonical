@@ -157,6 +157,14 @@ Every project must finish with `clients/<project>/LEARNINGS.md`. Record either:
 
 This requirement is about preserving evidence, not forcing premature abstraction.
 
+## Paid/client engagement isolation
+
+For contractor, agency, or client-paid work, do not put the engagement implementation directly in this canonical repository. Generate an isolated workspace with `python tools/engagement.py new ...`. The snapshot is reusable background capability material; client work product stays local to the engagement.
+
+Before implementation, the worker must make `CAPABILITY_PLAN.yml` ready and explicitly record selected providers, rejected providers, multi-capability composition, and residual local gaps. At closeout, generalized evidence may be proposed only through a sanitized `EVIDENCE_PROPOSAL.yml`; client-confidential material and client-owned code are prohibited from canonical evidence intake. `python tools/engagement.py close ...` produces proposal-only output for human review and never promotes code automatically.
+
+Business metrics (`METRICS.yml`) remain engagement-local. They exist to test whether reuse/composition rates rise and marginal delivery effort falls across materially similar work.
+
 ## Change discipline
 
 Before editing a shared capability, answer:
@@ -186,6 +194,7 @@ Targeted tests, syntax checks, package builds, or schema checks are useful durin
 
 - `python tools/new_project.py <name> --capabilities core,scheduling,...` creates a clean project layer.
 - `python tools/record_reuse_candidate.py ...` records a reuse observation without changing shared code.
+- `python tools/engagement.py new|validate|close ...` runs the isolated paid/client engagement operating loop.
 - `python tools/validate_schemas.py` validates the repository contracts.
 - `python tools/capability_catalog.py list --json` lists manifest-derived semantic exports; `describe <action-id> --json` performs exact lookup.
 - `python tools/check_reuse_evidence.py` prevents unsupported promotion labels.
