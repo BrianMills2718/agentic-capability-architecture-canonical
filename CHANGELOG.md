@@ -1,3 +1,11 @@
+## 2026-09-08 — Final lineage-convergence cleanup
+
+- Recorded `architecture/lineage_inventory.yml` with one active canonical capability-architecture repository and explicit preserved predecessor/proof dispositions.
+- Added an always-on lightweight `Bootstrap checks` pull-request workflow so the repository completion gate can be required before merge.
+- Preserved the seven-site Frappe workflow as the heavier integration proof rather than misconfiguring its push-only job as a required PR check.
+- Superseded experimental and prior acceptance branches are being closed without merging transitional architecture back into the clean mainline.
+- The genuinely isolated fresh-agent registry-discovery challenge remains the next active experiment under issue #23.
+
 ## 2026-09-05/06 — Fresh-agent iteration 4 exposed reminder idempotency gap
 
 - Fresh Copilot acceptance iteration 4 passed the automated evaluator but failed human review.
