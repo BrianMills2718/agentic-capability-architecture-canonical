@@ -2,107 +2,192 @@
 
 ## Mission
 
-Build a software-delivery system in which coding agents **reuse and strengthen existing capability rather than regenerate every application from scratch**. Each real project should leave behind working software, tests, compatibility evidence, reusable observations, and better instructions for the next agent.
+Build a software-delivery system in which coding agents **select and reuse the best existing capability before generating new implementation**, preserve consequential project-local semantics, and accumulate evidence that improves the next decision.
 
-The governing rule is:
+The durable asset is not a large private library. It is **machine-understandable capability knowledge plus evidence about what exists, what it actually does, when it fits, when it fails, and how it composes**.
+
+The governing rules are:
+
+> **Off-the-shelf wins ties.** Native platform features, established ecosystem packages, mature external implementations, and existing standards are first-class candidates alongside internal code.
 
 > **Do not force everything to be reusable. Make everything eligible to become reusable, then promote only after materially different uses provide evidence.**
 
-## Architectural layers
+## Architecture
+
+The ordinary application path is:
 
 ```text
-semantic primitives
-    ↓
-evidence-backed capabilities
-    ↓
-typed project composition / state models
-    ↓
-project-local domain behavior
-    ↓
-runtime adapters and infrastructure
+requested application meaning / semantic requirement
+        ↓
+capability sourcing and conservative provider selection
+        ↓
+honest typed public boundary
+        ↓
+project configuration / composition
+        ↓
+project-local residual behavior
+        ↓
+existing runtime/platform infrastructure
+        ↓
+execution, compatibility, and reuse evidence
 ```
 
-### 1. Primitives
+Upstream application meaning is owned outside this repository by the appropriate semantic/application authority. This repository should not create a second semantic IR merely to perform capability selection.
 
-A primitive is a **small, bounded semantic operation** whose execution meaning can remain stable across materially different domains. Examples under investigation include `state.transition`, `actor.authorize`, `policy.resolve`, `actor.assign`, `time.deadline`, `event.scan`, `notification.send`, and `artifact.attach`.
+### 1. Capability sourcing and semantic identity
 
-A primitive is not merely a helper function. A useful primitive should have explicit inputs/outputs, constraints, state/effect semantics, failure behavior, retry/idempotency behavior, and typed composition boundaries. The current execution hypothesis combines typed node/port composition with explicit state/action/transition and trigger semantics.
+A semantic capability/action identity should name the **narrowest reusable behavior actually required/provided**, independently of provider, repository, or deployment.
 
-### 2. Capabilities
+Before creating shared implementation, investigate:
 
-A capability is a **higher-order reusable unit**: implementation + public interfaces + configuration + dependencies + tests + extension points + compatibility evidence + maturity. Current examples include Core, Approvals, Notifications, and Scheduling.
+1. native runtime/platform capability;
+2. installed ecosystem plugins/apps/packages;
+3. mature external OSS/SaaS implementations;
+4. existing standards/protocols;
+5. internal registered capabilities;
+6. only then, the residual project-local gap.
 
-Capabilities may compose primitives or other capabilities. A capability interface does **not** automatically become a primitive; promotion depends on semantic stability and repeated cross-domain evidence.
+The architecture should record meaningful candidates, selection/rejection reasons, compatibility constraints, licensing/security/runtime considerations, and the evidence behind the decision when those facts materially affect future reuse.
+
+### 2. Capabilities and honest public boundaries
+
+A capability is reusable software or service behavior exposed through an honest public boundary, together with enough metadata and evidence for an agent to decide whether it fits.
+
+A capability may be implemented by this repository, by Frappe/ERPNext, by another package, by a remote service, or by another standards-based provider. Ownership of the metadata/selection layer does not imply ownership of the implementation runtime.
+
+Prefer existing typed public functions/APIs when they already express the correct behavior. Add adapters only for real translation, runtime, or compatibility needs; do not create wrapper facades merely for architectural symmetry.
 
 ### 3. Project-local behavior
 
 Project-local behavior is a first-class architectural category, not failed abstraction. Domain rules such as procurement fulfillment, entitlement provisioning, support triage, resource identity, client-specific thresholds, and domain-specific notification timing/recipients should remain local when generalization would erase consequential meaning or increase coupling.
 
-Agents should follow this order:
+The preferred sequence is:
 
 ```text
-reuse → configure → compose → implement local gap
+source existing → configure → compose → implement residual local gap
 ```
 
 Only repeated materially different demand should trigger extraction.
 
-## Evidence and promotion
+### 4. Runtime and infrastructure
+
+Execution, persistence, authorization, scheduling, retries, messaging, transactions, observability, package distribution, and similar infrastructure should be supplied by established runtime/platform mechanisms when they satisfy the required invariant.
+
+This repository should not build a generic workflow engine, authorization system, notification platform, scheduler, package manager, service catalog UI, agent transport protocol, provenance/signing system, or observability platform merely because those concerns appear in capability compositions.
+
+### 5. Primitive-model research
+
+The primitive vocabulary and composition files under `architecture/primitive_model/` are **experimental**.
+
+A primitive is a proposed small semantic operation whose meaning may remain stable across materially different domains. A primitive label may still be useful as planning vocabulary even when execution is delegated to an existing runtime or product.
+
+Do not promote a primitive merely because many applications can be described using a generic verb. Promotion requires evidence that the primitive adds value beyond ordinary typed capability interfaces—for example by catching real architecture errors, enabling useful compatibility checking, or improving capability selection/composition without hiding decisive domain semantics.
+
+The primitive model is not the default runtime architecture and is not a claim that one small universal vocabulary has been validated.
+
+## Evidence and maturity
 
 Reuse maturity is evidence-driven:
 
 ```text
-local / observed → candidate → proven → core or canonical
+local / observed → candidate → proven → core
 ```
 
-Evidence may include materially different project uses, unit/integration tests, compatibility suites, real-runtime proofs, migrations, known conflicts and limitations, independent-agent acceptance, security review, and operational incidents/lessons.
+Evidence may include:
 
-Tests are executable institutional memory. Project count alone is insufficient: a capability can remain candidate/proven when extraction would increase coupling or the stable common surface is still unclear.
+- materially different successful uses;
+- failed or rejected fits;
+- unit, integration, compatibility, and real-runtime proofs;
+- independent-agent or independent-consumer use;
+- runtime/platform diversity;
+- migrations and interface stability;
+- security review;
+- operational incidents and limitations;
+- licensing or deployment constraints.
+
+Project count alone is insufficient. A capability can remain candidate/proven when extraction would increase coupling, the stable common surface is unclear, or all evidence comes from one runtime/domain family.
+
+Human-readable documents should not hand-maintain volatile maturity tables when machine-readable manifests/catalogs can supply them. Views should be derived where practical and drift should be treated as a defect.
 
 ## Agent planning contract
 
 Before writing project-specific code, an agent should be able to answer:
 
-1. What requirement is being satisfied?
-2. Which registered capabilities/primitives are semantically relevant?
-3. Which available capabilities are explicitly rejected, and why?
-4. Which public interfaces will be consumed?
+1. What exact requirement is being satisfied?
+2. Which native, ecosystem, external, standards-based, and internal candidates are relevant?
+3. Which candidates were rejected, and why?
+4. Which semantic capability/action and honest public interface will be consumed?
 5. What configuration or composition is required?
 6. What behavior must remain project-local?
-7. What evidence/tests will prove the composition works?
-8. What new reuse observation, if any, should be recorded afterward?
+7. Which runtime/platform facility supplies execution and reliability guarantees?
+8. What evidence/tests will prove the composition works?
+9. What new sourcing/reuse observation should be recorded afterward?
 
-The goal is to make agent planning increasingly **selection-and-composition dominated**, with code generation focused on genuine gaps.
+The goal is to make agent planning increasingly **selection-and-composition dominated**, with code generation focused on genuine residual gaps.
 
-## Federated capability commons
+## Federated capability knowledge
 
-The long-run model is federated rather than monolithic:
+The long-run model may be federated, but should reuse existing standards and registries rather than invent networking/distribution protocols prematurely:
 
 ```text
-PUBLIC CAPABILITY COMMONS
+public/external capability sources
           ↓
-ORGANIZATION REGISTRIES
+organization capability knowledge
           ↓
-TEAM / PROJECT REGISTRIES
+team / project capability knowledge
           ↓
-PROJECT-LOCAL BEHAVIOR
+project-local behavior
 ```
 
-A registry should eventually let agents query capability identity/version, semantics, public interfaces, configuration, dependencies, runtime compatibility, licensing, provenance, tests, evidence, security constraints, known conflicts, and validated compositions.
+A capability knowledge layer should eventually let agents reason about semantic identity/version, public interfaces, configuration, dependencies, runtime compatibility, licensing, provenance, tests, evidence, security constraints, known conflicts, rejected fits, and validated compositions.
 
 The network effect is:
 
 ```text
-real use → evidence → better agent selection → more reuse → stronger capabilities → faster future projects
+real use or rejection
+      ↓
+evidence
+      ↓
+better sourcing and selection
+      ↓
+less bespoke implementation
+      ↓
+stronger evidence for future decisions
 ```
 
-The central reusable asset is therefore not just code. It is **machine-understandable capability plus evidence about when and how it works**.
+## Documentation and navigation
+
+Cross-repo navigation is owned by the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md). This repository owns local technical truth and exposes it through `docs/README.md`, manifests, code, schemas, tests, decisions, and the proof ledger.
+
+Prefer links over duplicated status prose. Preserve historical proof/session documents with explicit labels rather than rewriting history as though later decisions were known at the time.
 
 ## Non-goals
 
-The architecture does not currently aim to create a universal workflow engine, universal form/schema system, visual graph editor as the source of truth, one semantic vocabulary for every domain, or a global capability marketplace before independent-consumer demand exists.
+The architecture does not currently aim to create:
 
-Frappe is the current runtime substrate, not the durable abstraction boundary. UML, SysML v2, KerML, BPMN, and ISO/IEC/IEEE 42010 are prior art and possible interchange/viewpoint sources, not assumed runtime kernels.
+- a universal workflow engine;
+- a universal form/schema system;
+- a universal semantic IR or primitive language;
+- a visual graph editor as a source of truth;
+- a generic developer portal/service catalog;
+- a package registry or marketplace;
+- a new MCP/A2A-like transport or agent registry;
+- a general authorization, scheduling, messaging, observability, or provenance platform;
+- internal replacements for mature runtime/platform/business capabilities merely to increase the apparent size of the capability base.
+
+Frappe is the current runtime substrate, not the durable abstraction boundary.
 
 ## Success criterion
 
-The architecture succeeds if later projects require less architectural discovery and less bespoke implementation **without hiding domain semantics or increasing coupling**. The desired trend is more requirements satisfied by existing primitives/capabilities, faster delivery, fewer regressions, stronger compatibility evidence, and lower marginal effort per new project—not simply more shared code.
+The architecture succeeds if later projects require less discovery and bespoke implementation **because agents make better sourcing and composition decisions**, without hiding domain semantics or increasing coupling.
+
+The desired trend is:
+
+- more requirements satisfied by existing suitable implementations, regardless of who owns them;
+- fewer unnecessary internal abstractions and duplicate products;
+- faster delivery and fewer regressions;
+- stronger compatibility and rejection evidence;
+- lower marginal effort per new project;
+- clearer separation between reusable behavior and legitimately local semantics.
+
+Success is not measured by the number of primitives, internal packages, or lines of shared code.
