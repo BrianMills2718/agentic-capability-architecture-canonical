@@ -22,9 +22,11 @@ project-local domain behavior
 runtime adapters and infrastructure
 ```
 
-### 1. Primitives
+### 1. Primitives and semantic action IDs
 
-A primitive is a **small, bounded semantic operation** whose execution meaning can remain stable across materially different domains. Examples under investigation include `state.transition`, `actor.authorize`, `policy.resolve`, `actor.assign`, `time.deadline`, `event.scan`, `notification.send`, and `artifact.attach`.
+A primitive is a **small, bounded semantic operation** whose execution meaning can remain stable across materially different domains. Primitive status is a research/maturity claim; a semantic action ID is only a stable provider-independent name for behavior that an existing capability honestly exposes. Do not infer one from the other.
+
+The currently audited semantic exports are deliberately narrow: `approval.resolve`, `state.transition.plan`, and `notification.email.send`. Each resolves directly to an existing typed public function. Broader research labels such as `policy.resolve`, `state.transition`, and `notification.send` remain research/compatibility vocabulary unless a capability actually implements those broader meanings.
 
 A primitive is not merely a helper function. A useful primitive should have explicit inputs/outputs, constraints, state/effect semantics, failure behavior, retry/idempotency behavior, and typed composition boundaries. The current execution hypothesis combines typed node/port composition with explicit state/action/transition and trigger semantics.
 

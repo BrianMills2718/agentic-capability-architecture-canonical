@@ -2,6 +2,15 @@ name: Frappe integration
 
 "on":
   push:
+    paths:
+      - "capabilities/**"
+      - "clients/**"
+      - "schemas/**"
+      - "tests/**"
+      - "tools/**"
+      - "capability_registry.yml"
+      - "requirements-dev.txt"
+      - ".github/workflows/frappe-integration.yml"
   workflow_dispatch:
 
 concurrency:

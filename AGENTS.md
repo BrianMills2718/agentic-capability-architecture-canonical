@@ -5,7 +5,7 @@ These rules apply to coding agents working in this repository.
 ## Before implementing any feature
 
 1. Read `docs/WORKING_CONTEXT.md`.
-2. Read `capability_registry.yml`.
+2. Read `capability_registry.yml` and inspect `python tools/capability_catalog.py list --json` for exported semantic actions.
 3. Search existing capabilities for the requested behavior.
 4. Prefer configuration over new code.
 5. Prefer composition of existing capabilities over adding new behavior.

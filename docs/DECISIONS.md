@@ -45,3 +45,11 @@
 **Decision:** A project-specific ALLOW decision cannot automatically erase a stricter shared/core REQUIRE_APPROVAL or BLOCK decision.
 
 **Reason:** Local customization should not bypass shared invariants accidentally.
+
+---
+
+## ADR-007 — Semantic action catalog is derived from capability manifests
+
+**Decision:** Capability manifests are the source of truth for semantic exports. An exported action ID must already be listed in the capability's `provides`, and it must point at an existing declared `public_interfaces` boundary. The catalog and exact lookup surface are generated from those manifests; no second publication registry is maintained. Existing public functions serve directly when their semantics already match, so no wrapper is added for `approval.resolve`, `state.transition.plan`, or `notification.email.send`.
+
+**Reason:** This keeps semantic lookup independent of package names without duplicating provider metadata or creating adapter code for architectural symmetry. Exact lookup is sufficient until a real requirement needs graded matching or planning.

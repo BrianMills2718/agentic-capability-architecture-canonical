@@ -1,4 +1,6 @@
 build>=1,<2
+setuptools>=68
+wheel>=0.44
 jsonschema>=4,<5
 pytest>=8,<10
 PyYAML>=6,<7

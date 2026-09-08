@@ -53,10 +53,21 @@ project-native implementation adapters
 
 ```text
 core            CORE
-approvals       PROVEN
-notifications   PROVEN
+approvals       CANDIDATE
+notifications   CANDIDATE
 scheduling      CANDIDATE
 ```
+
+## Semantic action catalog
+
+Semantic actions are exported from capability manifests and resolved by exact ID; there is no hand-maintained publication registry. The first audited exports are `approval.resolve`, `state.transition.plan`, and `notification.email.send`, each pointing directly at an existing public function.
+
+```bash
+python tools/capability_catalog.py list --json
+python tools/capability_catalog.py describe approval.resolve --json
+```
+
+Use the catalog for provider-independent lookup. Do not treat an action ID as a claim that the behavior is a universal primitive, and do not add wrapper functions when the existing public interface already matches the declared meaning.
 
 ## Real projects
 
@@ -89,11 +100,12 @@ That challenge exposes multiple portable capabilities and asks an independent co
 2. `docs/ARCHITECTURE_ONE_DIAGRAM.md` — visual architecture overview.
 3. `AGENTS.md` — rules for coding agents.
 4. `capability_registry.yml` — current capability registry.
-5. `reuse_candidates.yml` — evidence pipeline for emerging reuse.
-6. `docs/PRIMITIVE_CAPABILITY_THESIS.md` — deeper primitive/capability hypothesis.
-7. `docs/WORKING_CONTEXT.md` and `docs/SESSION_CONTEXT_2026-09-06.md` — implementation history and strategic handoff.
-8. `docs/PROOF_LEDGER_EXTENDED.md` — proof references.
-9. `docs/ROADMAP.md` — current direction where present.
+5. `python tools/capability_catalog.py list --json` — manifest-derived semantic action catalog (`make capability-list` is the thin shorthand).
+6. `reuse_candidates.yml` — evidence pipeline for emerging reuse.
+7. `docs/PRIMITIVE_CAPABILITY_THESIS.md` — deeper primitive/capability hypothesis.
+8. `docs/WORKING_CONTEXT.md` and `docs/SESSION_CONTEXT_2026-09-06.md` — implementation history and strategic handoff.
+9. `docs/PROOF_LEDGER_EXTENDED.md` — proof references.
+10. `docs/DECISIONS.md` — durable repository-local architecture decisions.
 
 ## Status
 

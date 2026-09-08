@@ -21,3 +21,6 @@ public_interfaces:
 - na_core.transitions.TransitionResult
 - na_core.transitions.plan_transition
 - na_core.transitions.audit_payload
+semantic_exports:
+- action_id: state.transition.plan
+  public_interface: na_core.transitions.plan_transition
