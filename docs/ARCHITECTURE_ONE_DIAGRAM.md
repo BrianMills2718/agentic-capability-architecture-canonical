@@ -1,80 +1,79 @@
 # Agentic Capability Architecture — One Diagram
 
+This diagram is an explanatory view of the current charter, not an independent architecture authority.
+
 ```mermaid
 flowchart TB
-    R[Real requirement]
+    R[Required application behavior]
     A[Coding agent]
 
-    subgraph F["Federated capability commons"]
-      P[Public registry]
-      O[Organization registry]
-      T[Team / project registry]
-      P --> O --> T
+    subgraph S["Capability sources"]
+      N[Native runtime / platform\nFrappe · ERPNext · framework facilities]
+      E[Ecosystem / external\napps · packages · OSS · SaaS]
+      ST[Standards / protocols\nexisting schema · auth · messaging · agent interfaces]
+      I[Internal capability knowledge\nmanifests · interfaces · evidence]
     end
 
-    subgraph K["Reusable architecture"]
-      PR[Semantic primitives\nstate.transition · authorize · resolve · assign · deadline · trigger]
-      C[Evidence-backed capabilities\nCore · Approvals · Notifications · Scheduling · ...]
-      PR --> C
+    subgraph SEL["Selection and composition"]
+      Q[Precise semantic requirement]
+      D[Compare candidates\nselect / reject with reasons]
+      B[Honest typed public boundary]
+      C[Configuration / composition]
+      L[Residual project-local behavior]
+      Q --> D --> B --> C --> L
     end
 
-    subgraph PJ["Project composition"]
-      M[Typed node/port composition\n+ state/action/transition\n+ triggers/constraints]
-      L[Project-local behavior\ndomain rules · schemas · fulfillment · provisioning · triage]
-      M --> L
+    subgraph RT["Runtime / infrastructure"]
+      X[Existing execution facilities\npersistence · auth · scheduling · retries · messaging · transactions · observability]
     end
 
-    subgraph RT["Runtime"]
-      AD[Implementation adapters\nFrappe · Python · APIs · databases · human/agent actions]
+    subgraph EV["Evidence loop"]
+      T[Tests + compatibility + real use\nfailures · rejected fits · incidents · limitations]
+      M[Maturity / knowledge update\nlocal → candidate → proven → core]
+      T --> M
     end
 
-    subgraph E["Evidence loop"]
-      TEST[Tests + compatibility\nreal-runtime proofs · operations · limitations]
-      PROM[Promotion review\nobserved → candidate → proven → core/canonical]
-      TEST --> PROM
+    subgraph EXP["Experimental research"]
+      P[Primitive vocabulary / composition model\nprobationary; not the default runtime]
     end
 
-    R --> A
-    A -->|query / select / reject| T
-    T --> PR
-    T --> C
-    A -->|compose known behavior| M
-    C --> M
-    PR --> M
-    L --> AD
-    M --> AD
-    AD --> TEST
-    PROM -->|strengthen metadata, interfaces, evidence| F
-    PROM -->|refine reusable layer| K
+    R --> A --> Q
+    N --> D
+    E --> D
+    ST --> D
+    I --> D
+    L --> X
+    C --> X
+    X --> T
+    M --> I
+    P -.->|may improve planning / validation if proven| SEL
 
-    N["Decision rule:\nreuse → configure → compose → local gap"]
-    A -.-> N
-    N -.-> M
-    N -.-> L
+    RULE["Sourcing rule:\nnative → ecosystem → external → standards → internal → local gap"]
+    A -.-> RULE
+    RULE -.-> D
 ```
 
 ## How to read it
 
-- **Primitives** are small semantic operations with stable execution meaning.
-- **Capabilities** are evidence-backed reusable packages with interfaces, configuration, dependencies, tests, and maturity.
-- **Project composition** combines reusable pieces through typed connections and explicit lifecycle/trigger semantics.
-- **Project-local behavior** preserves domain meaning when generalization would erase important distinctions or increase coupling.
-- **Runtime adapters** execute the plan in concrete systems; Frappe is the current substrate, not the abstract architecture.
-- **Evidence** flows back from tests, real deployments, compatibility checks, failures, and independent-agent use.
-- **Promotion** is evidence-based rather than automatic.
-- **Federation** lets public, organizational, and project registries accumulate reusable capability without forcing one monolithic codebase.
+- **Start from required behavior, not from an internal package name.**
+- **Capability sources are plural.** Native framework features, established packages/services, standards, and internal capabilities are all legitimate providers.
+- **Selection is the strategic layer.** The agent should choose or reject candidates based on semantic fit, interfaces, constraints, evidence, and operational considerations.
+- **Typed public boundaries** should reuse existing honest APIs/functions where possible; adapters exist for real translations, not symmetry.
+- **Project-local behavior** remains first-class when abstraction would erase consequential domain meaning.
+- **Runtime infrastructure** should usually be off-the-shelf/platform-native rather than rebuilt inside this repository.
+- **Evidence** includes successful reuse and also failed fits, rejected providers, compatibility limits, incidents, and independent-consumer results.
+- **Primitive research** is intentionally shown off the critical path. A semantic primitive may become useful planning/validation vocabulary without becoming a runtime owned here.
 
 The intended flywheel is:
 
 ```text
-real project
-→ discover existing capability
-→ compose what fits
-→ implement only local gaps
-→ test under new pressure
-→ contribute compatibility evidence
-→ strengthen the shared commons
-→ make the next project easier
+real requirement
+→ search all credible sources
+→ select the best existing fit
+→ implement only the residual local gap
+→ test under real pressure
+→ record success, rejection, and failure evidence
+→ improve the next sourcing decision
 ```
 
-The architecture is successful when agent work shifts from repeated reinvention toward reliable **discovery, selection, composition, and evidence-producing local implementation**.
+The architecture is successful when agent work shifts from repeated reinvention toward reliable **discovery, selection, composition, and evidence-producing local implementation**, regardless of who owns the selected implementation.
