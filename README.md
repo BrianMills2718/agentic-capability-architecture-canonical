@@ -36,13 +36,25 @@ Use [`docs/README.md`](docs/README.md) for the repository-local documentation ma
 Key machine-readable/current sources include:
 
 - `capabilities/*/capability.yml` — capability-local metadata and evidence;
-- `capability_registry.yml` — current checked-in registry/catalog surface;
+- `capability_registry.yml` — synchronized capability index;
+- `python tools/capability_catalog.py list --json` — manifest-derived semantic action catalog;
 - `schemas/` — machine-readable contracts;
 - `AGENTS.md` — coding-agent operating rules;
 - `docs/ARCHITECTURE_CHARTER.md` — current local architecture charter;
 - `docs/PROOF_LEDGER_EXTENDED.md` — current proof-status index.
 
 Do not copy capability maturity/status tables into prose merely for convenience. Read machine-readable state directly. If manifests and registry disagree, that is a synchronization defect to fix rather than something this README should mask.
+
+### Semantic action lookup
+
+The current catalog is derived directly from capability manifests; there is no hand-maintained publication registry. The first audited exports are `approval.resolve`, `state.transition.plan`, and `notification.email.send`, each pointing directly at an existing public function. Lookup is exact and conservative.
+
+```bash
+python tools/capability_catalog.py list --json
+python tools/capability_catalog.py describe approval.resolve --json
+```
+
+An action ID is a provider-independent behavior name, not a claim that the behavior is a universal primitive. Do not add a wrapper when the existing public interface already matches the declared meaning.
 
 ## Lineage
 

@@ -16,6 +16,11 @@ def test_frappe_ci_workflow_has_required_runtime_and_isolated_sites():
         'node-version: "20"',
         "SITE_ACME: acme_test",
         "SITE_INTAKE: intake_test",
+        "SITE_PROCUREMENT: procurement_test",
+        "SITE_ACCESS: access_test",
+        "SITE_MAINTENANCE: maintenance_test",
+        "SITE_SERVICE_DESK: service_desk_test",
+        "SITE_RESOURCE_RESERVATION: resource_reservation_test",
         "Create isolated project test sites",
         "run_frappe_reference_tests.sh",
         'clients/**',
@@ -23,6 +28,9 @@ def test_frappe_ci_workflow_has_required_runtime_and_isolated_sites():
 
     for item in required:
         assert item in text, f"Frappe CI contract missing: {item}"
+
+    assert "proof/procurement_payload" not in text
+    assert "proof/it_access_delta" not in text
 
 
 def test_local_frappe_runner_keeps_client_extensions_on_separate_sites():

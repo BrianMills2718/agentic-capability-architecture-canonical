@@ -15,6 +15,10 @@ public_interfaces:
   - na_approvals.engine.resolve
   - na_approvals.engine.apply_resolution
 
+semantic_exports:
+  - action_id: approval.resolve
+    public_interface: na_approvals.engine.resolve
+
 configuration:
   decisions:
     type: enum

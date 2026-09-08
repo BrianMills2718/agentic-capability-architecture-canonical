@@ -221,3 +221,7 @@ A green developer-shell test run is not sufficient evidence if nested app tests 
 ### Local-vs-Bench test collection rule
 
 Nested app tests are part of the local repository-wide test discovery. Tests that genuinely require a real Frappe site must remain collectable without Frappe installed, using `pytest.importorskip("frappe")` or deferred framework imports. This lets the local gate prove test discovery/import wiring while the real Bench proof establishes lifecycle behavior for the tested revision.
+
+## Current semantic capability boundary
+
+The current application/composability architecture uses precise semantic action IDs only as provider-independent lookup keys. Capability manifests remain the implementation source of truth and point exports at real public interfaces. The initial audited set is `approval.resolve`, `state.transition.plan`, and `notification.email.send`; catalog/list/describe views are derived from those manifests, exact matching is the current resolver policy, and no wrapper or second publication registry is added unless a real interface mismatch or matching requirement appears.

@@ -52,6 +52,7 @@ def main():
     run(sys.executable, "tools/check_documentation_contract.py")
     run(sys.executable, "tools/validate_schemas.py")
     run(sys.executable, "tools/validate_registry.py")
+    run(sys.executable, "tools/capability_catalog.py", "check")
     run(sys.executable, "tools/check_reuse_evidence.py")
 
     for manifest in sorted((ROOT / "clients").glob("*/manifest.yml")):

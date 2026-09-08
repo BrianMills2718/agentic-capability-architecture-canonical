@@ -9,6 +9,8 @@ capabilities:
       - identity
       - configuration
       - shared_conventions
+      - state.transition.plan
+      - state.transition.audit_payload
     requires: []
 
   approvals:

@@ -87,3 +87,13 @@ Cross-repo semantic/interface policy is governed by the [Vision Semantic Boundar
 **Reason:** Independent hand-maintained summaries become stale and can agree with each other while disagreeing with evidence or executable state.
 
 **Consequence:** If machine-readable sources disagree, treat that as a synchronization/validation defect to fix explicitly rather than choosing a prose winner.
+
+---
+
+## ADR-011 — Semantic action catalog is derived from capability manifests
+
+**Decision:** Capability manifests are the source of truth for semantic exports. An exported action ID must already be listed in the capability's `provides` and must point at a declared `public_interfaces` boundary. Catalog/list/describe views are generated from those manifests; no second publication registry is maintained. Existing public functions serve directly when their semantics already match, so no wrapper is added for `approval.resolve`, `state.transition.plan`, or `notification.email.send`.
+
+**Reason:** This preserves provider-independent semantic lookup without duplicating provider metadata or creating adapter code for architectural symmetry. Exact matching is sufficient until a real requirement demonstrates the need for graded matching or planning.
+
+**Consequence:** `tools/capability_catalog.py` is a derived view/check surface. A duplicate action ID, a non-public target, or an action not present in `provides` is a validation failure.

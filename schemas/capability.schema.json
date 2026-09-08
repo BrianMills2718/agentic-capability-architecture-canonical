@@ -93,6 +93,28 @@
         }
       },
       "additionalProperties": true
+    },
+    "semantic_exports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "action_id",
+          "public_interface"
+        ],
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+          },
+          "public_interface": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)+$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "uniqueItems": true
     }
   },
   "additionalProperties": true

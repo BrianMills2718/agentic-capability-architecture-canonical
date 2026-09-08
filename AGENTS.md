@@ -16,7 +16,7 @@ First establish what already exists. **Internal reuse is only one candidate sour
 2. **Installed ecosystem:** is an established plugin/app/package already available in the chosen environment?
 3. **Mature external implementation:** is there established OSS or SaaS that should be integrated instead of recreated?
 4. **Existing standard/protocol:** are you about to invent a schema, registry, workflow, authorization, messaging, agent, or provenance mechanism already standardized?
-5. **Internal capability base:** inspect `capability_registry.yml`, capability manifests, and existing public interfaces for an honest semantic match.
+5. **Internal capability base:** inspect `capability_registry.yml`, capability manifests, `python tools/capability_catalog.py list --json`, and existing public interfaces for an honest semantic match.
 6. **Project-local gap:** only then implement the residual behavior locally. Promote it later only when materially different reuse provides evidence.
 
 Then apply these repository rules:
@@ -187,4 +187,5 @@ Targeted tests, syntax checks, package builds, or schema checks are useful durin
 - `python tools/new_project.py <name> --capabilities core,scheduling,...` creates a clean project layer.
 - `python tools/record_reuse_candidate.py ...` records a reuse observation without changing shared code.
 - `python tools/validate_schemas.py` validates the repository contracts.
+- `python tools/capability_catalog.py list --json` lists manifest-derived semantic exports; `describe <action-id> --json` performs exact lookup.
 - `python tools/check_reuse_evidence.py` prevents unsupported promotion labels.
