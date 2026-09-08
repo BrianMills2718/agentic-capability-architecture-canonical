@@ -1,0 +1,66 @@
+schema_version: 1
+recorded_date: 2026-09-08
+canonical_repo: BrianMills2718/agentic-capability-architecture-canonical
+canonical_baseline_commit: 40698c31a9ad9f3d633e7669727bc6acc4c99746
+purpose: Record the single active capability-architecture lineage and the disposition of preserved predecessors and proof fixtures.
+
+lineages:
+  - repository: BrianMills2718/agentic-capability-architecture-canonical
+    role: canonical
+    development_status: active
+    disposition: retain_as_sole_active_lineage
+    owns:
+      - capability_registry
+      - primitive_registry_experiments
+      - maturity_and_reuse_evidence
+      - reusable_implementation_metadata
+      - semantic_capability_resolution
+    shared_boundary:
+      repository: BrianMills2718/data-contracts
+      note: Portable typed composition contracts remain outside this repository.
+
+  - repository: brianmills-spec/agentic-capability-architecture
+    role: source_lineage
+    development_status: frozen_historical_experiment
+    recorded_head: 781e0adc54197d4cb062e65bf4bd942f131847cf
+    disposition: preserve_in_place_do_not_develop
+    unique_evidence:
+      - commit: 1840e734bcae54a3f06e7cee25484cb25c977bc8
+        classification: experimental_alternative
+        note: Build-time semantic architecture v0.1; preserved as research evidence, not a second canonical composition model.
+
+  - repository: brianmills-spec/composable-capability-architecture
+    role: predecessor_snapshot
+    development_status: frozen_historical_predecessor
+    recorded_head: 3e2477d998a804cd585ebd86d10e79cd88026317
+    disposition: preserve_in_place_do_not_develop
+    unique_evidence:
+      - source_path: docs/SESSION_NETWORK_GATE.md
+        classification: research_context
+        disposition: preserve_in_source_lineage
+    unresolved_external_provenance:
+      artifact: composable_capability_all_context_current.zip
+      status: unavailable_at_recorded_location_on_2026-09-07
+      rule: Do not infer or promote unrecovered functionality from artifact claims alone.
+
+  - repository: brianmills-spec/capability-registry-discovery-proof-20260906
+    role: experiment_evidence
+    development_status: frozen_proof_fixture
+    recorded_head: ce82801e5e5cd45c34d837e27efd379c5a7537d0
+    disposition: preserve_in_place_do_not_develop
+    canonical_mirror: proof/fresh_agent_registry_discovery
+    note: Historical proof fixture; the next decisive run is tracked in canonical issue 23.
+
+rules:
+  - new capability architecture development happens only in canonical_repo
+  - preserve predecessor repositories and conflicting experiments as evidence
+  - do not bulk-copy predecessor trees into the canonical repository
+  - every migrated unit records source repository and source path or commit
+  - unrecovered external artifacts remain provenance debt, not implied functionality
+  - generated or historical documentation does not override current executable state
+  - keep compiler_to_data_contracts_to_capability_resolution proofs green during consolidation
+
+next_active_experiment:
+  issue: 23
+  name: Fresh-agent capability registry discovery challenge
+  constraint: Run with a genuinely separate coding agent using only the isolated challenge context.
