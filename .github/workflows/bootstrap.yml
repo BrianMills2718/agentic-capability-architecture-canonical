@@ -1,0 +1,28 @@
+name: Bootstrap checks
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: bootstrap-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install validation dependencies
+        run: python -m pip install --upgrade pip -r requirements-dev.txt
+      - name: Run repository bootstrap gate
+        run: python tools/check_bootstrap.py
