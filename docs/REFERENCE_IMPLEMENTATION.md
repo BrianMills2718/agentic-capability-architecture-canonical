@@ -1,12 +1,14 @@
 # Reference Implementation
 
+> **Status: preserved proof fixture / early example.** This document demonstrates the original shared/config/local pattern. It is not a production recommendation to rebuild appointment scheduling or approval workflow when Frappe/ERPNext or another mature provider already satisfies the real requirement. For current architecture and sourcing rules, use `ARCHITECTURE_CHARTER.md` and `PROJECT_WORKFLOW.md`.
+
 ## Purpose
 
-This reference project proves the architecture with the smallest useful example.
+This reference project proves the architecture with a small controlled example.
 
 ### Shared capabilities
 
-- `na_scheduling`: owns the reusable Appointment model.
+- `na_scheduling`: owns the reusable Appointment model in this proof fixture.
 - `na_approvals`: owns deterministic approval-rule resolution.
 
 ### Project-specific extension
@@ -50,9 +52,9 @@ The root `pytest` suite tests:
 
 ## What requires a Frappe environment
 
-`acme_rules/tests/test_appointment_hook.py` is a real Frappe integration suite. It
-uses a real `Appointment` document, `doc.run_method("validate")`, and `doc.insert()`.
-It should be run after the three apps are installed on a Frappe test site.
+`acme_rules/tests/test_appointment_hook.py` is a real Frappe integration suite. It uses a real `Appointment` document, `doc.run_method("validate")`, and `doc.insert()`.
+
+The baseline real-Frappe proof has since passed; current evidence is indexed in `PROOF_LEDGER_EXTENDED.md` and `FRAPPE_TEST_STATUS.md`.
 
 ## Reference acceptance scenario
 
@@ -60,6 +62,4 @@ ACME's bespoke requirement is:
 
 > Appointments longer than 120 minutes require approval.
 
-This remains project-local. If a second materially different project needs the
-same behavior, we should consider generalizing it. A third use should test that
-the generalized form composes without breaking the first two.
+This remains project-local in the fixture. Repeated demand may justify a reusable semantic boundary, but extraction should be evaluated against existing platform/ecosystem/external implementations first. A second or third use is evidence pressure, not an automatic instruction to build a new shared product.

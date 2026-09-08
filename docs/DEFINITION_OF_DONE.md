@@ -1,55 +1,60 @@
 # Definition of Done
 
-## Bootstrap completion checklist
+## Status
 
-- [x] Agent rules are stable enough to guide a new coding session.
-- [x] Capability registry schema is defined and usable.
-- [x] Project/client manifest schema is defined and usable.
-- [x] Shared/config/custom layering is enforced by convention and examples.
-- [x] Scheduling reference capability exists.
-- [x] At least one composable companion capability exists.
-- [x] A project-specific extension demonstrates customization without modifying shared code.
-- [x] Rule priorities and explicit conflicts resolve deterministically.
-- [x] Pure unit tests cover rule behavior.
-- [ ] Frappe hook integration tests have produced a confirmed green run against a real Bench/site.
-- [ ] Persistence tests have produced a confirmed green run for ALLOW, REQUIRE_APPROVAL, and BLOCK against a real Bench/site.
-- [x] Compatibility tests exist for shared capability changes.
-- [x] Capability promotion lifecycle (local → candidate → proven → core) is documented.
-- [x] New-project agent workflow is documented and repeatable.
-- [x] Reusable knowledge capture is part of the workflow.
-- [x] A final export script/checklist produces a complete ZIP.
-- [x] A fresh-agent acceptance sandbox and independent evaluator exist.
-- [x] The acceptance harness has both positive and negative rehearsal evidence.
-- [ ] A genuinely fresh coding-agent run has passed both the evaluator and human review.
+The **original bootstrap completion gates are closed**:
 
-## Current automated local evidence
+- real Frappe lifecycle/persistence proof passed in GitHub Actions run `34001408766`;
+- genuinely fresh coding-agent acceptance passed in run `34010580867`.
 
-At the latest snapshot:
+See [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md) for the current proof index and [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md) for the baseline Frappe environment/result.
 
-- 17 local tests pass;
-- repository schemas, registry synchronization, promotion evidence, and reference project manifests validate;
-- all Python sources compile;
-- all 4 current Frappe-style app packages build successfully;
-- the Frappe lifecycle proof is packaged as `.github/workflows/frappe-integration.yml` and a local Bench runner, but still requires a green external Bench execution.
+The earlier unchecked bootstrap checklist is preserved in repository history; it is no longer the current program-status source.
 
-## Final acceptance test
+## Definition of done for a new project or material capability change
 
-Start a fresh project with a coding agent that has no access to this conversation or a previous agent thread.
+A change is not complete until it satisfies the applicable items below.
 
-Without manually reminding it of the architecture, the agent should:
+### Sourcing and architecture
 
-1. inspect the capability registry,
-2. reuse/configure existing capabilities where possible,
-3. compose them through a project manifest,
-4. isolate new bespoke behavior,
-5. add appropriate tests,
-6. preserve existing consumers,
-7. update reusable knowledge,
-8. and leave the capability base stronger than before.
+- [ ] The exact requirement is stated.
+- [ ] Native platform/runtime, installed ecosystem, mature external, standards/protocol, and internal capability options were considered where relevant.
+- [ ] Meaningful rejected candidates and reasons are recorded when they would help a future agent.
+- [ ] The selected capability/public boundary honestly matches the required semantics.
+- [ ] Consequential project-specific behavior remains in the project-local layer.
+- [ ] No new generic infrastructure is introduced when an established system already satisfies the required invariant.
 
-The bootstrap is complete only when:
+### Implementation and reliability
 
-1. the real Frappe hook/persistence integration suite has a confirmed green run, and
-2. the genuinely fresh agent acceptance run passes both automated evaluation and human review.
+- [ ] Shared capability dependencies and public interfaces remain explicit.
+- [ ] Triggered behavior has a real trigger path, not only a callable helper.
+- [ ] Retryable/external side effects use durable idempotency/reliability semantics appropriate to the failure mode.
+- [ ] Authorization, persistence, scheduling, transactions, messaging, and similar runtime concerns use established platform/runtime facilities unless a documented gap justifies otherwise.
 
-The capability base itself then continues to grow indefinitely through future projects.
+### Evidence
+
+- [ ] Unit/integration/persistence/compatibility tests cover the behavior appropriate to its boundary.
+- [ ] New reusable failure modes leave regression tests.
+- [ ] `clients/<project>/LEARNINGS.md` records a reuse/sourcing assessment or explicitly explains why nothing should be promoted.
+- [ ] Reuse candidates are recorded without premature maturity promotion.
+- [ ] Human-readable status does not contradict machine-readable manifests/catalogs.
+
+### Required repository gate
+
+Run the exact repository-wide gate:
+
+```bash
+python tools/check_bootstrap.py
+```
+
+Targeted checks do not substitute for this command. A change that fails the full gate is not complete.
+
+## Current program-level proof question
+
+The original bootstrap is complete, but one distinct research question remains open in the current proof ledger: the isolated `proof/fresh_agent_registry_discovery/challenge/` should receive a genuinely separate coding-agent run to test whether an agent can discover, select, reject, and compose portable capabilities without the source monorepo or this conversation.
+
+That is an **ongoing architecture research gate**, not evidence that the original Frappe/fresh-agent bootstrap remains unfinished.
+
+## Success after bootstrap
+
+The capability architecture should now improve through real application pressure. Progress is measured by better sourcing decisions, less unnecessary bespoke implementation, preserved local semantics, stronger compatibility/rejection evidence, and lower marginal effort—not by continually adding framework machinery or internal capabilities.

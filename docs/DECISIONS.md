@@ -1,8 +1,10 @@
 # Architecture Decisions
 
+Cross-repo semantic/interface policy is governed by the [Vision Semantic Boundary and Interface Policy](https://github.com/BrianMills2718/vision/blob/main/wiki/synthesis/adr-2026-09-07-semantic-boundary-and-interface-policy.md). This file records repository-local decisions that future work should preserve.
+
 ## ADR-001 — Separate shared, configured, and custom behavior
 
-**Decision:** Use three explicit layers: shared capability, project configuration, project custom extension.
+**Decision:** Use explicit shared capability, project configuration, and project custom-extension boundaries.
 
 **Reason:** Prevents reusable code from accumulating project-specific conditions.
 
@@ -18,9 +20,9 @@
 
 ## ADR-003 — Agents inspect before building
 
-**Decision:** Coding agents must inspect the registry and existing capabilities before implementing new behavior.
+**Decision:** Coding agents must investigate existing implementations before creating new behavior. Inspection includes native runtime/platform features, installed ecosystem packages, mature external implementations, existing standards/protocols, and internal registered capabilities.
 
-**Reason:** The capability base only compounds if reuse is considered before coding.
+**Reason:** The capability base only compounds if agents select existing suitable behavior before generating bespoke code; “reuse” must not mean “prefer our implementation regardless of what already exists.”
 
 ---
 
@@ -44,12 +46,54 @@
 
 **Decision:** A project-specific ALLOW decision cannot automatically erase a stricter shared/core REQUIRE_APPROVAL or BLOCK decision.
 
-**Reason:** Local customization should not bypass shared invariants accidentally.
+**Reason:** Local customization should not bypass shared invariants accidentally. Where durable state represents multiple requirement sources, provenance should be preserved rather than relying on an unqualified Boolean alone.
 
 ---
 
-## ADR-007 — Semantic action catalog is derived from capability manifests
+## ADR-007 — Off-the-shelf wins ties
 
-**Decision:** Capability manifests are the source of truth for semantic exports. An exported action ID must already be listed in the capability's `provides`, and it must point at an existing declared `public_interfaces` boundary. The catalog and exact lookup surface are generated from those manifests; no second publication registry is maintained. Existing public functions serve directly when their semantics already match, so no wrapper is added for `approval.resolve`, `state.transition.plan`, or `notification.email.send`.
+**Decision:** When an established platform feature, package, external product/service, or standard satisfies the required invariant approximately as well as a custom implementation, use or integrate the established option. Build shared implementation only for a genuine unmet gap or where the custom boundary provides a demonstrated architectural benefit.
 
-**Reason:** This keeps semantic lookup independent of package names without duplicating provider metadata or creating adapter code for architectural symmetry. Exact lookup is sufficient until a real requirement needs graded matching or planning.
+**Reason:** Reimplementing commodity workflow, scheduling, authorization, notifications, package distribution, observability, service cataloging, agent transport, or business application functionality increases maintenance cost without strengthening the distinctive capability-selection/evidence layer.
+
+**Consequence:** Proof applications may deliberately exercise these concerns, but their presence in the repository is not a product commitment to compete with mature off-the-shelf systems.
+
+---
+
+## ADR-008 — Capability intelligence is the strategic trunk
+
+**Decision:** Prioritize semantic capability identity, honest public interfaces, sourcing/selection, explicit local gaps, compatibility/rejection evidence, and accumulated reuse knowledge over expanding a private implementation catalog.
+
+**Reason:** The durable advantage is better agent decisions about available capability, not ownership of every implementation.
+
+**Consequence:** Primitive/composition research remains probationary until it demonstrates incremental value beyond good capability metadata and typed interfaces.
+
+---
+
+## ADR-009 — The Vision wiki is the single global navigation authority
+
+**Decision:** Cross-repo “where do I start / where does this belong?” navigation is owned by `BrianMills2718/vision/wiki/index.md`. Repository READMEs identify local role and point to local authority maps but do not maintain competing global navigation trees.
+
+**Reason:** Multiple active-looking indexes and repeated current-status lists drift and make fresh-agent discovery less reliable.
+
+**Consequence:** `docs/README.md` is a repository-local document map only. Historical proof/session documents remain preserved but must not be presented as current navigation authority.
+
+---
+
+## ADR-010 — Do not duplicate volatile machine state in prose
+
+**Decision:** Capability maturity, public interfaces, dependencies, and other machine-readable state should be read from or derived from manifests/catalogs where practical. Prose may explain interpretation but should not maintain a second manual status table.
+
+**Reason:** Independent hand-maintained summaries become stale and can agree with each other while disagreeing with evidence or executable state.
+
+**Consequence:** If machine-readable sources disagree, treat that as a synchronization/validation defect to fix explicitly rather than choosing a prose winner.
+
+---
+
+## ADR-011 — Semantic action catalog is derived from capability manifests
+
+**Decision:** Capability manifests are the source of truth for semantic exports. An exported action ID must already be listed in the capability's `provides` and must point at a declared `public_interfaces` boundary. Catalog/list/describe views are generated from those manifests; no second publication registry is maintained. Existing public functions serve directly when their semantics already match, so no wrapper is added for `approval.resolve`, `state.transition.plan`, or `notification.email.send`.
+
+**Reason:** This preserves provider-independent semantic lookup without duplicating provider metadata or creating adapter code for architectural symmetry. Exact matching is sufficient until a real requirement demonstrates the need for graded matching or planning.
+
+**Consequence:** `tools/capability_catalog.py` is a derived view/check surface. A duplicate action ID, a non-public target, or an action not present in `provides` is a validation failure.

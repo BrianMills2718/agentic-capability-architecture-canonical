@@ -1,5 +1,7 @@
 # Fresh-Agent Acceptance Proof
 
+> **Status: historical iteration log.** This document records the failures that hardened the bootstrap through iteration 4. Its inline statements that another run “is required” describe the state at that point in the chronology. The later genuinely fresh coding-agent acceptance passed; current proof status is maintained in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md), which records run `34010580867` as passed. The remaining distinct research question is the isolated registry-discovery challenge described in [`NEXT_PROOF.md`](NEXT_PROOF.md).
+
 ## Iteration 1 — FAIL (useful bootstrap evidence)
 
 A clean acceptance sandbox was materialized into the disposable private GitHub repository `BrianMills2718/test` and the exact acceptance issue was assigned to GitHub Copilot's cloud coding agent. This was a separate coding-agent session with no access to the evaluator or this conversation.
@@ -21,7 +23,8 @@ No corrective hint was sent to the coding agent before scoring. Therefore this i
 4. Agent/workflow instructions now state that scheduled requirements need a real trigger path; a callable transport/helper is not sufficient.
 5. The external evaluator now requires visible automatic reminder triggering plus trigger/wiring tests.
 
-A second genuinely fresh agent run is required after these changes.
+At that point, a second genuinely fresh agent run was required.
+
 ## Iteration 2 — FAIL (test harness resilience gap)
 
 A new clean GitHub Copilot cloud-agent session was launched from the strengthened base with the same plain task and no iteration-1 feedback.
@@ -40,7 +43,8 @@ This exposed a repository test-harness weakness as well as a process weakness: t
 2. A compatibility regression test protects that setting.
 3. Agent instructions now state that the exact full `python tools/check_bootstrap.py` command is mandatory before completion; targeted substitutes do not count.
 
-A third genuinely fresh run is required.
+At that point, a third genuinely fresh run was required.
+
 ## Iteration 3 — FAIL (nested app test discovery / clean import gap)
 
 A third clean Copilot cloud-agent session ran from the importlib-mode baseline and followed the strengthened instructions, including its own repository bootstrap checks.
@@ -61,7 +65,8 @@ Human inspection also showed the new Frappe app omitted the module-package marke
 4. `check_frappe_packages.py` now validates every `modules.txt` entry has its expected Python module package marker before building.
 5. The external evaluator uses the same clean dynamic import environment for focused tests.
 
-A fourth genuinely fresh run is required.
+At that point, a fourth genuinely fresh run was required.
+
 ## Iteration 4 — AUTOMATED PASS / HUMAN REVIEW FAIL (side-effect idempotency gap)
 
 A fourth clean Copilot cloud-agent session ran from the nested-test/package-layout-hardened baseline.
@@ -83,5 +88,4 @@ Human review rejected it because the hourly reminder job queried all appointment
 3. Project workflow now requires a repeat-execution test: run the same job twice for the same logical event and assert the side effect happens once.
 4. The acceptance evaluator now checks for visible durable reminder deduplication and a duplicate-delivery/idempotency regression test.
 
-A fifth genuinely fresh run is required.
-
+At that point, a fifth genuinely fresh run was required. A later genuinely fresh acceptance subsequently passed; see the current proof ledger rather than interpreting this historical stopping point as an open bootstrap gate.
