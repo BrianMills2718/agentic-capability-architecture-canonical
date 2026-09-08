@@ -21,3 +21,9 @@ public_interfaces:
 - na_core.transitions.TransitionResult
 - na_core.transitions.plan_transition
 - na_core.transitions.audit_payload
+semantic_exports:
+- semantic_action: state.transition
+  implementation: na_core.transitions.plan_transition
+  implementation_version: 1
+  inputs: [state_ref, transition_spec, actor_ref]
+  outputs: [transition_result]
