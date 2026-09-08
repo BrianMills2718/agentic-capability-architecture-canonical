@@ -11,13 +11,13 @@ help:
 check:
 	python tools/capability_catalog.py publication --json >/dev/null
 	python tools/validate_capability_publication.py
-	python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py
+	python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py tests/compatibility/test_behavior_pipeline_defaults.py
 
 test:
-	python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py tests/compatibility/test_runtime_execution_receipts.py
+	python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py tests/compatibility/test_behavior_pipeline_defaults.py tests/compatibility/test_runtime_execution_receipts.py
 
 proof:
-	python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py tests/compatibility/test_milestone1_runtime_smoke.py tests/compatibility/test_runtime_execution_receipts.py
+	python -m pytest -q tests/compatibility/test_behavior_requirement_resolution.py tests/compatibility/test_behavior_pipeline_defaults.py tests/compatibility/test_milestone1_runtime_smoke.py tests/compatibility/test_runtime_execution_receipts.py
 
 doctor:
 	@command -v python >/dev/null || { echo 'python not found' >&2; exit 2; }
