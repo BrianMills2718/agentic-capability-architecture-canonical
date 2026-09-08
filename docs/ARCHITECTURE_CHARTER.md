@@ -2,7 +2,7 @@
 
 ## Mission
 
-Build a software-delivery system in which coding agents **select and reuse the best existing capability before generating new implementation**, preserve consequential project-local semantics, and accumulate evidence that improves the next decision.
+Build a **cumulative software-delivery ecosystem** in which coding agents **select and reuse the best existing capability before generating new implementation**, preserve consequential project-local semantics, and leave behind capability knowledge and evidence that make later projects easier to build.
 
 The durable asset is not a large private library. It is **machine-understandable capability knowledge plus evidence about what exists, what it actually does, when it fits, when it fails, and how it composes**.
 
@@ -11,6 +11,26 @@ The governing rules are:
 > **Off-the-shelf wins ties.** Native platform features, established ecosystem packages, mature external implementations, and existing standards are first-class candidates alongside internal code.
 
 > **Do not force everything to be reusable. Make everything eligible to become reusable, then promote only after materially different uses provide evidence.**
+
+## Cumulative growth contract
+
+Every project is both a **consumer and a contributor** to the capability ecosystem. The architecture should make this compounding loop normal:
+
+```text
+reuse the best existing capability
+        ↓
+implement only the residual local gap
+        ↓
+validate the result in a real project
+        ↓
+record use, rejection, compatibility, provenance, and limitations
+        ↓
+promote genuinely reusable behavior when evidence warrants it
+        ↓
+better capability knowledge for the next project
+```
+
+The cumulative asset can grow even when no new internal package is created. A project improves the ecosystem when it strengthens evidence for an external/native capability, records a failed or rejected fit, clarifies an interface or compatibility constraint, preserves a useful local boundary, or contributes a reusable capability whose promotion is supported by materially different uses.
 
 ## Architecture
 
@@ -179,10 +199,11 @@ Frappe is the current runtime substrate, not the durable abstraction boundary.
 
 ## Success criterion
 
-The architecture succeeds if later projects require less discovery and bespoke implementation **because agents make better sourcing and composition decisions**, without hiding domain semantics or increasing coupling.
+The architecture succeeds if the ecosystem **compounds**: later projects require less discovery and bespoke implementation because each completed project leaves behind better capability knowledge, evidence, and reusable behavior where justified—without hiding domain semantics or increasing coupling.
 
 The desired trend is:
 
+- more validated capability/evidence knowledge available to the next project;
 - more requirements satisfied by existing suitable implementations, regardless of who owns them;
 - fewer unnecessary internal abstractions and duplicate products;
 - faster delivery and fewer regressions;

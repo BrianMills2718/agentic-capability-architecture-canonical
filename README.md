@@ -1,6 +1,6 @@
 # Agentic Capability Architecture
 
-Research and working implementation for an agent-native capability **selection, reuse, and evidence** architecture.
+Research and working implementation for an agent-native **cumulative capability ecosystem**: capability selection, reuse, evidence, and evidence-backed promotion that make later projects easier to build.
 
 > **Global navigation:** start at the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md), then use the [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
 >
@@ -9,6 +9,8 @@ Research and working implementation for an agent-native capability **selection, 
 ## Local role
 
 This is the **sole active capability-architecture lineage**. It owns capability/provider metadata, honest reusable public implementation boundaries, conservative capability resolution, reuse/maturity evidence, and the local proof fixtures used to test those ideas.
+
+Its core architectural purpose is **cumulative**: each project should consume the best capability knowledge already available and leave the ecosystem better for the next project through stronger evidence, clearer compatibility/provenance, better rejected-fit knowledge, or genuinely reusable capability when promotion is justified.
 
 It does **not** own upstream application meaning, a second semantic IR, a universal workflow engine, a scheduler, authorization platform, notification platform, package registry, observability system, or a general replacement for capabilities already available in mature software.
 
@@ -20,6 +22,30 @@ The durable goal is to help a coding agent answer:
 4. What honest typed interface should be consumed?
 5. What consequential behavior must remain project-local?
 6. What evidence should be recorded so the next agent makes a better decision?
+
+## Cumulative ecosystem model
+
+Each project is both a **consumer and a contributor**. It should start by discovering and reusing the best existing implementation, implement only the genuine residual gap, then leave behind evidence and reusable knowledge that improve future decisions.
+
+```text
+requirement
+    ↓
+source/select existing capability
+    ↓
+configure / compose
+    ↓
+implement only the residual local gap
+    ↓
+validate in real use
+    ↓
+record evidence + provenance + compatibility + rejected fits
+    ↓
+promote reusable behavior when repeated use justifies it
+    ↓
+stronger capability ecosystem for the next project
+```
+
+Ecosystem growth therefore means more than a larger internal codebase. It includes better knowledge of native/platform features, external OSS/SaaS, standards, internal capabilities, honest interfaces, compatibility constraints, failures, and successful compositions. Sometimes the best cumulative contribution is evidence that an existing external capability should be reused—or that a behavior should remain project-local.
 
 ## Governing stance
 

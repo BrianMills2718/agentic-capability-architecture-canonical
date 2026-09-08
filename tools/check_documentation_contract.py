@@ -25,6 +25,12 @@ def main() -> None:
             "https://github.com/BrianMills2718/vision/blob/main/wiki/index.md",
             "docs/README.md",
             "Off-the-shelf wins ties",
+            "cumulative capability ecosystem",
+            "Each project is both a **consumer and a contributor**",
+        ],
+        "docs/ARCHITECTURE_CHARTER.md": [
+            "Cumulative growth contract",
+            "consumer and a contributor",
         ],
         "docs/README.md": [
             "Global navigation authority",
