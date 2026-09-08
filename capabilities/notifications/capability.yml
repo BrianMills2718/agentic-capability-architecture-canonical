@@ -12,6 +12,13 @@ requires:
 public_interfaces:
   - na_notifications.email.send_email
 
+semantic_exports:
+  - semantic_action: notification.send
+    implementation: na_notifications.email.send_email
+    implementation_version: 1
+    inputs: [recipients, subject, message]
+    outputs: [delivery_ref]
+
 configuration:
   default_sender:
     type: string
@@ -23,4 +30,3 @@ notes:
 evidence:
   materially_different_uses: []
   third_use_checked: false
-
