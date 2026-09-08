@@ -2,6 +2,7 @@ from copy import deepcopy
 
 import yaml
 
+from tools.capability_catalog import build_publication
 from tools.resolve_behavior_requirements import ResolutionError, resolve
 
 
@@ -65,16 +66,31 @@ def requirements_fixture():
 
 
 def publication_fixture():
-    return yaml.safe_load(open("architecture/publication/capability_publication_v1.yaml").read())
+    return build_publication()
+
+
+def test_manifest_derived_publication_matches_legacy_bindings():
+    derived = publication_fixture()
+    legacy = yaml.safe_load(open("architecture/publication/capability_publication_v1.yaml").read())
+
+    def essential(publication):
+        return {
+            action["semantic_action"]: (
+                action["capability_owner"],
+                action["selected_implementation"],
+                action["composition_implementation_ref"],
+                tuple(action["semantic_contract"]["inputs"]),
+                tuple(action["semantic_contract"]["outputs"]),
+            )
+            for action in publication["published_actions"]
+        }
+
+    assert essential(derived) == essential(legacy)
 
 
 def test_resolves_all_published_actions_and_preserves_contracts_sources_and_provenance():
     result = resolve(requirements_fixture(), publication_fixture())
-    assert [b["semantic_action"] for b in result["bindings"]] == [
-        "policy.resolve",
-        "state.transition",
-        "notification.send",
-    ]
+    assert [b["semantic_action"] for b in result["bindings"]] == ["policy.resolve", "state.transition", "notification.send"]
     first = result["bindings"][0]
     assert first["selected_implementation"] == "na_approvals.engine.resolve"
     assert first["composition_implementation_ref"] == "na_approvals.engine.resolve/1"
@@ -122,10 +138,7 @@ def test_missing_input_source_fails_typed():
 
 def test_missing_output_fails_typed():
     reqs = requirements_fixture()
-    reqs["requirements"][0]["required_outputs"] = [
-        _io("decision", "test.decision/1"),
-        _io("audit_ref", "test.audit/1"),
-    ]
+    reqs["requirements"][0]["required_outputs"] = [_io("decision", "test.decision/1"), _io("audit_ref", "test.audit/1")]
     try:
         resolve(reqs, publication_fixture())
     except ResolutionError as exc:
@@ -179,12 +192,6 @@ def test_shipment_exception_reuses_only_core_and_notifications():
         ],
     }
     result = resolve(requirements, publication_fixture())
-    assert [binding["semantic_action"] for binding in result["bindings"]] == [
-        "state.transition",
-        "notification.send",
-    ]
-    assert [binding["capability_owner"] for binding in result["bindings"]] == [
-        "core",
-        "notifications",
-    ]
+    assert [binding["semantic_action"] for binding in result["bindings"]] == ["state.transition", "notification.send"]
+    assert [binding["capability_owner"] for binding in result["bindings"]] == ["core", "notifications"]
     assert all(binding["capability_owner"] not in {"approvals", "scheduling"} for binding in result["bindings"])
