@@ -1,71 +1,9 @@
-# Architecture
+# Architecture — Compatibility Pointer
 
-## Layers
+This file is retained for older links. It is **not a second architecture specification**.
 
-### 1. Shared capabilities
+Current local architecture is defined in [`ARCHITECTURE_CHARTER.md`](ARCHITECTURE_CHARTER.md), with durable repository decisions in [`DECISIONS.md`](DECISIONS.md).
 
-Reusable code with:
+Cross-repo navigation and governing semantic/interface policy live in the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md) and the [Semantic Boundary and Interface Policy](https://github.com/BrianMills2718/vision/blob/main/wiki/synthesis/adr-2026-09-07-semantic-boundary-and-interface-policy.md).
 
-- explicit purpose,
-- public interface,
-- configuration schema,
-- dependency declarations,
-- tests,
-- compatibility expectations.
-
-### 2. Project/client configuration
-
-Settings that change shared behavior without forking shared code.
-
-### 3. Project/client custom extension
-
-Behavior unique to one project.
-
-Custom extensions may depend on shared capabilities but should not modify their source directly.
-
-## Desired dependency direction
-
-```text
-client custom code
-       ↓
-shared capabilities
-       ↓
-core/runtime
-```
-
-Shared capabilities should not depend on client/project code.
-
-## Composition rule
-
-Prefer explicit APIs/contracts over one capability reaching into another capability's internals.
-
-## Rule engine pattern
-
-For competing business rules:
-
-```text
-framework hook
-      ↓
-dispatcher
-      ↓
-rule evaluations
-      ↓
-deterministic resolver
-      ↓
-single final mutation
-```
-
-Rules report decisions. The resolver owns final state changes.
-
-## Compatibility
-
-A change to a proven or core capability should be treated as potentially affecting every known consumer.
-
-Compatibility tests should be added when:
-
-- interfaces change,
-- dependencies change,
-- configuration semantics change,
-- rule precedence changes,
-- migrations alter stored data,
-- framework lifecycle hooks change.
+Historical versions of this file described the early three-layer shared/config/custom model. That principle remains valid, but the current charter adds the required upstream sourcing step: **native/platform → ecosystem → mature external → standards → internal capability → residual local gap**.

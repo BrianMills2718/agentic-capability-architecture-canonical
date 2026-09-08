@@ -1,11 +1,15 @@
 # Proof Ledger
 
-This file records proof identifiers referenced during development. GitHub Actions run IDs are retained so claims can be checked against the original proof repositories where access remains available.
+This is the repository's **current proof-status index**. Historical proof plans, iteration logs, PR descriptions, and session notes may describe what was pending at the time they were written; reconcile current completed/pending claims here first.
+
+GitHub Actions run IDs are retained so claims can be checked against the original proof repositories where access remains available.
 
 ## Bootstrap and agent behavior
 
 - `34001408766` — baseline real Frappe lifecycle proof; 6 tests OK.
 - `34010580867` — genuinely fresh coding-agent acceptance hidden evaluator; acceptance passed.
+
+The original bootstrap's two decisive gates are therefore closed. See `DEFINITION_OF_DONE.md` for the ongoing per-project completion standard.
 
 ## Real project proofs
 
@@ -19,6 +23,7 @@ This file records proof identifiers referenced during development. GitHub Action
 ## Cross-repository portability
 
 - `34047230770` — independent consumer repository resolved portable capabilities, verified package hashes, installed dependency closure, and passed 7/7 consumer tests.
+
 ## Evidence interpretation
 
 Passing tests prove bounded implementation claims, not universal architectural correctness.
@@ -32,8 +37,10 @@ The strongest recurring evidence so far is:
 - prospective modeling can reveal abstraction ownership mistakes before implementation;
 - Resource Reservation showed that a capability interface such as `availability.query` need not automatically become a primitive.
 
+These project proofs are architecture evidence, not a reason to recreate mature business products that already exist in Frappe/ERPNext or other established systems.
+
 ## Pending proof
 
-The fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/` still needs a genuinely separate coding agent run.
+The fresh-agent registry-discovery challenge under `proof/fresh_agent_registry_discovery/challenge/` still needs a genuinely separate coding-agent run.
 
-That test should establish whether an agent can discover, select, reject, and compose portable capabilities without receiving the source monorepo or this conversation.
+That test should establish whether an agent can discover, select, reject, and compose portable capabilities without receiving the source monorepo or this conversation. See `NEXT_PROOF.md` for the current isolated-test question and interpretation.
