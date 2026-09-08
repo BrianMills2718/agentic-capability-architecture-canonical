@@ -1,5 +1,7 @@
 # Working Context
 
+> **Status: historical accumulated implementation context.** This file records the reasoning and examples that shaped the early capability-first bootstrap. Terms such as “current,” “chosen direction,” and the workflow shown below should be read in that historical context. For current architecture use [`ARCHITECTURE_CHARTER.md`](ARCHITECTURE_CHARTER.md); for current agent/project sourcing use `../AGENTS.md` and [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md); for current proof status use [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md). In particular, current sourcing begins with native/platform, ecosystem, mature external, and standards-based options before internal capability reuse.
+
 ## Objective
 
 Build a development system for projects created with coding agents where each completed project strengthens a larger reusable capability base.
@@ -166,7 +168,7 @@ Use `insert()` to verify:
 
 ## Coding-agent workflow
 
-For every requested feature:
+For every requested feature, the early bootstrap used:
 
 ```text
 Understand requirement
@@ -188,11 +190,11 @@ Record reusable learning
 Consider candidate promotion
 ```
 
-The agent must inspect the capability base before coding.
+The current workflow broadens inspection beyond the internal capability base; see `PROJECT_WORKFLOW.md`.
 
 ## Guiding principle
 
-The target is:
+The target was described as:
 
 > vibe code against an accumulating software capability base
 
@@ -201,18 +203,24 @@ rather than:
 > vibe code a new bespoke repository every time.
 
 The valuable accumulated base includes not only source code, but tests, schemas, interfaces, integration knowledge, migration knowledge, deployment patterns, failure cases, and architecture decisions.
+
+The current charter generalizes this idea further: the accumulated asset is capability **knowledge and evidence**, and the selected implementation may be native, ecosystem, external, standards-based, internal, or local.
+
 ## Fresh-agent proof learning — iteration 1
 
-The first independent GitHub Copilot cloud-agent run correctly reused Scheduling, Approvals, and Notifications and kept the 90-minute rule local, but it exposed two self-guidance gaps: it did not record a reuse assessment, and it implemented an email reminder callable without an actual scheduled trigger. The bootstrap now mechanically requires a per-project `LEARNINGS.md` reuse assessment and explicitly requires automatic/triggered requirements to include real framework wiring and tests.
+The first independent GitHub Copilot cloud-agent run correctly reused Scheduling, Approvals, and Notifications and kept the 90-minute rule local, but it exposed two self-guidance gaps: it did not record a reuse assessment, and it implemented an email reminder callable without an actual scheduled trigger. The bootstrap then mechanically required a per-project `LEARNINGS.md` reuse assessment and explicitly required automatic/triggered requirements to include real framework wiring and tests.
+
 ## Fresh-agent proof learning — iteration 2
 
-The second fresh agent fixed the first run's missing learning record and missing scheduled trigger, but full-suite evaluation exposed a test-module basename collision between unit and compatibility directories. The repository now uses pytest importlib mode for modular test isolation, protects that contract with a regression test, and explicitly requires agents to run the exact full bootstrap gate before declaring work complete.
+The second fresh agent fixed the first run's missing learning record and missing scheduled trigger, but full-suite evaluation exposed a test-module basename collision between unit and compatibility directories. The repository then adopted pytest importlib mode for modular test isolation, protected that contract with a regression test, and explicitly required agents to run the exact full bootstrap gate before declaring work complete.
+
 ## Fresh-agent proof learning — iteration 3
 
-A green developer-shell test run is not sufficient evidence if nested app tests are omitted or local packages happen to be installed. The bootstrap now dynamically discovers every Frappe app, supplies all app roots through a clean test environment, executes nested app tests, and structurally validates Frappe module-package markers before wheel builds.
+A green developer-shell test run is not sufficient evidence if nested app tests are omitted or local packages happen to be installed. The bootstrap was strengthened to dynamically discover every Frappe app, supply all app roots through a clean test environment, execute nested app tests, and structurally validate Frappe module-package markers before wheel builds.
+
 ### Local-vs-Bench test collection rule
 
-Nested app tests are now part of the local repository-wide test discovery. Tests that genuinely require a real Frappe site must remain collectable without Frappe installed, using `pytest.importorskip("frappe")` or deferred framework imports. This lets the local gate prove test discovery/import wiring while the real Bench CI gate proves lifecycle behavior.
+Nested app tests are part of the local repository-wide test discovery. Tests that genuinely require a real Frappe site must remain collectable without Frappe installed, using `pytest.importorskip("frappe")` or deferred framework imports. This lets the local gate prove test discovery/import wiring while the real Bench proof establishes lifecycle behavior for the tested revision.
 
 ## Current semantic capability boundary
 
