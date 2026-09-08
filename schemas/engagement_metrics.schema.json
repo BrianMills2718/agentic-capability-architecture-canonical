@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Engagement Business Metrics",
+  "type": "object",
+  "required": ["schema_version", "engagement_id", "currency", "revenue", "contractor_cost", "human_hours", "agent_hours", "requirements_total", "requirements_reused", "requirements_composed", "local_lines_changed", "rework_events"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "engagement_id": {"type": "string"},
+    "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "revenue": {"type": ["number", "null"], "minimum": 0},
+    "contractor_cost": {"type": ["number", "null"], "minimum": 0},
+    "human_hours": {"type": ["number", "null"], "minimum": 0},
+    "agent_hours": {"type": ["number", "null"], "minimum": 0},
+    "requirements_total": {"type": "integer", "minimum": 1},
+    "requirements_reused": {"type": "integer", "minimum": 0},
+    "requirements_composed": {"type": "integer", "minimum": 0},
+    "local_lines_changed": {"type": ["integer", "null"], "minimum": 0},
+    "rework_events": {"type": "integer", "minimum": 0}
+  },
+  "additionalProperties": false
+}

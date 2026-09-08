@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Engagement Capability Plan",
+  "type": "object",
+  "required": ["schema_version", "engagement_id", "status", "selected", "rejected", "composition", "local_gaps"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "engagement_id": {"type": "string"},
+    "status": {"enum": ["draft", "ready"]},
+    "selected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_class", "candidate", "requirement_ids", "reason"],
+        "properties": {
+          "source_class": {"enum": ["platform_native", "ecosystem", "external_oss", "external_saas", "standard", "internal"]},
+          "candidate": {"type": "string", "minLength": 1},
+          "requirement_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "semantic_actions": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "interfaces": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+          "reason": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "rejected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_class", "candidate", "requirement_ids", "reason"],
+        "properties": {
+          "source_class": {"enum": ["platform_native", "ecosystem", "external_oss", "external_saas", "standard", "internal"]},
+          "candidate": {"type": "string", "minLength": 1},
+          "requirement_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "reason": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "composition": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirement_ids", "components", "description"],
+        "properties": {
+          "requirement_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "components": {"type": "array", "minItems": 2, "items": {"type": "string"}, "uniqueItems": true},
+          "description": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "local_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["requirement_ids", "behavior", "reason"],
+        "properties": {
+          "requirement_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+          "behavior": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

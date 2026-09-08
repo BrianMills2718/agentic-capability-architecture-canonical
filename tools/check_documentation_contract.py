@@ -25,12 +25,17 @@ def main() -> None:
             "https://github.com/BrianMills2718/vision/blob/main/wiki/index.md",
             "docs/README.md",
             "Off-the-shelf wins ties",
-            "cumulative capability ecosystem",
+            "cumulative, composable capability ecosystem",
             "Each project is both a **consumer and a contributor**",
         ],
         "docs/ARCHITECTURE_CHARTER.md": [
+            "cumulative, composable software-delivery ecosystem",
             "Cumulative growth contract",
             "consumer and a contributor",
+        ],
+        "docs/ENGAGEMENT_OPERATING_SYSTEM.md": [
+            "Client work product stays in the engagement workspace",
+            "CANONICAL_EVIDENCE_PROPOSAL.yml",
         ],
         "docs/README.md": [
             "Global navigation authority",

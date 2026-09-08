@@ -1,3 +1,11 @@
+## 2026-09-08 — Paid engagement operating MVP
+
+- Added an isolated contractor/client engagement kit generator with a hashed read-only capability snapshot and portable self-validator.
+- Added machine-readable engagement, capability-plan, evidence-proposal, and business-metrics contracts.
+- Made selection/rejection, explicit composition, residual local gaps, client-work-product isolation, and sanitized evidence closeout part of the paid-work operating loop.
+- Closeout emits proposal-only generalized evidence for human review and keeps client task text, client reference, client code, and financial metrics out of canonical evidence intake.
+- Added five focused engagement-tool regression tests; the full local bootstrap remains green.
+
 ## 2026-09-08 — Final lineage-convergence cleanup
 
 - Recorded `architecture/lineage_inventory.yml` with one active canonical capability-architecture repository and explicit preserved predecessor/proof dispositions.
