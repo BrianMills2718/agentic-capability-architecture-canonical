@@ -12,7 +12,10 @@ import argparse
 import sys
 import yaml
 
-from capability_catalog import build_publication
+try:
+    from tools.capability_catalog import build_publication
+except ModuleNotFoundError:  # direct `python tools/resolve_behavior_requirements.py`
+    from capability_catalog import build_publication
 
 ROOT = Path(__file__).resolve().parents[1]
 
