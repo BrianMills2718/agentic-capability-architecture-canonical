@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-"""Resolve compiler-owned BehaviorRequirements against CapabilityPublication v1.
+"""Resolve compiler-owned BehaviorRequirements against available capabilities.
 
-This is a deterministic boundary resolver, not a planner. It matches exact semantic
-action identities, checks named input/output compatibility, and emits provider-bound
-resolution records including target-neutral payload contract IDs, explicit input-source
-provenance, and a versioned opaque composition implementation identity. Runtime
-execution remains out of scope.
+The default catalog is derived from capability manifests. The legacy publication YAML
+can still be supplied explicitly for compatibility while subtraction equivalence is
+being tested.
 """
 from __future__ import annotations
 
@@ -14,8 +12,9 @@ import argparse
 import sys
 import yaml
 
+from capability_catalog import build_publication
+
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PUBLICATION = ROOT / "architecture/publication/capability_publication_v1.yaml"
 
 
 class ResolutionError(ValueError):
@@ -62,19 +61,14 @@ def _publication_index(publication: dict) -> dict[str, list[dict]]:
 def resolve(requirements: dict, publication: dict) -> dict:
     index = _publication_index(publication)
     bindings: list[dict] = []
-
     for requirement in requirements.get("requirements") or ():
         req_id = str(requirement.get("id") or "<missing-id>")
         semantic_action = str(requirement.get("semantic_action") or "")
         candidates = index.get(semantic_action, [])
         if not candidates:
-            raise ResolutionError(
-                "UNKNOWN_SEMANTIC_ACTION", req_id, f"no publication for {semantic_action!r}"
-            )
+            raise ResolutionError("UNKNOWN_SEMANTIC_ACTION", req_id, f"no publication for {semantic_action!r}")
         if len(candidates) != 1:
-            raise ResolutionError(
-                "AMBIGUOUS_PUBLICATION", req_id, f"{len(candidates)} publications for {semantic_action!r}"
-            )
+            raise ResolutionError("AMBIGUOUS_PUBLICATION", req_id, f"{len(candidates)} publications for {semantic_action!r}")
 
         action = candidates[0]
         contract = action.get("semantic_contract") or {}
@@ -83,39 +77,29 @@ def resolve(requirements: dict, publication: dict) -> dict:
         input_sources = _input_sources(requirement)
         missing_inputs = sorted(required_inputs - set(input_contracts))
         if missing_inputs:
-            raise ResolutionError(
-                "INPUT_CONTRACT_MISMATCH", req_id, f"missing inputs: {', '.join(missing_inputs)}"
-            )
+            raise ResolutionError("INPUT_CONTRACT_MISMATCH", req_id, f"missing inputs: {', '.join(missing_inputs)}")
         missing_sources = sorted(set(input_contracts) - set(input_sources))
         if missing_sources:
-            raise ResolutionError(
-                "INPUT_SOURCE_MISSING", req_id, f"inputs without source: {', '.join(missing_sources)}"
-            )
+            raise ResolutionError("INPUT_SOURCE_MISSING", req_id, f"inputs without source: {', '.join(missing_sources)}")
 
         output_contracts = _named_contracts(requirement, "required_outputs")
-        required_outputs = set(output_contracts)
-        provided_outputs = set(str(v) for v in contract.get("outputs") or ())
-        missing_outputs = sorted(required_outputs - provided_outputs)
+        missing_outputs = sorted(set(output_contracts) - set(str(v) for v in contract.get("outputs") or ()))
         if missing_outputs:
-            raise ResolutionError(
-                "OUTPUT_CONTRACT_MISMATCH", req_id, f"missing outputs: {', '.join(missing_outputs)}"
-            )
+            raise ResolutionError("OUTPUT_CONTRACT_MISMATCH", req_id, f"missing outputs: {', '.join(missing_outputs)}")
 
-        bindings.append(
-            {
-                "requirement_id": req_id,
-                "semantic_action": semantic_action,
-                "capability_owner": action["capability_owner"],
-                "selected_implementation": action["selected_implementation"],
-                "composition_implementation_ref": action["composition_implementation_ref"],
-                "owner_manifest": action["owner_manifest"],
-                "input_contracts": input_contracts,
-                "input_sources": input_sources,
-                "output_contracts": output_contracts,
-                "provenance": requirement.get("provenance") or {},
-                "requirement_invariants": requirement.get("invariants") or [],
-            }
-        )
+        bindings.append({
+            "requirement_id": req_id,
+            "semantic_action": semantic_action,
+            "capability_owner": action["capability_owner"],
+            "selected_implementation": action["selected_implementation"],
+            "composition_implementation_ref": action["composition_implementation_ref"],
+            "owner_manifest": action["owner_manifest"],
+            "input_contracts": input_contracts,
+            "input_sources": input_sources,
+            "output_contracts": output_contracts,
+            "provenance": requirement.get("provenance") or {},
+            "requirement_invariants": requirement.get("invariants") or [],
+        })
 
     return {
         "schema_version": "1.0",
@@ -126,26 +110,33 @@ def resolve(requirements: dict, publication: dict) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="Resolve semantic behavior requirements")
     parser.add_argument("requirements")
-    parser.add_argument("--publication", default=str(DEFAULT_PUBLICATION))
+    parser.add_argument("--publication", help="legacy explicit publication YAML; default derives from capability manifests")
     parser.add_argument("--output")
+    parser.add_argument("--json", action="store_true", help="emit JSON instead of YAML")
     args = parser.parse_args()
 
-    req_path = Path(args.requirements)
-    pub_path = Path(args.publication)
-    if not pub_path.is_absolute():
-        pub_path = ROOT / pub_path
+    requirements = yaml.safe_load(Path(args.requirements).read_text())
+    if args.publication:
+        pub_path = Path(args.publication)
+        if not pub_path.is_absolute():
+            pub_path = ROOT / pub_path
+        publication = yaml.safe_load(pub_path.read_text())
+    else:
+        publication = build_publication(ROOT)
 
-    requirements = yaml.safe_load(req_path.read_text())
-    publication = yaml.safe_load(pub_path.read_text())
     try:
         result = resolve(requirements, publication)
     except ResolutionError as exc:
-        print(str(exc), file=sys.stderr)
+        print(f"{exc.code}: {exc.requirement_id}: {exc.detail}", file=sys.stderr)
         return 2
 
-    rendered = yaml.safe_dump(result, sort_keys=False)
+    if args.json:
+        import json
+        rendered = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    else:
+        rendered = yaml.safe_dump(result, sort_keys=False)
     if args.output:
         Path(args.output).write_text(rendered)
     else:
