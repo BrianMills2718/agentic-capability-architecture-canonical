@@ -1,6 +1,8 @@
 # Fresh-Agent Acceptance Runbook
 
-This is the exact procedure for the bootstrap acceptance test.
+> **Status: historical bootstrap fixture.** This runbook preserves the exact `beta_reference` acceptance procedure that hardened the original capability-first bootstrap. That acceptance has since passed; current proof status is in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md). Do not treat this task's forced reuse of internal Scheduling/Approvals/Notifications as the current general sourcing policy. Current agents must follow `AGENTS.md` / `PROJECT_WORKFLOW.md`, including native/platform, ecosystem, external, standards, internal, then local-gap sourcing. The remaining separate registry-discovery research question is described in [`NEXT_PROOF.md`](NEXT_PROOF.md).
+
+This is the exact procedure for the original bootstrap acceptance test.
 
 ## What this test proves
 
