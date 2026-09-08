@@ -1,13 +1,12 @@
 # Acceptance Rehearsal Result
 
+> **Status: historical harness evidence from 2026-09-05.** This rehearsal predated the later real-Frappe and genuinely fresh-agent passes. Statements below about what was not yet proven describe the state at the time. Current proof status is maintained in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md).
+
 Date: 2026-09-05
 
 ## Purpose
 
-Exercise the packaged fresh-agent sandbox and external evaluator end to end without
-claiming the final fresh-agent proof. The rehearsal was performed in a disposable copy
-of the exact sandbox. Because the implementing assistant already knew the architecture,
-this result validates the harness and repository workflow, not agent-context freshness.
+Exercise the packaged fresh-agent sandbox and external evaluator end to end without claiming the final fresh-agent proof. The rehearsal was performed in a disposable copy of the exact sandbox. Because the implementing assistant already knew the architecture, this result validated the harness and repository workflow, not agent-context freshness.
 
 ## Rehearsal task
 
@@ -51,13 +50,10 @@ ACCEPTANCE FAILED
 - clients/beta_reference/manifest.yml does not exist
 ```
 
-This proves the evaluator is not a rubber stamp.
+This proves the evaluator was not a rubber stamp.
 
-## What this does NOT prove
+## What this did NOT prove at the time
 
-This is not the final fresh-agent acceptance result because the implementing assistant
-had already participated in the architecture discussion. The untouched sandbox remains
-available for a genuinely fresh coding-agent session.
+This rehearsal was not the final fresh-agent acceptance result because the implementing assistant had already participated in the architecture discussion. It also predated the confirmed real-Frappe lifecycle proof.
 
-The other outstanding proof remains execution of the authored Frappe lifecycle tests
-inside a real Bench/test site.
+Those two bootstrap gates were subsequently closed: real Frappe run `34001408766` passed, and genuinely fresh coding-agent acceptance run `34010580867` passed. The separate remaining registry-discovery research question is described in [`NEXT_PROOF.md`](NEXT_PROOF.md).

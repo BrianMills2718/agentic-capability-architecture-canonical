@@ -24,9 +24,9 @@ Human-readable status summaries should not duplicate volatile machine state when
 | [`ARCHITECTURE_CHARTER.md`](ARCHITECTURE_CHARTER.md) | Current local architecture mission, boundaries, sourcing order, evidence model, and non-goals. |
 | [`DECISIONS.md`](DECISIONS.md) | Repository-local durable decisions. Cross-repo semantic/interface policy lives in the Vision ADR linked from the global wiki. |
 | [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md) | Required project implementation/reuse workflow. |
-| [`REUSE_PROMOTION.md`](REUSE_PROMOTION.md) | Promotion discipline for local → candidate → proven → core. |
+| [`REUSE_PROMOTION.md`](REUSE_PROMOTION.md) | Current internal promotion discipline and the broader evidence factors that sit above the minimum reuse-count checks. |
 | [`ARCHITECTURE_ONE_DIAGRAM.md`](ARCHITECTURE_ONE_DIAGRAM.md) | Explanatory view only; not an independent source of architecture truth. |
-| [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) | Current interpretation of the original bootstrap completion gates and the transition to ongoing capability work. |
+| [`DEFINITION_OF_DONE.md`](DEFINITION_OF_DONE.md) | Current per-project/material-change completion standard and interpretation of the completed bootstrap. |
 
 `ARCHITECTURE.md` is retained as a compatibility pointer to the charter rather than a second architecture specification.
 
@@ -35,15 +35,15 @@ Human-readable status summaries should not duplicate volatile machine state when
 | Document | Role |
 | --- | --- |
 | [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md) | **Current proof-status index.** Completed and pending proof claims should be reconciled here first. |
-| [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md) | Current record of the baseline real-Frappe lifecycle proof. |
+| [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md) | Current record of the baseline real-Frappe lifecycle proof result. |
+| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Current formulation of the remaining isolated registry-discovery research question; it also supersedes the old bootstrap proof plan. |
 
 ## Operational runbooks and checks
 
 | Document | Role |
 | --- | --- |
-| [`ACCEPTANCE_RUNBOOK.md`](ACCEPTANCE_RUNBOOK.md) | Procedure for fresh-agent acceptance execution. |
-| [`FRAPPE_INTEGRATION_RUNBOOK.md`](FRAPPE_INTEGRATION_RUNBOOK.md) | Procedure for real-Frappe integration execution. |
-| [`EXPORT_CHECKLIST.md`](EXPORT_CHECKLIST.md) | Packaging/export checklist. |
+| [`FRAPPE_INTEGRATION_RUNBOOK.md`](FRAPPE_INTEGRATION_RUNBOOK.md) | Current local real-Bench regression invocation; the executable script owns the app/site matrix. |
+| [`EXPORT_CHECKLIST.md`](EXPORT_CHECKLIST.md) | Current post-bootstrap export/handoff checklist. |
 
 ## Experimental and research material
 
@@ -56,19 +56,19 @@ Primitive labels may be useful semantic vocabulary without implying that this re
 
 ## Historical evidence and preserved context
 
-These files are intentionally retained because they explain how the current rules were learned. Treat dated “next step,” “required run,” or architecture language inside them as historical unless reconciled by a current document above.
+These files are intentionally retained because they explain how the current rules were learned. Their own headers should identify them as historical/fixture material where they could otherwise be mistaken for current status.
 
 | Document | Status |
 | --- | --- |
 | [`FRESH_AGENT_PROOF.md`](FRESH_AGENT_PROOF.md) | Historical iteration log; current outcome is summarized at its top and in the proof ledger. |
-| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Superseded bootstrap proof plan; rewritten to point to the remaining current proof question. |
-| [`ACCEPTANCE_REHEARSAL_RESULT.md`](ACCEPTANCE_REHEARSAL_RESULT.md) | Historical rehearsal evidence. |
-| [`FRAPPE_CI_PROOF.md`](FRAPPE_CI_PROOF.md) | Historical proof record. |
+| [`ACCEPTANCE_RUNBOOK.md`](ACCEPTANCE_RUNBOOK.md) | Historical runbook for the original `beta_reference` bootstrap acceptance fixture. |
+| [`ACCEPTANCE_TEST.md`](ACCEPTANCE_TEST.md) | Historical acceptance fixture/specification; its forced internal-provider choices are not the current general sourcing policy. |
+| [`ACCEPTANCE_REHEARSAL_RESULT.md`](ACCEPTANCE_REHEARSAL_RESULT.md) | Historical rehearsal evidence, reconciled with the later completed proofs. |
+| [`FRAPPE_CI_PROOF.md`](FRAPPE_CI_PROOF.md) | Baseline historical proof narrative; the successful run remains evidence for its recorded revision. |
 | [`REFERENCE_IMPLEMENTATION.md`](REFERENCE_IMPLEMENTATION.md) | Early reference/proof fixture, not a product roadmap. |
-| [`SESSION_CONTEXT_2026-09-06.md`](SESSION_CONTEXT_2026-09-06.md) | Dated session handoff/history. |
-| [`WORKING_CONTEXT.md`](WORKING_CONTEXT.md) | Accumulated implementation context; useful history, not the current global navigation authority. |
-| [`SOURCE_MATERIALS.md`](SOURCE_MATERIALS.md) | Preserved source/provenance notes. |
-| [`ACCEPTANCE_TEST.md`](ACCEPTANCE_TEST.md) | Acceptance fixture/specification from the bootstrap proof lineage. |
+| [`SESSION_CONTEXT_2026-09-06.md`](SESSION_CONTEXT_2026-09-06.md) | Historical dated architecture checkpoint. |
+| [`WORKING_CONTEXT.md`](WORKING_CONTEXT.md) | Historical accumulated implementation context; current sourcing/architecture documents override its early capability-first workflow. |
+| [`SOURCE_MATERIALS.md`](SOURCE_MATERIALS.md) | Preserved source/provenance notes with an explicit authority boundary. |
 
 ## Machine-readable authorities
 

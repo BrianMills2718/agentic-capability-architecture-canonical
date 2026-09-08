@@ -1,20 +1,22 @@
 # Automated Frappe Lifecycle Proof
 
+> **Status: baseline proof record.** The original real-Frappe lifecycle gate has passed; GitHub Actions run `34001408766` completed the baseline proof with 6 tests OK. Current proof status is indexed in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md), and the recorded environment/result is summarized in [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md).
+
 ## Purpose
 
-The remaining framework-level proof is automated in:
+The repository contains a Frappe integration workflow at:
 
 ```text
 .github/workflows/frappe-integration.yml
 ```
 
-It creates a real Frappe **version-15** Bench with MariaDB and Redis, creates a
-fresh site, installs the reference apps, and runs the `acme_rules` integration
-tests against a real `Appointment` document lifecycle.
+The original baseline form created a real Frappe **version-15** Bench with MariaDB and Redis, created a fresh site, installed the reference apps, and ran the `acme_rules` integration tests against a real `Appointment` document lifecycle.
 
-## What the workflow proves
+The repository's regression surface has since expanded beyond that original three-app/single-site proof. Use [`FRAPPE_INTEGRATION_RUNBOOK.md`](FRAPPE_INTEGRATION_RUNBOOK.md) and `tools/run_frappe_reference_tests.sh` for the current local multi-site regression contract rather than inferring it from this historical proof narrative.
 
-The integration suite verifies that:
+## What the baseline workflow proved
+
+The integration suite verified that:
 
 - the `Appointment.validate` lifecycle invokes the ACME `doc_events` hook;
 - `ALLOW` permits validation without adding an approval requirement;
@@ -24,10 +26,9 @@ The integration suite verifies that:
 - approval fields persist through a real `insert()`;
 - `BLOCK` prevents the Appointment from being inserted.
 
-## CI environment
+## Baseline CI environment
 
-The workflow intentionally follows the same basic setup pattern used by current
-Frappe application CI:
+The successful proof used:
 
 - Ubuntu GitHub Actions runner;
 - Frappe `version-15`;
@@ -39,28 +40,20 @@ Frappe application CI:
 - a fresh test site;
 - `allow_tests` enabled before `bench run-tests`.
 
-The capability apps do not currently require frontend assets, so the workflow
-skips asset building and focuses on the server/document lifecycle.
+The capability apps did not require frontend assets for this proof, so the workflow skipped asset building and focused on the server/document lifecycle.
 
-## Run it on GitHub
+## Current interpretation
 
-Put the capability base in a GitHub repository and enable Actions. The workflow
-runs automatically when relevant capability/reference files change and can also
-be started manually with **Actions → Frappe integration → Run workflow**.
+A green baseline lifecycle proof closes the claim that the reference hook/persistence path worked in a real Frappe environment at the recorded revision. It does not prove that every later project or every future revision is green.
 
-A green `appointment-lifecycle` job closes the real-Frappe integration gate in
-`DEFINITION_OF_DONE.md`.
+When current Frappe-facing code changes, run the applicable current regression suite and record new evidence rather than treating the historical run ID as evergreen certification.
 
-## Local equivalent
+## Local regression entry point
 
-If you already have a Frappe Bench, the same test suite can be run from the
-Bench root:
+The current repository script is:
 
-```bash
-CAPABILITY_BASE=/absolute/path/to/composable_capability_base \
-SITE=test.localhost \
-bash "$CAPABILITY_BASE/tools/run_frappe_reference_tests.sh"
+```text
+tools/run_frappe_reference_tests.sh
 ```
 
-The local runner and CI runner intentionally converge on the same script so the
-proof does not depend on two separate installation procedures.
+It defines the authoritative current app/site regression matrix for local Bench execution. See [`FRAPPE_INTEGRATION_RUNBOOK.md`](FRAPPE_INTEGRATION_RUNBOOK.md) for invocation and scope.
