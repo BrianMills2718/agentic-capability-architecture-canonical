@@ -1,157 +1,171 @@
 # Agentic Capability Architecture
 
-A working architecture for **composable software functionality that compounds across projects**. It gives coding agents a machine-readable capability ecosystem: discoverable behaviors, typed public interfaces, explicit composition, project-local residuals, and evidence that feeds back into what later agents can reuse.
+A working architecture for **composable software functionality that compounds across projects**. It gives coding agents a machine-readable capability system: semantic capability identities, verified executable exports, typed public boundaries, explicit composition, project-local residuals, and evidence that can improve what later agents know how to reuse.
 
-The core idea is not merely “reuse existing software.” It is to make reusable functionality **legible and composable to agents**, then make every real project strengthen that capability system for the next one.
+The main idea is **not** “use off-the-shelf software when possible.” That is only a sourcing rule. The architectural thesis is to make useful functionality **legible, bindable, composable, and cumulative for agents** so that a later project can increasingly be expressed as composition plus only the genuinely novel residual.
 
-> **Try the working system:** [`QUICKSTART.md`](QUICKSTART.md) generates an isolated engagement from a real task, gives the worker a capability snapshot, requires a capability/composition plan before coding, and validates the result.
+> **If you are a teammate:** read [`TEAM_GUIDE.md`](TEAM_GUIDE.md) first. It explains why this matters to your coding agent, what is and is not novel, what is actually verified, and what remains a hypothesis.
+>
+> **Try the working system:** [`QUICKSTART.md`](QUICKSTART.md) generates an isolated engagement from a real task, gives the worker a capability snapshot, requires a capability/composition plan before coding, and validates the workflow.
 
-## What the architecture makes possible
+## The value proposition
+
+Most coding-agent workflows start each project from requirements plus whatever context happens to be in that repository. The agent rediscovers familiar behavior, rewrites interfaces, and leaves much of what it learned trapped in the project.
+
+This repository tests a different model:
 
 ```text
 required behavior
     ↓
-capability identities + machine-readable metadata
+semantic capability identity
     ↓
-typed public interfaces
+verified executable / typed public boundary
     ↓
-discover / select / compose capabilities
+select + reject + compose
     ↓
-implement only genuine project-local residuals
+project-local residual behavior
     ↓
-validate in real use
+real tests / runtime evidence
     ↓
-record composition, compatibility, success, rejection, and failure evidence
+compatibility + rejection + composition knowledge
     ↓
-promote or strengthen reusable capability knowledge
-    ↓
-the next project starts from a stronger composable capability ecosystem
+stronger capability system for the next project
 ```
 
-That flywheel is the differentiated architectural thesis. The system is designed so that a later project can increasingly be expressed as **composition plus a small residual**, rather than as a fresh application implementation.
+The goal is **not maximum reuse**. It is **correct composition**: reuse what truly fits, compose multiple capabilities when they jointly satisfy the requirement, keep consequential domain semantics local, and leave evidence that makes the next agent's decision better.
+
+## Why point a coding agent at this repository?
+
+The useful thing here is not simply a shared code library. An agent gets an explicit decision surface for answering:
+
+1. What reusable behavior exists?
+2. Which behavior has a verified executable interface?
+3. Which candidates fit this requirement, and which should be rejected?
+4. Which capabilities should be composed together?
+5. What must remain project-local because it carries real domain meaning?
+6. What evidence from this project should improve future composition decisions?
+
+For paid/client work, `tools/engagement.py` turns those questions into a pre-code `CAPABILITY_PLAN.yml` and a closeout/evidence loop rather than leaving them as informal advice.
+
+## What may be novel here — and what is not
+
+The ingredients are not individually novel. Reusing libraries, typed APIs, service catalogs, package ecosystems, CI, build-vs-buy decisions, and preferring mature software over reinvention are established software practices.
+
+The differentiated hypothesis is the **integrated agent-facing loop**:
+
+- provider-independent semantic capability identities;
+- machine-readable capability knowledge with explicit executable exports;
+- typed boundaries that agents can bind and compose;
+- a required pre-code plan that separates selected capabilities, rejected candidates, compositions, and local gaps;
+- project-local behavior treated as a valid architectural outcome rather than failed abstraction;
+- every project feeding success, failure, compatibility, and rejected-fit evidence back into the capability system;
+- evidence-backed promotion rather than assuming generic-looking code is reusable;
+- success measured by later projects becoming increasingly **composition-dominated**, not by the size of an internal library.
+
+We do **not** claim this is historically unique or a world-first architecture without a dedicated landscape review. The potentially novel contribution is the combination, the agent operating contract, and the attempt to make the capability/evidence flywheel measurable and falsifiable.
+
+## Machine-readable truth hierarchy
+
+Agents should not treat every label in the repository as equally strong evidence.
+
+1. **`semantic_exports` / `capability_catalog.py`** — verified executable action boundary. This is the strongest current callable claim.
+2. **`public_interfaces`** — declared public boundary; inspect source/tests for semantics not covered by an export.
+3. **`provides` and capability metadata** — capability scope/discovery information. A `provides` label is **not by itself a guarantee that a callable action exists**.
+4. **evidence/maturity fields** — useful only to the extent they are current and backed by real use/test evidence.
+5. **prose and historical proof material** — context, never stronger than current code/machine truth.
+
+If code and metadata disagree, surface the disagreement as a defect. Do not silently infer a capability that the executable boundary does not support.
+
+### Semantic action lookup
+
+The current audited semantic action catalog is derived from capability manifests and exact public interfaces:
+
+```bash
+python tools/capability_catalog.py list --json
+python tools/capability_catalog.py describe state.transition.plan --json
+python tools/capability_catalog.py check
+```
+
+The audited exports currently include `approval.resolve`, `state.transition.plan`, and `notification.email.send`. Broader capability scope may exist in manifests, but agents should not treat it as an executable action until it has an honest bound export/interface.
 
 ## What exists today
 
-- a capability registry and manifest-derived semantic action catalog;
-- typed public capability boundaries tied to real implementations;
+- a capability registry and capability manifests;
+- a manifest-derived semantic action catalog with audited public implementation boundaries;
 - reusable capability implementations and multiple proof applications;
-- explicit project composition through capability manifests/plans;
-- a paid-engagement generator that gives contractors/agents a portable hashed capability snapshot;
-- mandatory `CAPABILITY_PLAN.yml` selection, rejection, interface, composition, and local-gap recording before implementation;
-- validation that rejects unknown capabilities/interfaces, uncovered requirements, invalid compositions, and snapshot tampering;
-- evidence, provenance, compatibility, rejection, maturity, and promotion machinery;
-- tests and protected CI covering the repository contracts and proofs.
+- explicit capability composition plus project-local extension boundaries;
+- a paid-engagement generator that creates a portable worker capability snapshot;
+- `CAPABILITY_PLAN.yml` for pre-code selection, rejection, composition, interfaces, and local-gap reasoning;
+- validation for schema/requirement coverage, known internal exports/interfaces, and cooperative-workflow snapshot consistency;
+- evidence, provenance, compatibility, rejection, maturity, and promotion records;
+- tests and protected CI covering repository contracts and proof applications.
 
-Provider sourcing is a supporting policy, not the architecture itself. Capabilities may come from internal code, platform-native behavior, external software/services, or standards. What matters architecturally is that the behavior can be represented honestly, bound through a usable interface, composed with other capabilities, validated, and learned from.
+The engagement workflow is currently a **planning and evidence discipline for a cooperative worker**, not an adversarial sandbox or automatic IP-redaction system. The shipped checksum/self-check detects ordinary changes relative to the shipped snapshot, but because the worker receives the hash file and validator it is not a tamper-proof trust boundary. Evidence sanitization also still requires human review. See [`docs/ENGAGEMENT_OPERATING_SYSTEM.md`](docs/ENGAGEMENT_OPERATING_SYSTEM.md).
 
-## Why this matters
+## The cumulative/composable flywheel
 
-Most coding-agent workflows still treat each new project as a mostly fresh synthesis problem. This architecture is testing a different model: **software delivery as cumulative composition**.
-
-If it works, the important trend is not simply “more reuse.” It is that the percentage of a new project describable as validated capability composition rises over time, while bespoke residual implementation shrinks toward genuinely novel domain behavior.
-
-
-
-Most coding-agent workflows repeatedly regenerate applications from requirements. This repository tests a different model: a **cumulative, composable capability ecosystem** in which software development should compound. A later project should increasingly reuse proven capabilities, interfaces, compatibility knowledge, and compositions instead of re-solving the same problems.
-
-Ecosystem growth is not just more internal code. It can also mean better evidence for platform-native features, external OSS/SaaS, standards, rejected fits, compatibility constraints, or proof that a behavior should remain project-local. **Off-the-shelf wins ties.**
-
-## What is not proven yet
-
-This is a working technical system and research architecture, not proof of a universal composition language or a commercially compounding services business. The commercial hypothesis is being tested separately through paid engagements and comparable-cohort economics.
-
-## For deeper technical context
-
-The sections below preserve the architecture, authority, proof, and lineage detail used by maintainers and agents. Repository-local documentation is indexed in [`docs/README.md`](docs/README.md). For cross-repository context, use the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md) and [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
-
-## Local role
-
-This is the **sole active capability-architecture lineage**. It owns capability/provider metadata, honest reusable public implementation boundaries, conservative capability resolution, reuse/maturity evidence, and the local proof fixtures used to test those ideas.
-
-Its core architectural purpose is **cumulative**: each project should consume the best capability knowledge already available and leave the ecosystem better for the next project through stronger evidence, clearer compatibility/provenance, better rejected-fit knowledge, or genuinely reusable capability when promotion is justified.
-
-It does **not** own upstream application meaning, a second semantic IR, a universal workflow engine, a scheduler, authorization platform, notification platform, package registry, observability system, or a general replacement for capabilities already available in mature software.
-
-The durable goal is to help a coding agent answer:
-
-1. What behavior is actually required?
-2. What suitable implementation already exists—native platform, ecosystem package, external OSS/SaaS, standard protocol, or internal capability?
-3. Why does a candidate fit or fail?
-4. What honest typed interface should be consumed?
-5. What consequential behavior must remain project-local?
-6. What evidence should be recorded so the next agent makes a better decision?
-
-## Cumulative ecosystem model
-
-Each project is both a **consumer and a contributor**. It should start by discovering and reusing the best existing implementation, implement only the genuine residual gap, then leave behind evidence and reusable knowledge that improve future decisions.
+Each project is both a **consumer and a contributor**. A project consumes existing capability knowledge, composes what fits, implements only its residual local behavior, then contributes evidence back.
 
 ```text
 requirement
     ↓
-source/select existing capability
+represent relevant capabilities honestly
     ↓
-configure / compose
+bind verified interfaces
     ↓
-implement only the residual local gap
+compose selected capabilities
+    ↓
+implement residual local semantics
     ↓
 validate in real use
     ↓
-record evidence + provenance + compatibility + rejected fits
+record success + failure + rejection + compatibility evidence
     ↓
-promote reusable behavior when repeated use justifies it
+promote or strengthen reusable capability knowledge when justified
     ↓
-stronger capability ecosystem for the next project
+next project starts from a stronger composable capability ecosystem
 ```
 
-Ecosystem growth therefore means more than a larger internal codebase. It includes better knowledge of native/platform features, external OSS/SaaS, standards, internal capabilities, honest interfaces, compatibility constraints, failures, and successful compositions. Sometimes the best cumulative contribution is evidence that an existing external capability should be reused—or that a behavior should remain project-local.
-
-### Paid/client engagements
-
-For contractor or client work, use `python tools/engagement.py new ...` to create an isolated engagement workspace. The contractor consumes a read-only capability snapshot, records a capability/composition plan before coding, keeps client work product local, and produces only sanitized generalized evidence for human review. See [`docs/ENGAGEMENT_OPERATING_SYSTEM.md`](docs/ENGAGEMENT_OPERATING_SYSTEM.md).
+That is the **cumulative, composable capability ecosystem** this repository is testing.
 
 ## Supporting sourcing policy
 
-**Off-the-shelf wins ties.** Reuse does not mean “prefer our code.” Before creating shared implementation, investigate native runtime features, installed ecosystem options, mature external implementations, existing standards/protocols, and only then the internal capability base. Implement the residual local gap when none of those honestly satisfies the requirement.
+**Off-the-shelf wins ties.** Provider sourcing matters, but it is not the main invention. A capability may be implemented by native platform behavior, an installed package, external OSS/SaaS, a standard, or internal code. The architecture cares that the behavior is represented honestly, exposed through a usable boundary, composable with other behavior, and backed by evidence.
 
-The repository's strongest strategic direction is therefore a **capability intelligence and evidence layer**, not a growing private reimplementation of common application infrastructure.
+Before creating shared implementation, investigate native/runtime features, installed ecosystem options, mature external implementations, existing standards/protocols, and internal capabilities. Implement a local gap when none of those honestly satisfies the requirement.
 
-The primitive vocabulary and composition models under `architecture/primitive_model/` remain experimental. A primitive name may be useful as semantic vocabulary without implying that this repository should own a runtime implementation for that operation.
+## What is not proven yet
 
-## Local technical authority
+This is a working technical system and research architecture, not proof that the capability flywheel pays for its overhead.
 
-Use [`docs/README.md`](docs/README.md) for the repository-local documentation map and authority order.
+The central experiment still needs to show that, on comparable tasks and fresh sessions, an agent with the accumulated capability system materially outperforms a control agent with only a good planning contract. Relevant measures include task success, first-pass tests, turns/tokens/time, human intervention, bespoke code, duplicated implementation, rework, and composition accuracy.
 
-Key machine-readable/current sources include:
+The commercial hypothesis is also unproven: there is not yet a comparable 5–10 paid-engagement cohort showing that composition increases while marginal delivery effort and cost fall.
 
-- `capabilities/*/capability.yml` — capability-local metadata and evidence;
-- `capability_registry.yml` — synchronized capability index;
-- `python tools/capability_catalog.py list --json` — manifest-derived semantic action catalog;
-- `schemas/` — machine-readable contracts;
-- `AGENTS.md` — coding-agent operating rules;
-- `docs/ARCHITECTURE_CHARTER.md` — current local architecture charter;
-- `docs/PROOF_LEDGER_EXTENDED.md` — current proof-status index.
+## For deeper technical context
 
-Do not copy capability maturity/status tables into prose merely for convenience. Read machine-readable state directly. If manifests and registry disagree, that is a synchronization defect to fix rather than something this README should mask.
+Repository-local documentation is indexed in [`docs/README.md`](docs/README.md). The current charter is [`docs/ARCHITECTURE_CHARTER.md`](docs/ARCHITECTURE_CHARTER.md), the one-diagram view is [`docs/ARCHITECTURE_ONE_DIAGRAM.md`](docs/ARCHITECTURE_ONE_DIAGRAM.md), and current proof status is indexed in [`docs/PROOF_LEDGER_EXTENDED.md`](docs/PROOF_LEDGER_EXTENDED.md).
 
-### Semantic action lookup
+For cross-repository context, use the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md) and [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
 
-The current catalog is derived directly from capability manifests; there is no hand-maintained publication registry. The first audited exports are `approval.resolve`, `state.transition.plan`, and `notification.email.send`, each pointing directly at an existing public function. Lookup is exact and conservative.
+## Local role and boundaries
 
-```bash
-python tools/capability_catalog.py list --json
-python tools/capability_catalog.py describe approval.resolve --json
+This is the **sole active capability-architecture lineage**. It owns capability/provider metadata, honest reusable public implementation boundaries, conservative capability resolution, reuse/maturity evidence, engagement planning contracts, and the local proof fixtures used to test those ideas.
+
+It does **not** own upstream application meaning, a universal workflow engine, a scheduler, authorization platform, notification platform, package registry, observability system, or a universal primitive runtime. The primitive vocabulary/composition work under `architecture/primitive_model/` remains experimental.
+
+Shared capabilities must not absorb consequential client/project semantics merely to increase reuse. The intended mature project shape is:
+
+```text
+known capability composition
+        +
+small genuinely novel project-local residual
 ```
-
-An action ID is a provider-independent behavior name, not a claim that the behavior is a universal primitive. Do not add a wrapper when the existing public interface already matches the declared meaning.
-
-## Lineage
-
-The sibling capability-architecture repositories are historical/evidence lineages rather than competing active architectures. The wider authority matrix and current dispositions are maintained in the [current ontology/semantic cluster architecture](https://github.com/BrianMills2718/vision/blob/main/wiki/synthesis/ontology-semantic-cluster-current-architecture-2026-09-07.md).
 
 ## Proof applications
 
-Client Intake + Booking, Internal Procurement, IT Access Control, Facility Maintenance, Service Desk, Shared Resource Reservation, and the acceptance sandboxes are primarily **architecture proof fixtures**. They demonstrate reuse pressure, local semantics, compatibility, portability, and agent behavior. Where Frappe/ERPNext or another mature product already supplies the business capability, these fixtures are not a mandate to build a competing product.
+Client Intake + Booking, Internal Procurement, IT Access Control, Facility Maintenance, Service Desk, Shared Resource Reservation, and the acceptance sandboxes are primarily **architecture proof fixtures**. They demonstrate reuse pressure, local semantics, compatibility, portability, and agent behavior. They are not a mandate to rebuild mature business platforms.
 
 ## Status
 
-This remains experimental architecture research. The validated claims are bounded implementation/proof claims, not proof of a universal primitive language or universal application-composition runtime. Current completed and pending proof claims are indexed in [`docs/PROOF_LEDGER_EXTENDED.md`](docs/PROOF_LEDGER_EXTENDED.md).
+This remains experimental architecture research with real working code and bounded proof results. The validated claims are implementation/proof claims, not proof of a universal composition language, a universal application runtime, or commercial compounding. Current completed and pending proof claims are indexed in [`docs/PROOF_LEDGER_EXTENDED.md`](docs/PROOF_LEDGER_EXTENDED.md).
