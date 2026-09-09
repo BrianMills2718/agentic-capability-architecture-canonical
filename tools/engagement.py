@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Create, validate, and close isolated paid/client engagement workspaces.
+"""Create, validate, and close paid/client engagement workspaces.
 
 The canonical repository supplies reusable background capability knowledge. Client
-work product stays in the engagement workspace. Closeout emits only a sanitized,
-human-reviewable evidence proposal; it never promotes capability code automatically.
+work product stays in the engagement workspace. The tooling enforces planning/schema
+conformance for a cooperative worker and emits proposal-only generalized evidence for
+human review; it is not an adversarial sandbox or automatic redaction system.
 """
 from __future__ import annotations
 
@@ -114,6 +115,12 @@ def hash_snapshot(snapshot: Path) -> None:
 
 
 def verify_snapshot(snapshot: Path) -> list[str]:
+    """Check workspace files against the checksum shipped in that same workspace.
+
+    This detects ordinary changes in the cooperative workflow; it is not an
+    independent/adversarial attestation because the worker receives SHA256SUMS too.
+    """
+
     sums = snapshot / "SHA256SUMS"
     if not sums.exists():
         return ["snapshot/SHA256SUMS is missing"]
@@ -163,6 +170,9 @@ def create_snapshot(workspace: Path, capability_names: list[str], baseline: str)
 
         source_entry["path"] = f"metadata/{name}"
         source_entry["metadata_path"] = f"metadata/{name}"
+        # Put the strongest agent-facing boundaries directly in the portable registry.
+        source_entry["semantic_exports"] = copy.deepcopy(metadata.get("semantic_exports") or [])
+        source_entry["public_interfaces"] = copy.deepcopy(metadata.get("public_interfaces") or [])
         runtime = runtime_source(name, source_entry, metadata)
         if runtime:
             vendor_name = runtime.name
@@ -180,10 +190,13 @@ def create_snapshot(workspace: Path, capability_names: list[str], baseline: str)
 
     write_yaml(snapshot / "capability_registry.yml", portable_registry)
     (snapshot / "README.md").write_text(
-        "# Read-only capability snapshot\n\n"
+        "# Capability snapshot\n\n"
         f"Generated from canonical commit `{baseline}`. Treat `metadata/`, `vendor/`, and "
-        "`capability_registry.yml` as read-only background capability material. Client work "
-        "belongs outside this directory. `SHA256SUMS` is checked during engagement validation.\n",
+        "`capability_registry.yml` as read-only background capability material during the "
+        "cooperative engagement workflow. `semantic_exports` are the strongest callable "
+        "claims; `provides` may describe broader capability scope. Client work belongs "
+        "outside this directory. `SHA256SUMS` checks consistency with the checksum shipped "
+        "in this workspace; it is not an independent signature.\n",
         encoding="utf-8",
     )
     hash_snapshot(snapshot)
@@ -193,18 +206,20 @@ def agent_rules() -> str:
     return """# Engagement Agent Rules
 
 1. Read `ENGAGEMENT.yml`, `TASK.md`, and `snapshot/capability_registry.yml` before implementation.
-2. Treat `snapshot/` as read-only background capability material. Do not modify or copy client-specific behavior into it.
+2. Treat `snapshot/` as read-only background capability material during this engagement.
 3. Before writing implementation code, complete `CAPABILITY_PLAN.yml` and set `status: ready`.
-4. Source before building: platform/native, ecosystem, mature OSS/SaaS, standards, internal capabilities, then residual local gap.
-5. Record material rejected candidates. Internal reuse is not automatically preferable to a better existing option.
-6. Compose through declared public interfaces when multiple capabilities jointly satisfy a requirement. Do not reimplement shared behavior locally.
-7. Keep consequential client/domain semantics in the engagement implementation. Do not invent a generic framework, registry, workflow engine, or universal abstraction for one job.
-8. Client work product, client source, secrets, and confidential material must stay in this engagement workspace and must never be proposed for canonical ingestion.
-9. Before closeout, complete `EVIDENCE_PROPOSAL.yml` with generalized learnings only. Set both sanitization flags to `false` only after removing client-confidential information and client-owned code.
-10. Complete `METRICS.yml` after delivery so reuse/composition economics can be measured. Business metrics remain engagement-local.
-11. Obey `ENGAGEMENT.yml` `research.external_allowed`; when it is false, do not use external research beyond the supplied workspace.
-12. Run `python control/engagement.py validate . --require-ready` before declaring the capability plan complete.
-13. A human reviewer decides whether any generalized evidence or reusable capability is promoted into the canonical ecosystem.
+4. Treat `semantic_exports` as verified executable action claims. A broad `provides` label is discovery/scope metadata, not proof that a callable action exists.
+5. For internal reuse, name the exact verified semantic action and/or declared public interface you will consume.
+6. Decide composition before code: selected capabilities, rejected candidates, multi-capability compositions, and genuinely local residual behavior.
+7. Do not maximize reuse for its own sake. A local gap is correct when available capabilities do not honestly fit.
+8. Source missing behavior from platform/native, ecosystem, mature OSS/SaaS, standards, internal capabilities, then residual local implementation.
+9. Keep consequential client/domain semantics in the engagement implementation. Do not invent a generic framework, registry, workflow engine, or universal abstraction for one job.
+10. Client work product, client source, secrets, and confidential material must stay in this engagement workspace and must never be proposed for canonical ingestion.
+11. Complete `EVIDENCE_PROPOSAL.yml` with generalized learnings only. The sanitization flags are a human-reviewed declaration, not automatic redaction.
+12. Complete `METRICS.yml` after delivery so reuse/composition economics can be measured. Business metrics remain engagement-local.
+13. Obey `ENGAGEMENT.yml` `research.external_allowed`; when false, do not use external research beyond the supplied workspace.
+14. Run `python control/engagement.py validate . --require-ready` before declaring the capability plan complete. This is a cooperative planning/schema check, not an adversarial security boundary.
+15. A human reviewer decides whether generalized evidence or reusable capability is promoted into the canonical ecosystem.
 """
 
 
@@ -249,7 +264,7 @@ def command_new(args: argparse.Namespace) -> None:
             }
         ],
         "deliverables": ["working implementation", "tests or executable validation", "handoff notes"],
-        "constraints": ["Do not modify the read-only capability snapshot."],
+        "constraints": ["Treat the capability snapshot as read-only during the engagement."],
         "research": {"external_allowed": bool(args.external_research)},
         "capability_snapshot": {
             "baseline_commit": baseline,
@@ -388,18 +403,42 @@ def validate_workspace(workspace: Path, require_ready: bool = False) -> list[str
         if candidate not in internal:
             errors.append(f"CAPABILITY_PLAN.yml:selected: internal capability {candidate!r} is not in the snapshot")
             continue
-        entry = internal[candidate]
-        provided = set(entry.get("provides", []))
-        for action in item.get("semantic_actions", []):
-            if action not in provided:
-                errors.append(f"CAPABILITY_PLAN.yml:selected: {candidate!r} does not provide {action!r}")
+
         metadata_path = workspace / "snapshot" / "metadata" / candidate / "capability.yml"
         metadata = load_yaml(metadata_path) if metadata_path.exists() else {}
         declared_interfaces = set(metadata.get("public_interfaces", []))
-        if declared_interfaces:
-            for interface in item.get("interfaces", []):
-                if interface not in declared_interfaces:
-                    errors.append(f"CAPABILITY_PLAN.yml:selected: {candidate!r} does not declare interface {interface!r}")
+        export_map = {
+            str(export.get("action_id")): str(export.get("public_interface"))
+            for export in metadata.get("semantic_exports", []) or []
+            if isinstance(export, dict) and export.get("action_id") and export.get("public_interface")
+        }
+        requested_actions = [str(action) for action in item.get("semantic_actions", [])]
+        requested_interfaces = {str(interface) for interface in item.get("interfaces", [])}
+
+        if not requested_actions and not requested_interfaces:
+            errors.append(
+                f"CAPABILITY_PLAN.yml:selected: internal capability {candidate!r} must name at least one "
+                "verified semantic action or declared public interface"
+            )
+
+        for action in requested_actions:
+            if action not in export_map:
+                errors.append(
+                    f"CAPABILITY_PLAN.yml:selected: {candidate!r} action {action!r} is not a verified semantic export"
+                )
+                continue
+            bound_interface = export_map[action]
+            if bound_interface not in requested_interfaces:
+                errors.append(
+                    f"CAPABILITY_PLAN.yml:selected: {candidate!r} action {action!r} must include its "
+                    f"bound public interface {bound_interface!r}"
+                )
+
+        for interface in requested_interfaces:
+            if interface not in declared_interfaces:
+                errors.append(
+                    f"CAPABILITY_PLAN.yml:selected: {candidate!r} does not declare interface {interface!r}"
+                )
 
     for item in plan["composition"]:
         missing = set(item["components"]) - selected_names
@@ -425,7 +464,7 @@ def command_validate(args: argparse.Namespace) -> None:
     errors = validate_workspace(workspace, require_ready=args.require_ready)
     if errors:
         raise SystemExit("Engagement validation failed:\n- " + "\n- ".join(errors))
-    print("OK: engagement contracts, snapshot integrity, and capability plan are valid")
+    print("OK: engagement contracts, snapshot checksum consistency, and capability plan are valid")
 
 
 def metric(value: Any) -> str:
@@ -446,7 +485,7 @@ def command_close(args: argparse.Namespace) -> None:
     sanitization = evidence["sanitization"]
     if sanitization["contains_client_confidential"] or sanitization["contains_client_owned_code"]:
         raise SystemExit(
-            "Engagement closeout blocked: sanitize EVIDENCE_PROPOSAL.yml and explicitly set both client-content flags to false"
+            "Engagement closeout blocked: review/sanitize EVIDENCE_PROPOSAL.yml and explicitly set both client-content flags to false"
         )
 
     portable_selected = [
@@ -472,7 +511,7 @@ def command_close(args: argparse.Namespace) -> None:
         "keep_local": evidence["keep_local"],
         "review": {
             "status": "pending_human_review",
-            "rule": "Do not ingest client-owned code or confidential information; promote reusable behavior only after evidence review.",
+            "rule": "Free-text evidence requires human review. Do not ingest client-owned code or confidential information; promote reusable behavior only after evidence review.",
         },
     }
     write_yaml(workspace / "CANONICAL_EVIDENCE_PROPOSAL.yml", canonical)
@@ -505,7 +544,7 @@ Outcome: **{evidence['outcome']}**
 - Local lines changed: {metric(metrics['local_lines_changed'])}
 - Candidate capabilities proposed: {len(evidence['candidate_capabilities'])}
 
-`CANONICAL_EVIDENCE_PROPOSAL.yml` is sanitized proposal-only input for a human reviewer. It contains no business metrics or client task text by design.
+`CANONICAL_EVIDENCE_PROPOSAL.yml` is proposal-only input for a human reviewer. It contains no business metrics or client task text by construction, but its copied free-text evidence still requires human sanitization review.
 """
     (workspace / "CLOSEOUT_SUMMARY.md").write_text(summary, encoding="utf-8")
     print(workspace / "CANONICAL_EVIDENCE_PROPOSAL.yml")
@@ -516,7 +555,7 @@ def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(description=__doc__)
     sub = result.add_subparsers(dest="command", required=True)
 
-    new = sub.add_parser("new", help="Create an isolated contractor/client engagement workspace")
+    new = sub.add_parser("new", help="Create a contractor/client engagement workspace")
     new.add_argument("engagement_id")
     new.add_argument("--task", required=True, help="Markdown task file")
     new.add_argument("--output", help="Output directory; defaults to workspaces/<engagement_id>")
@@ -526,12 +565,12 @@ def parser() -> argparse.ArgumentParser:
     new.add_argument("--acceptance-command", action="append", default=[], help="Command contractor/reviewer should run; repeatable")
     new.set_defaults(func=command_new)
 
-    validate = sub.add_parser("validate", help="Validate engagement contracts and snapshot integrity")
+    validate = sub.add_parser("validate", help="Validate engagement contracts and snapshot checksum consistency")
     validate.add_argument("workspace")
     validate.add_argument("--require-ready", action="store_true")
     validate.set_defaults(func=command_validate)
 
-    close = sub.add_parser("close", help="Create sanitized evidence proposal and local business closeout summary")
+    close = sub.add_parser("close", help="Create human-review evidence proposal and local business closeout summary")
     close.add_argument("workspace")
     close.set_defaults(func=command_close)
     return result
