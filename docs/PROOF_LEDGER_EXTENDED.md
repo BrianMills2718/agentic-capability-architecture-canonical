@@ -40,6 +40,14 @@ The strongest recurring evidence so far is:
 
 These project proofs are architecture evidence, not a reason to recreate mature business products that already exist in Frappe/ERPNext or other established systems.
 
+## Preliminary controlled market-derived experiment
+
+A 2026-09-08 controlled fresh-agent experiment used a behavior-only slice derived from a live public Upwork ATS project. Control and capability-snapshot treatments all passed the same hidden 11-test evaluator. Capability-aware runs were faster and produced materially less/shallower bespoke code, but consumed more input context.
+
+The first treatment also exposed a concrete capability-knowledge gap: a reusable pure availability implementation already existed, but Scheduling had no verified executable `availability.query` boundary, so the fresh agent correctly rejected it. After publishing that existing boundary without adding shared implementation, a new fresh agent selected and composed both `state.transition.plan` and `availability.query` on the unchanged task.
+
+This is `n=1` per arm and is **preliminary**, not proof of a general capability-layer advantage. See [`experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md`](experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md).
+
 ## Pending decisive proof
 
 The most important unresolved question is **not** whether a fresh agent can follow a task that names the expected capability choices. It is whether accumulated capability knowledge materially improves agent performance over a control.
