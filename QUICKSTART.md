@@ -72,10 +72,10 @@ python tools/engagement.py validate ../colleague_demo
 You should see:
 
 ```text
-OK: engagement contracts, snapshot integrity, and capability plan are valid
+OK: engagement contracts, snapshot checksum consistency, and capability plan are valid
 ```
 
-Here, “snapshot integrity” means consistency with the checksum file shipped in the same workspace under the expected cooperative workflow. It is **not** a cryptographic/adversarial trust boundary because the worker receives the checksum and validator too.
+“Snapshot checksum consistency” means the snapshot still matches the checksum file shipped in the same workspace under the expected cooperative workflow. It is **not** an adversarial attestation boundary because the worker receives the checksum and validator too.
 
 ## 3. Open the generated workspace
 
@@ -96,7 +96,7 @@ snapshot/metadata/...
 snapshot/vendor/...
 ```
 
-The worker receives a portable snapshot of capability metadata and runtime source instead of being told to start from a blank repository.
+The worker receives a portable snapshot of capability metadata and runtime source instead of being told to start from a blank repository. The portable registry also copies each capability's `semantic_exports` and `public_interfaces` so the agent can see the strongest executable boundaries without inferring them from broad scope labels.
 
 `CAPABILITY_PLAN.yml` starts in `draft` state. Before implementation, the worker should record:
 
