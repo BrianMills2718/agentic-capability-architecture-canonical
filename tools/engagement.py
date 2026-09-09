@@ -196,7 +196,11 @@ def create_snapshot(workspace: Path, capability_names: list[str], baseline: str)
         "cooperative engagement workflow. `semantic_exports` are the strongest callable "
         "claims; `provides` may describe broader capability scope. Client work belongs "
         "outside this directory. `SHA256SUMS` checks consistency with the checksum shipped "
-        "in this workspace; it is not an independent signature.\n",
+        "in this workspace; it is not an independent signature.\n\n"
+        "For vendored Python packages, preserve the manifest-declared public import name. "
+        "Add each package root under `vendor/` to `PYTHONPATH` (or install that vendored package "
+        "into an isolated environment) rather than importing through `snapshot.vendor...`, which "
+        "is a snapshot layout detail rather than a public capability interface.\n",
         encoding="utf-8",
     )
     hash_snapshot(snapshot)

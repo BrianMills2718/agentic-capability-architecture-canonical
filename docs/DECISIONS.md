@@ -97,3 +97,14 @@ Cross-repo semantic/interface policy is governed by the [Vision Semantic Boundar
 **Reason:** This preserves provider-independent semantic lookup without duplicating provider metadata or creating adapter code for architectural symmetry. Exact matching is sufficient until a real requirement demonstrates the need for graded matching or planning.
 
 **Consequence:** `tools/capability_catalog.py` is a derived view/check surface. A duplicate action ID, a non-public target, or an action not present in `provides` is a validation failure.
+
+
+## ADR-012 — Publish availability.query as the scheduling availability boundary
+
+**Status:** accepted
+
+**Decision:** Bind the existing `availability.query` capability identity to the pure-Python `na_scheduling.availability.is_available` public interface, with `TimeWindow` and `find_conflicts` declared as supporting public interfaces. Keep `appointment.create`, `appointment.cancel`, and `appointment.reschedule` as broader scope labels only until honest callable boundaries exist.
+
+**Why:** A fresh-agent experiment derived from a current public ATS/booking job independently required overlap prevention. The scheduling implementation already contained the reusable behavior, but the agent correctly rejected Scheduling because the manifest exposed no verified executable interface. This was a capability-knowledge defect, not an implementation gap. Publishing the existing stable boundary improves discoverability without adding shared code.
+
+**Constraint:** This does not promote Scheduling beyond `candidate`, does not make availability a universal primitive, and does not claim appointment lifecycle actions exist.

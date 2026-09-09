@@ -123,7 +123,7 @@ python tools/capability_catalog.py describe state.transition.plan --json
 python tools/capability_catalog.py check
 ```
 
-The audited exports currently include `approval.resolve`, `state.transition.plan`, and `notification.email.send`. Broader capability scope may exist in manifests, but agents should not treat it as an executable action until it has an honest bound export/interface.
+The audited exports currently include `approval.resolve`, `availability.query`, `state.transition.plan`, and `notification.email.send`. Broader capability scope may exist in manifests, but agents should not treat it as an executable action until it has an honest bound export/interface.
 
 ## What exists today
 

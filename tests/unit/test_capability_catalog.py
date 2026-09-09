@@ -5,11 +5,13 @@ import subprocess
 import sys
 
 import pytest
+import yaml
 from tools.capability_catalog import CatalogError, build_catalog, resolve_action
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
     "approval.resolve": ("approvals", "na_approvals.engine.resolve"),
+    "availability.query": ("scheduling", "na_scheduling.availability.is_available"),
     "notification.email.send": ("notifications", "na_notifications.email.send_email"),
     "state.transition.plan": ("core", "na_core.transitions.plan_transition"),
 }
@@ -35,10 +37,25 @@ def test_exact_resolution_returns_declared_public_interface():
 
 
 def test_exported_interfaces_are_real_callables():
-    for _, public_interface in EXPECTED.values():
-        module_name, attr_name = public_interface.rsplit(".", 1)
-        module = importlib.import_module(module_name)
-        assert callable(getattr(module, attr_name))
+    registry = yaml.safe_load((ROOT / "capability_registry.yml").read_text(encoding="utf-8"))
+    added = []
+    try:
+        for capability, _ in EXPECTED.values():
+            entry = registry["capabilities"][capability]
+            manifest = yaml.safe_load((ROOT / entry["path"] / "capability.yml").read_text(encoding="utf-8"))
+            runtime_path = manifest.get("runtime_path") or entry.get("runtime_path")
+            if runtime_path:
+                value = str(ROOT / runtime_path)
+                if value not in sys.path:
+                    sys.path.insert(0, value)
+                    added.append(value)
+        for _, public_interface in EXPECTED.values():
+            module_name, attr_name = public_interface.rsplit(".", 1)
+            module = importlib.import_module(module_name)
+            assert callable(getattr(module, attr_name))
+    finally:
+        for value in added:
+            sys.path.remove(value)
 
 
 def test_catalog_rejects_non_public_export(tmp_path):

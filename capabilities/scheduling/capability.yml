@@ -16,6 +16,15 @@ optional:
   - approvals
   - notifications
 
+public_interfaces:
+  - na_scheduling.availability.TimeWindow
+  - na_scheduling.availability.is_available
+  - na_scheduling.availability.find_conflicts
+
+semantic_exports:
+  - action_id: availability.query
+    public_interface: na_scheduling.availability.is_available
+
 configuration:
   default_duration_minutes:
     type: integer
