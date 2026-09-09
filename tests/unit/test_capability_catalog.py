@@ -10,6 +10,8 @@ from tools.capability_catalog import CatalogError, build_catalog, resolve_action
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
+    "approval.action.bind": ("approvals", "na_approvals.binding.bind_approval"),
+    "approval.action.verify": ("approvals", "na_approvals.binding.verify_approval"),
     "approval.resolve": ("approvals", "na_approvals.engine.resolve"),
     "availability.query": ("scheduling", "na_scheduling.availability.is_available"),
     "notification.email.send": ("notifications", "na_notifications.email.send_email"),

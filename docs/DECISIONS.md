@@ -122,3 +122,30 @@ Cross-repo semantic/interface policy is governed by the [Vision Semantic Boundar
 **Reason:** The order-approval experiment showed that a correctly selected and composed capability can still increase wall time and context cost for a small fixed rule set. Treating fit as sufficient would reward reuse count instead of lower marginal delivery effort and reliability.
 
 **Consequence:** A capability that fits but offers no concrete advantage over an equally reliable local implementation should be recorded as a rejected candidate and the behavior should remain local. This does not reduce capability value to source-line savings: reused verification, difficult invariants, material risk reduction, compatibility, and amortization across repeated actions are legitimate advantages.
+
+---
+
+## ADR-014 — Human approval binds to the exact executable action
+
+**Status:** accepted
+
+**Decision:** Represent human approval of a consequential action as a
+caller-persisted binding over the stable operation key, action, target, and
+complete canonical JSON payload. Verify that binding immediately before every
+initial or retried execution and fail closed if any bound field changed.
+
+**Rejected alternative:** Treat a workflow-level approved Boolean or approver
+name as authority for whatever recommendation or payload happens to be present
+when execution is retried.
+
+**Reason:** A review of the isolated CRM/API proof demonstrated that an adapter
+failure could leave an approved workflow retryable; replacing the recommendation
+before retry then allowed different work to execute under the old approval. The
+binding contract is small, but its shared canonicalization, negative tests, and
+fail-closed invariant provide material risk reduction over repeated local
+implementations.
+
+**Consequence:** `approval.action.bind` and `approval.action.verify` are candidate
+semantic actions distinct from `approval.resolve`. They do not authenticate an
+approver, persist consent, perform authorization, or execute an effect; the
+consuming application/runtime owns those boundaries.

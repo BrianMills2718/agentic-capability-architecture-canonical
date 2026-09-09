@@ -15,19 +15,22 @@ capabilities:
 
   approvals:
     status: candidate
-    version: 0.1.0
+    version: 0.1.1
     path: capabilities/approvals
     runtime_path: capabilities/approvals/frappe_app/na_approvals
     provides:
       - approval.resolve
       - approval.require
       - approval.block
+      - approval.action.bind
+      - approval.action.verify
     requires:
       - core
     notes:
       - Rules resolve deterministically.
       - Explicit conflicts fail rather than being hidden by priority.
       - Project-specific ALLOW decisions must not silently weaken mandatory shared rules.
+      - Action approval can be bound to an exact operation/action/target/payload digest and verified before execution.
 
   notifications:
     status: candidate
