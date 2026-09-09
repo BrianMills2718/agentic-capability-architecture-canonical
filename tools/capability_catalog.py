@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
-"""Inspect semantic actions derived directly from capability manifests.
+"""Inspect verified semantic actions derived directly from capability manifests.
 
-Capability manifests and their real public interfaces are the source of truth.
-This module deliberately performs exact lookup only; it is not a planner and it
-does not maintain a second publication registry.
+Capability manifests name intended semantic exports, but an export is admitted to
+this catalog only when its declared public target can also be resolved to a real
+top-level callable in the capability's pinned runtime source. This keeps the
+agent-facing executable surface narrower and stronger than broad capability-scope
+metadata such as ``provides``.
 """
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 from pathlib import Path
 import sys
@@ -29,8 +32,71 @@ def _load_yaml(path: Path) -> dict[str, Any]:
     return data
 
 
+def _runtime_root(
+    capability: str,
+    registry_entry: dict[str, Any],
+    manifest: dict[str, Any],
+    root: Path,
+) -> Path:
+    runtime_path = manifest.get("runtime_path") or registry_entry.get("runtime_path")
+    if not runtime_path:
+        raise CatalogError(
+            f"{capability}: semantic exports require a runtime_path so their targets can be verified"
+        )
+    runtime_root = root / str(runtime_path)
+    if not runtime_root.exists():
+        raise CatalogError(f"{capability}: runtime_path does not exist: {runtime_path}")
+    return runtime_root
+
+
+def _verify_public_target(
+    capability: str,
+    public_interface: str,
+    runtime_root: Path,
+    root: Path,
+) -> str:
+    """Resolve ``package.module.symbol`` to a real top-level callable definition."""
+
+    parts = [part for part in public_interface.split(".") if part]
+    if len(parts) < 2:
+        raise CatalogError(
+            f"{capability}: public interface {public_interface!r} must include module and symbol"
+        )
+
+    symbol = parts[-1]
+    module_parts = parts[:-1]
+    module_file = runtime_root.joinpath(*module_parts).with_suffix(".py")
+    if not module_file.exists():
+        package_init = runtime_root.joinpath(*module_parts, "__init__.py")
+        if package_init.exists():
+            module_file = package_init
+        else:
+            raise CatalogError(
+                f"{capability}: semantic export target module for {public_interface!r} does not exist"
+            )
+
+    try:
+        tree = ast.parse(module_file.read_text(encoding="utf-8"), filename=str(module_file))
+    except SyntaxError as exc:  # pragma: no cover - surfaced as catalog failure
+        raise CatalogError(f"{capability}: unable to parse export source {module_file}: {exc}") from exc
+
+    callable_names = {
+        node.name
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+    }
+    if symbol not in callable_names:
+        raise CatalogError(
+            f"{capability}: semantic export {public_interface!r} does not resolve to a "
+            f"top-level function/class in {module_file.relative_to(root)}"
+        )
+
+    return str(module_file.relative_to(root))
+
+
 def build_catalog(root: Path = ROOT) -> dict[str, Any]:
-    """Build the semantic-action catalog from capability manifests."""
+    """Build the verified semantic-action catalog from capability manifests."""
+
     registry = _load_yaml(root / "capability_registry.yml")
     actions: list[dict[str, Any]] = []
     seen: dict[str, str] = {}
@@ -40,8 +106,10 @@ def build_catalog(root: Path = ROOT) -> dict[str, Any]:
         manifest = _load_yaml(manifest_path)
         provides = {str(v) for v in manifest.get("provides") or ()}
         public_interfaces = {str(v) for v in manifest.get("public_interfaces") or ()}
+        exports = manifest.get("semantic_exports") or ()
+        runtime_root: Path | None = None
 
-        for export in manifest.get("semantic_exports") or ():
+        for export in exports:
             if not isinstance(export, dict):
                 raise CatalogError(f"{name}: semantic_exports entries must be mappings")
             action_id = str(export.get("action_id") or "")
@@ -60,6 +128,13 @@ def build_catalog(root: Path = ROOT) -> dict[str, Any]:
                 raise CatalogError(
                     f"semantic action {action_id!r} is exported by both {prior!r} and {name!r}"
                 )
+
+            if runtime_root is None:
+                runtime_root = _runtime_root(str(name), registry_entry, manifest, root)
+            source_file = _verify_public_target(
+                str(name), public_interface, runtime_root, root
+            )
+
             seen[action_id] = str(name)
             actions.append(
                 {
@@ -69,6 +144,7 @@ def build_catalog(root: Path = ROOT) -> dict[str, Any]:
                     "status": str(manifest.get("status") or ""),
                     "runtime": manifest.get("runtime"),
                     "public_interface": public_interface,
+                    "source_file": source_file,
                     "manifest": str(manifest_path.relative_to(root)),
                 }
             )
@@ -78,7 +154,8 @@ def build_catalog(root: Path = ROOT) -> dict[str, Any]:
 
 
 def resolve_action(action_id: str, root: Path = ROOT) -> dict[str, Any]:
-    """Resolve one exact semantic action ID to its declared public boundary."""
+    """Resolve one exact semantic action ID to its verified public boundary."""
+
     for action in build_catalog(root)["semantic_actions"]:
         if action["action_id"] == action_id:
             return action
@@ -93,17 +170,17 @@ def _emit(value: Any, as_json: bool) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Inspect manifest-derived semantic actions")
+    parser = argparse.ArgumentParser(description="Inspect verified manifest-derived semantic actions")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    list_parser = sub.add_parser("list", help="List exported semantic actions")
+    list_parser = sub.add_parser("list", help="List verified exported semantic actions")
     list_parser.add_argument("--json", action="store_true", dest="as_json")
 
-    describe_parser = sub.add_parser("describe", help="Describe one exact semantic action")
+    describe_parser = sub.add_parser("describe", help="Describe one exact verified semantic action")
     describe_parser.add_argument("action_id")
     describe_parser.add_argument("--json", action="store_true", dest="as_json")
 
-    sub.add_parser("check", help="Validate semantic-export referential integrity")
+    sub.add_parser("check", help="Validate semantic exports and their runtime source targets")
 
     args = parser.parse_args()
     try:
@@ -113,7 +190,7 @@ def main() -> int:
             _emit(resolve_action(args.action_id), args.as_json)
         else:
             catalog = build_catalog()
-            print(f"OK: {len(catalog['semantic_actions'])} manifest-derived semantic actions")
+            print(f"OK: {len(catalog['semantic_actions'])} verified manifest-derived semantic actions")
         return 0
     except CatalogError as exc:
         print(json.dumps({"ok": False, "error": str(exc)}), file=sys.stderr)
