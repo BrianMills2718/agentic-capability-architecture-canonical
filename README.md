@@ -1,14 +1,62 @@
 # Agentic Capability Architecture
 
-Research and working implementation for an agent-native **cumulative, composable capability ecosystem**: capability discovery, selection, composition, reuse, evidence, and evidence-backed promotion that make later projects easier to build.
+A working prototype for building software with AI agents and contractors by **discovering, selecting, and composing existing capabilities before writing new code**. The goal is cumulative software delivery: each completed project should make later comparable projects easier to build.
 
-> **Global navigation:** start at the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md), then use the [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
->
-> This README describes this repository's local role. It intentionally does not maintain a competing global “start here” tree.
+## Try the working system
 
-## Try it
+Start with [`QUICKSTART.md`](QUICKSTART.md). It gives you a reproducible hands-on demo using the included Shipment Exception task. You will generate an isolated engagement workspace, inspect its capability snapshot and planning contract, and then hand that workspace to a coding agent.
 
-For a reproducible hands-on demonstration, see [`QUICKSTART.md`](QUICKSTART.md). It walks through generating an isolated engagement kit from the included Shipment Exception task, inspecting the capability snapshot and plan, and handing the workspace to a coding agent.
+```bash
+python -m venv .venv
+. .venv/bin/activate
+python -m pip install 'PyYAML>=6,<7' 'jsonschema>=4,<5'
+python tools/engagement.py new colleague_demo \
+  --task proof/fresh_agent_registry_discovery/challenge/TASK.md \
+  --output ../colleague_demo
+python tools/engagement.py validate ../colleague_demo
+```
+
+The generated workspace contains `TASK.md`, `ENGAGEMENT.yml`, `AGENT_RULES.md`, `CAPABILITY_PLAN.yml`, `METRICS.yml`, `EVIDENCE_PROPOSAL.yml`, a self-contained validator, and a hashed snapshot of available capability metadata and runtime source.
+
+## What it does
+
+```text
+requirement
+  -> discover available capabilities/providers
+  -> select and reject candidates explicitly
+  -> compose through declared public interfaces
+  -> implement only the residual local gap
+  -> test and deliver
+  -> record evidence, compatibility, failures, and reusable learning
+  -> improve the ecosystem for the next project
+```
+
+The system is designed so a worker does **not** begin from a blank repository. It receives reusable capability knowledge and must complete a capability/composition plan before implementation. Client-specific work stays isolated; reusable learning is proposed separately for human review.
+
+## What exists today
+
+- a machine-readable capability registry and manifest-derived semantic action catalog;
+- reusable capability implementations with honest public interfaces;
+- capability selection/rejection and composition planning;
+- isolated engagement generation for contractor/client work;
+- snapshot integrity and self-contained engagement validation;
+- commercial/delivery metrics and sanitized evidence closeout;
+- multiple project/proof fixtures that pressure-test reuse and local semantics;
+- repository-wide validation, package-build checks, tests, and a protected `bootstrap` CI gate.
+
+## Why this matters
+
+Most coding-agent workflows repeatedly regenerate applications from requirements. This repository tests a different model: a **cumulative, composable capability ecosystem** in which software development should compound. A later project should increasingly reuse proven capabilities, interfaces, compatibility knowledge, and compositions instead of re-solving the same problems.
+
+Ecosystem growth is not just more internal code. It can also mean better evidence for platform-native features, external OSS/SaaS, standards, rejected fits, compatibility constraints, or proof that a behavior should remain project-local. **Off-the-shelf wins ties.**
+
+## What is not proven yet
+
+This is a working technical system and research architecture, not proof of a universal composition language or a commercially compounding services business. The commercial hypothesis is being tested separately through paid engagements and comparable-cohort economics.
+
+## For deeper technical context
+
+The sections below preserve the architecture, authority, proof, and lineage detail used by maintainers and agents. Repository-local documentation is indexed in [`docs/README.md`](docs/README.md). For cross-repository context, use the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md) and [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
 
 ## Local role
 
