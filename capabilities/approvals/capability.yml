@@ -1,12 +1,14 @@
 name: approvals
 status: candidate
-version: 0.1.0
+version: 0.1.1
 runtime: frappe
 
 provides:
   - approval.resolve
   - approval.require
   - approval.block
+  - approval.action.bind
+  - approval.action.verify
 
 requires:
   - core
@@ -14,10 +16,19 @@ requires:
 public_interfaces:
   - na_approvals.engine.resolve
   - na_approvals.engine.apply_resolution
+  - na_approvals.binding.ActionIntent
+  - na_approvals.binding.ApprovalBinding
+  - na_approvals.binding.digest_action_intent
+  - na_approvals.binding.bind_approval
+  - na_approvals.binding.verify_approval
 
 semantic_exports:
   - action_id: approval.resolve
     public_interface: na_approvals.engine.resolve
+  - action_id: approval.action.bind
+    public_interface: na_approvals.binding.bind_approval
+  - action_id: approval.action.verify
+    public_interface: na_approvals.binding.verify_approval
 
 configuration:
   decisions:
@@ -32,11 +43,15 @@ invariants:
   - Equal-priority rules that disagree fail instead of depending on input order.
   - BLOCK is stronger than ordinary ALLOW/REQUIRE priority competition.
   - Project-specific ALLOW must not silently weaken an existing shared requirement.
+  - Human approval for a consequential action is bound to its operation key, action, target, and complete JSON payload.
+  - Changed or noncanonical action content fails closed before execution.
 
 notes:
   - Several client proof apps consume the resolver, but the verified client call sites currently pass at most one rule result at a time.
   - Package unit tests prove multi-rule arbitration/conflict behavior exists; current client consumption does not yet prove that real projects need or exercise those distinctive invariants.
   - Keep this capability at candidate and treat the single-rule consumer pattern as insufficient/negative promotion evidence until a materially different project exercises genuine rule composition.
+  - Action binding is separate from rule arbitration. It does not authenticate the approver, persist the receipt, execute an action, or replace application authorization.
+  - The action-binding surface was added after a retry review demonstrated that an approved workflow could otherwise execute a changed payload under stale consent.
 
 evidence:
   materially_different_uses: []

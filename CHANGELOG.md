@@ -88,6 +88,15 @@
 
 # Changelog
 
+## 2026-09-09 — Action-bound human approval
+
+- Added candidate semantic actions `approval.action.bind` and
+  `approval.action.verify`.
+- Bound approval receipts to the exact operation key, action, target, and
+  canonical JSON payload so changed work cannot execute under stale approval.
+- Kept authentication, persistence, authorization, and execution outside the
+  capability's claim boundary.
+
 ## 2026-09-05 — Reference implementation bootstrap
 
 - Established the shared/config/custom architecture.
