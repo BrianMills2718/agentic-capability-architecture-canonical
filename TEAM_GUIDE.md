@@ -10,7 +10,7 @@ This repository tests a different operating model:
 
 > **Make useful software behavior persistent and legible to agents as typed capabilities, let agents compose those capabilities before writing new code, keep genuinely domain-specific behavior local, and feed real-use evidence back so the next project starts from a stronger capability system.**
 
-The goal is not to maximize reuse. The goal is to maximize **correct composition** while shrinking bespoke implementation toward the genuinely novel residual.
+The goal is not to maximize reuse. The goal is to maximize **correct composition** while shrinking bespoke implementation toward the genuinely novel residual. Semantic fit alone is not enough: consuming a capability should provide more implementation, verification, risk-reduction, compatibility, or repeated-use value than it costs to discover and bind compared with the smallest viable local implementation.
 
 ## Why this is relevant to your coding agent
 
@@ -65,7 +65,7 @@ There is real working software here:
 - audited semantic exports bound to public implementation interfaces;
 - reusable capability code plus multiple proof applications;
 - an engagement generator that creates a portable worker workspace;
-- `CAPABILITY_PLAN.yml` for explicit pre-code composition reasoning;
+- `CAPABILITY_PLAN.yml` for explicit pre-code selection, local-alternative/net-value comparison, composition, and residual reasoning;
 - schemas, validation, tests, and protected CI;
 - evidence and closeout artifacts intended to feed generalized learning back into the capability system.
 

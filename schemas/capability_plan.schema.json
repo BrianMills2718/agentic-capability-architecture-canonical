@@ -4,21 +4,30 @@
   "type": "object",
   "required": ["schema_version", "engagement_id", "status", "selected", "rejected", "composition", "local_gaps"],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "engagement_id": {"type": "string"},
     "status": {"enum": ["draft", "ready"]},
     "selected": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["source_class", "candidate", "requirement_ids", "reason"],
+        "required": ["source_class", "candidate", "requirement_ids", "local_alternative", "reason"],
         "properties": {
           "source_class": {"enum": ["platform_native", "ecosystem", "external_oss", "external_saas", "standard", "internal"]},
           "candidate": {"type": "string", "minLength": 1},
           "requirement_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
           "semantic_actions": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
           "interfaces": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
-          "reason": {"type": "string", "minLength": 1}
+          "local_alternative": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The smallest viable local implementation used as the comparison baseline."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The concrete net advantage of selection after discovery, context, binding, and adaptation costs are compared with local_alternative."
+          }
         },
         "additionalProperties": false
       }

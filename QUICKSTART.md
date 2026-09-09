@@ -101,18 +101,19 @@ The worker receives a portable snapshot of capability metadata and runtime sourc
 `CAPABILITY_PLAN.yml` starts in `draft` state. Before implementation, the worker should record:
 
 - selected providers/capabilities;
+- the smallest viable local alternative for each selection and the concrete net advantage of consuming the capability;
 - materially plausible rejected candidates and reasons;
 - exact verified semantic actions/public interfaces being consumed;
 - explicit multi-component compositions;
 - genuine project-local residual gaps.
 
-A plan with little or no reuse can be correct if the capability system does not honestly fit. The point is to make that boundary explicit, not to force reuse.
+A plan with little or no reuse can be correct if the capability system does not honestly fit or if an equally reliable local implementation is cheaper. The point is to make that boundary explicit, not to force reuse.
 
 ## 4. Give the workspace to a coding agent
 
 Open `../colleague_demo` as the coding agent's working directory and give it this instruction:
 
-> Read `TASK.md`, `AGENT_RULES.md`, `snapshot/capability_registry.yml`, and relevant `snapshot/metadata/*` before coding. Treat only verified semantic exports as callable action guarantees. Complete `CAPABILITY_PLAN.yml` first: state what you selected, what you rejected, what you are composing, and what must stay local. Do not maximize reuse for its own sake. Then implement the task, run tests, and leave generalized evidence that would help the next agent.
+> Read `TASK.md`, `AGENT_RULES.md`, `snapshot/capability_registry.yml`, and relevant `snapshot/metadata/*` before coding. Treat only verified semantic exports as callable action guarantees. Complete `CAPABILITY_PLAN.yml` first: state what you selected, the smallest viable local alternative and net advantage for each selection, what you rejected, what you are composing, and what must stay local. Do not maximize reuse for its own sake. Then implement the task, run tests, and leave generalized evidence that would help the next agent.
 
 The agent can run the self-check:
 
@@ -127,6 +128,7 @@ That check is a planning/schema conformance tool for a cooperative worker. It is
 Before looking at the code, inspect `CAPABILITY_PLAN.yml` and ask:
 
 - Did the agent use exact verified exports/interfaces rather than infer functions from broad labels?
+- Did each selected capability provide a concrete advantage over the smallest equally reliable local implementation after discovery and integration cost?
 - Did it reject irrelevant capabilities instead of selecting everything available?
 - Did it identify a real composition when multiple capabilities jointly satisfy the requirement?
 - Did it keep task-specific timing, recipients, persistence, authorization, schema, and other consequential semantics local where appropriate?

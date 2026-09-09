@@ -61,6 +61,8 @@ python tools/engagement.py new job_001 \
 
 The generated kit contains `ENGAGEMENT.yml`, `TASK.md`, `AGENT_RULES.md`, `CAPABILITY_PLAN.yml`, `EVIDENCE_PROPOSAL.yml`, `METRICS.yml`, a portable capability snapshot with metadata/runtime source, and `control/engagement.py` plus its schemas so the contractor can run the planning checks without access to the canonical repository.
 
+New workspaces use capability-plan schema version 2. Existing frozen workspaces retain their shipped validator and version-1 schema; to migrate one intentionally, set `CAPABILITY_PLAN.yml` to version 2 and add `local_alternative` to every selected item.
+
 Before handing the workspace to a contractor, edit `ENGAGEMENT.yml` so the placeholder requirement becomes the smallest useful set of exact requirements and acceptance conditions. If you change the number of requirements, update `METRICS.yml` `requirements_total` to match; validation will reject drift. Avoid client secrets in engagement metadata when an alias/reference is sufficient.
 
 Validate the intake:
@@ -74,6 +76,7 @@ python tools/engagement.py validate /private/work/job_001
 The contractor reads `ENGAGEMENT.yml`, `TASK.md`, the snapshot registry, and relevant capability metadata before coding. `CAPABILITY_PLAN.yml` must record:
 
 - selected providers/capabilities and the requirements they satisfy;
+- the smallest viable local alternative for each selection and why the selected capability creates concrete net value after discovery and integration cost;
 - materially plausible candidates that were rejected and why;
 - verified semantic actions/public interfaces for selected internal capabilities;
 - explicit multi-component compositions;

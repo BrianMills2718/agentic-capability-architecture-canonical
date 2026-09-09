@@ -132,7 +132,7 @@ The audited exports currently include `approval.resolve`, `availability.query`, 
 - reusable capability implementations and multiple proof applications;
 - explicit composition plus project-local extension boundaries;
 - engagement generator producing a portable worker capability snapshot;
-- `CAPABILITY_PLAN.yml` for pre-code selection, rejection, composition, interfaces, and local-gap reasoning;
+- `CAPABILITY_PLAN.yml` for pre-code selection, rejection, local-alternative/net-value comparison, composition, interfaces, and local-gap reasoning;
 - validation for schema/requirement coverage, known internal exports/interfaces, and cooperative-workflow snapshot consistency;
 - evidence, provenance, compatibility, rejection, maturity, and promotion records;
 - tests and protected CI covering repository contracts and proof applications.
