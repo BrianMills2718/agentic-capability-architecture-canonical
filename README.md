@@ -149,7 +149,7 @@ Before creating shared implementation, investigate native/runtime features, inst
 
 This is a working technical system and research architecture, not proof that the capability flywheel pays for its overhead.
 
-The central experiment still needs to show that, on comparable tasks and fresh sessions, an agent with the accumulated capability system materially outperforms a control agent with only a good planning contract. Relevant measures include task success, first-pass tests, turns/tokens/time, human intervention, bespoke code, duplicated implementation, rework, and composition accuracy.
+A [preliminary `n=1` market-derived control/treatment experiment](docs/experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md) produced an encouraging but mixed signal: capability-aware agents finished faster and wrote less/shallower bespoke code while passing the same hidden tests, but consumed more input context. The experiment also produced one concrete flywheel iteration: real task pressure exposed a missing verified availability boundary; after publishing the already-existing implementation, a new fresh agent selected and composed it without any task hint. The central experiment still needs replication across fresh sessions, models, and job families before claiming a general advantage.
 
 The commercial hypothesis is also unproven: there is not yet a comparable 5–10 paid-engagement cohort showing that composition increases while marginal delivery effort and cost fall.
 
