@@ -50,6 +50,8 @@ A second-model Claude Code pair also passed the same hidden evaluator in both ar
 
 This remains a tiny sample—one control/treatment pair per model—and is **preliminary**, not proof of a general capability-layer advantage. See [`experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md`](experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md).
 
+A second materially different Upwork-derived order-processing experiment targeted multi-rule approval semantics. Both Codex arms passed the same 11/11 hidden evaluator. The treatment independently composed `approval.resolve` with `state.transition.plan`, exercising BLOCK dominance and equal-rank approval aggregation, but it was slower and much more input-context-expensive than control. This is experimental fit evidence for Approvals, **not** promotion evidence or a delivery-efficiency win. See [`experiments/UPWORK_ORDER_APPROVAL_EXPERIMENT.md`](experiments/UPWORK_ORDER_APPROVAL_EXPERIMENT.md).
+
 ## Pending decisive proof
 
 The most important unresolved question is **not** whether a fresh agent can follow a task that names the expected capability choices. It is whether accumulated capability knowledge materially improves agent performance over a control.

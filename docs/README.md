@@ -52,6 +52,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 | --- | --- |
 | [`PRIMITIVE_CAPABILITY_THESIS.md`](PRIMITIVE_CAPABILITY_THESIS.md) | Falsifiable research thesis; not settled architecture. |
 | [`../architecture/primitive_model/`](../architecture/primitive_model/) | Experimental primitive/composition models and evidence. |
+| [`experiments/`](experiments/) | Controlled market-derived agent experiments, including the Upwork ATS capability/control comparison and the order-approval multi-rule fit test. Preliminary evidence only; current claim status is reconciled through the proof ledger. |
 
 Primitive labels may be useful semantic vocabulary without implying that this repository should own a runtime implementation of each primitive.
 
