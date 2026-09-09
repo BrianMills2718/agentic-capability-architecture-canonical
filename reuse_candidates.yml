@@ -15,5 +15,6 @@ candidates:
       - Both domains contain approval-gated actions plus domain-local lifecycle/notification semantics that should be compared before extraction.
     notes:
       - This candidate does not promote a workflow engine or the na_approvals rule resolver.
-      - Current client uses of na_approvals resolve at most one rule at a time, so multi-rule arbitration remains package-tested but not client-validated.
+      - Current client uses of na_approvals resolve at most one rule at a time; multi-rule arbitration is now package-tested and exercised by a market-derived Upwork order-approval experiment, but it is still not validated by a materially different real client/production use.
+      - The Upwork experiment passed the same hidden tests in control and treatment; the treatment composed approvals + core but was slower and much more context-expensive, so this is fit/compatibility evidence rather than promotion or economic evidence.
       - Promotion requires a narrow common surface that serves materially different domains without embedding their terminology or policy.
