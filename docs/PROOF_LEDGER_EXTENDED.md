@@ -46,7 +46,9 @@ A 2026-09-08 controlled fresh-agent experiment used a behavior-only slice derive
 
 The first treatment also exposed a concrete capability-knowledge gap: a reusable pure availability implementation already existed, but Scheduling had no verified executable `availability.query` boundary, so the fresh agent correctly rejected it. After publishing that existing boundary without adding shared implementation, a new fresh agent selected and composed both `state.transition.plan` and `availability.query` on the unchanged task.
 
-This is `n=1` per arm and is **preliminary**, not proof of a general capability-layer advantage. See [`experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md`](experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md).
+A second-model Claude Code pair also passed the same hidden evaluator in both arms. Both hit the same fixed 300-second ceiling, so it did not replicate the Codex speed signal; however, the capability-aware treatment left a materially smaller/shallower implementation and completed its evidence/metrics closeout while the control did not.
+
+This remains a tiny sample—one control/treatment pair per model—and is **preliminary**, not proof of a general capability-layer advantage. See [`experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md`](experiments/UPWORK_ATS_CAPABILITY_EXPERIMENT.md).
 
 ## Pending decisive proof
 
