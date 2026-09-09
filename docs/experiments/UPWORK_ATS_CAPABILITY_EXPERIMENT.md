@@ -1,6 +1,6 @@
 # Upwork ATS Capability Experiment — Preliminary Result
 
-**Status:** preliminary controlled experiment, `n=1` fresh Codex run per arm. Not proof of a general capability-layer advantage.
+**Status:** preliminary controlled experiment with one fresh control/treatment sample on Codex and one fresh control/treatment sample on Claude Code. Not proof of a general capability-layer advantage.
 
 ## Market source
 
@@ -73,6 +73,32 @@ Relative to control, treatment v2 was about **23.7% faster**, emitted **28.2% fe
 
 However, treatment v2 consumed **12.6% more input tokens** and about **11.4% more total input+output tokens** than control. The current capability snapshot therefore has a real context/discovery cost; this experiment does not support a claim that the capability layer is token-cheaper overall.
 
+## Second-model replication: Claude Code
+
+We repeated the unchanged behavior-only task using Claude Code `2.1.266` (reported model `claude-sonnet-5`) with one fresh control and one fresh treatment. Both used `--safe-mode`, `--restricted`, no session persistence, local-only file/shell tools, no web/network access, and the same hard **300-second execution budget**.
+
+Both Claude arms reached behaviorally correct implementations before the budget expired, but both hit the 300-second ceiling before returning a normal final CLI result. Therefore this pair does **not** support a speed advantage claim and does not provide comparable token-usage output. The workspaces were evaluated exactly as left at timeout, with no repairs.
+
+| Measure | Claude control | Claude treatment |
+|---|---:|---:|
+| Hidden acceptance | 11/11 | 11/11 |
+| Local tests passing | 79 | 56 |
+| 300-second budget | timed out | timed out |
+| Capability plan ready/valid | yes | yes |
+| Evidence/metrics closeout completed | no | yes |
+| Workflow source lines | 343 | 255 |
+| Workflow AST statements | 125 | 78 |
+| Workflow branch nodes | 29 | 11 |
+| Workflow functions | 14 | 9 |
+| Agent-authored test/support lines | 531 | 388 |
+| Workflow + test/support lines | 874 | 643 |
+| Internal capabilities selected | 0 | 2 (`core`, `scheduling`) |
+| Explicit internal composition | no | yes (`core` + `scheduling`) |
+
+Relative to Claude control, the treatment left **25.7% fewer workflow lines**, **37.6% fewer AST statements**, **62.1% fewer branch nodes**, and **26.4% fewer workflow+test/support lines** while passing the same hidden evaluator. The treatment also finished the evidence/metrics artifacts before timeout; the control left `EVIDENCE_PROPOSAL.yml` pending and its metrics unfilled.
+
+This is a useful directional replication of the **bespoke-surface reduction** seen with Codex, but not of the Codex wall-time result. Because both Claude runs timed out and the CLI never emitted its final usage record, token/cost comparison is unavailable for this pair.
+
 ## What the first treatment discovered
 
 Treatment v1 selected `state.transition.plan` from Core and reused it for the ATS lifecycle.
@@ -125,10 +151,10 @@ Important limitations:
 
 Replicate rather than broaden the architecture prematurely:
 
-1. run at least 5 fresh sessions per arm for this same task;
-2. repeat on 2–3 materially different current job families;
-3. run the same matrix with a second coding-agent model (for example Claude Code);
-4. report medians/distributions for success, wall time, input/output tokens, bespoke code, rework, and capability-selection accuracy;
-5. test whether a smaller discovery-first snapshot/catalog can retain the code/time benefit while reducing input-token overhead.
+1. run at least 5 fresh sessions per arm for this same task on Codex;
+2. repeat enough Claude samples to determine whether the smaller treatment surface persists and whether either arm reliably completes within a fixed budget;
+3. repeat on 2–3 materially different current job families;
+4. report medians/distributions for success, wall time, input/output tokens where available, bespoke code, rework, closeout completeness, and capability-selection accuracy;
+5. test whether a smaller discovery-first snapshot/catalog can retain the code/surface benefit while reducing input-token overhead.
 
 Do not count a successful guided demo as this evidence. The task must remain behavior-only and the evaluator must remain outside the agent workspace during each run.
