@@ -30,7 +30,7 @@ def main() -> None:
         ],
         "docs/ARCHITECTURE_CHARTER.md": [
             "cumulative, composable software-delivery ecosystem",
-            "Cumulative growth contract",
+            "Composability and cumulative growth contract",
             "consumer and a contributor",
         ],
         "docs/ENGAGEMENT_OPERATING_SYSTEM.md": [
