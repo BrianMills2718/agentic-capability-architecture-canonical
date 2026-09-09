@@ -32,8 +32,12 @@ invariants:
   - Equal-priority rules that disagree fail instead of depending on input order.
   - BLOCK is stronger than ordinary ALLOW/REQUIRE priority competition.
   - Project-specific ALLOW must not silently weaken an existing shared requirement.
-evidence:
-  materially_different_uses:
-    - acme_reference
-  third_use_checked: false
 
+notes:
+  - Several client proof apps consume the resolver, but the verified client call sites currently pass at most one rule result at a time.
+  - Package unit tests prove multi-rule arbitration/conflict behavior exists; current client consumption does not yet prove that real projects need or exercise those distinctive invariants.
+  - Keep this capability at candidate and treat the single-rule consumer pattern as insufficient/negative promotion evidence until a materially different project exercises genuine rule composition.
+
+evidence:
+  materially_different_uses: []
+  third_use_checked: false
