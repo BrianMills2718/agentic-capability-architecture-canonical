@@ -28,22 +28,48 @@ The main idea is **not** “use off-the-shelf software when possible.” That is
 
 For paid/client work, `tools/engagement.py` turns that distinction into an actual workflow through `CAPABILITY_PLAN.yml`, isolated project-local implementation, and evidence/metrics closeout.
 
-## The capability flywheel
+## How the architecture is layered
+
+The model has distinct layers. The capability knowledge is not the application, and the project-specific residual is not forced back into the shared layer.
 
 ```mermaid
-flowchart LR
-    R[Required behavior] --> I[Semantic capability identity]
-    I --> B[Verified typed boundary]
-    B --> P[Select / reject / compose]
-    P --> L[Project-local residual]
-    L --> T[Tests + real use]
-    T --> E[Success / failure / compatibility / rejection evidence]
-    E --> K[Stronger capability knowledge]
-    K --> I
+flowchart TB
+    R["Required behavior / project intent"]
 
-    classDef core stroke-width:2px;
-    class I,B,P,E,K core;
+    subgraph K["1 · Capability knowledge"]
+      I["Semantic capability identities"]
+      V["Verified executable exports\n+ typed public interfaces"]
+      E["Evidence\nsuccess · rejection · compatibility · failure"]
+      I --> V
+      E --> I
+    end
+
+    subgraph P["2 · Agent planning / composition contract"]
+      S["Select + reject candidates"]
+      C["Compose capabilities"]
+      G["Declare project-local gaps"]
+      S --> C
+      S --> G
+    end
+
+    subgraph D["3 · Project delivery"]
+      X["Bound capability implementations\ninternal · platform · external"]
+      L["Genuinely local residual implementation"]
+      T["Tests + real use"]
+      X --> T
+      L --> T
+    end
+
+    R --> I
+    V --> S
+    C --> X
+    G --> L
+    T --> E
 ```
+
+The important feedback path is:
+
+**real use → evidence → stronger capability knowledge → better composition decisions on the next project**
 
 **Target shape:** later projects should become increasingly **composition-dominated**, with bespoke implementation shrinking toward genuinely novel domain behavior.
 
