@@ -1,3 +1,19 @@
 schema_version: 1
 
-candidates: []
+candidates:
+  - id: approval_action_workflow
+    project: internal_procurement
+    description: >-
+      Repeated approval-gated action lifecycle pattern observed across Client Intake + Booking
+      and Internal Procurement; preserve as a candidate for comparison rather than silently
+      treating the existing approvals resolver as proven shared workflow behavior.
+    status: candidate
+    similar_to:
+      - client_intake_booking
+    evidence:
+      - clients/internal_procurement/LEARNINGS.md identifies this as the second materially different implementation and explicitly recommends candidate status.
+      - Both domains contain approval-gated actions plus domain-local lifecycle/notification semantics that should be compared before extraction.
+    notes:
+      - This candidate does not promote a workflow engine or the na_approvals rule resolver.
+      - Current client uses of na_approvals resolve at most one rule at a time, so multi-rule arbitration remains package-tested but not client-validated.
+      - Promotion requires a narrow common surface that serves materially different domains without embedding their terminology or policy.
