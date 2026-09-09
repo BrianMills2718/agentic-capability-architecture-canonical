@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
+"""Validate registry/manifest structural synchronization.
+
+This check does not prove that every broad ``provides`` label is an executable action.
+Verified semantic-export targets are checked separately by ``capability_catalog.py check``.
+"""
 from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "capability_registry.yml"
 
+
 def load_yaml(path: Path):
     return yaml.safe_load(path.read_text(encoding="utf-8"))
+
 
 def main() -> None:
     data = load_yaml(REGISTRY)
@@ -57,9 +64,13 @@ def main() -> None:
             errors.append(f"{name}: missing capability.yml")
 
     if errors:
-        raise SystemExit("Registry validation failed:\n- " + "\n- ".join(errors))
+        raise SystemExit("Registry structural validation failed:\n- " + "\n- ".join(errors))
 
-    print(f"OK: registry contains {len(capabilities)} valid, synchronized capability entries")
+    print(
+        f"OK: registry and manifests are structurally synchronized for {len(capabilities)} capability entries; "
+        "run capability_catalog.py check for verified executable semantic exports"
+    )
+
 
 if __name__ == "__main__":
     main()
