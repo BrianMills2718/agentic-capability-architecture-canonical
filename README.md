@@ -28,9 +28,22 @@ The main idea is **not** “use off-the-shelf software when possible.” That is
 
 For paid/client work, `tools/engagement.py` turns that distinction into an actual workflow through `CAPABILITY_PLAN.yml`, isolated project-local implementation, and evidence/metrics closeout.
 
-## How the architecture is layered
+## The system in motion
 
-The model has distinct layers. The capability knowledge is not the application, and the project-specific residual is not forced back into the shared layer.
+<p align="center">
+  <img src="docs/assets/capability-flywheel.gif" alt="Animated view of the cumulative composable capability system: persistent capability knowledge feeds agent planning and composition, project delivery combines bound capabilities with local residual implementation, and real-use evidence feeds back into capability knowledge for the next project." width="100%">
+</p>
+
+<p align="center"><sub><a href="docs/assets/capability-flywheel.png">Static version</a> · The animation highlights the four semantic stages; it is an explanatory projection, not an executable specification.</sub></p>
+
+The model has distinct layers. **Capability knowledge persists across projects; planning decides what to bind and compose; project delivery keeps genuinely local behavior local; evidence from real use feeds the next decision.**
+
+**Target shape:** later projects should become increasingly **composition-dominated**, with bespoke implementation shrinking toward genuinely novel domain behavior.
+
+Each project is both a **consumer and a contributor**. That is the **cumulative, composable capability ecosystem** this repository is testing.
+
+<details>
+<summary><strong>Inspect the same architecture as an explicit diagram</strong></summary>
 
 ```mermaid
 flowchart TB
@@ -67,13 +80,9 @@ flowchart TB
     T --> E
 ```
 
-The important feedback path is:
+**Feedback path:** real use → evidence → stronger capability knowledge → better composition decisions on the next project.
 
-**real use → evidence → stronger capability knowledge → better composition decisions on the next project**
-
-**Target shape:** later projects should become increasingly **composition-dominated**, with bespoke implementation shrinking toward genuinely novel domain behavior.
-
-Each project is both a **consumer and a contributor**. That is the **cumulative, composable capability ecosystem** this repository is testing.
+</details>
 
 ## What may be novel here — and what is not
 
