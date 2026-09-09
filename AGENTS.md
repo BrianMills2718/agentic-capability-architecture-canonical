@@ -1,38 +1,65 @@
 # Agent Operating Rules
 
-These rules apply to coding agents working in this repository.
+These rules apply to coding agents working in this repository or in an engagement workspace generated from it.
+
+## Mission
+
+The goal is not to maximize reuse and not to maximize code generation. The goal is to make software delivery increasingly **composition-dominated**:
+
+```text
+exact requirement
+  -> honest capability identity
+  -> verified public boundary
+  -> selection / rejection
+  -> composition
+  -> genuinely local residual
+  -> tests and evidence
+```
+
+A good result may reuse several capabilities, one capability, an external/platform capability, or none. Reuse is only correct when the semantics fit. Preserve consequential project/domain behavior locally rather than forcing it into a generic abstraction.
+
+## Machine-readable truth hierarchy
+
+Do not treat every label in the repository as an executable guarantee.
+
+1. **Verified semantic export** — `semantic_exports` resolved by `python tools/capability_catalog.py ...`; this is the strongest current callable action claim.
+2. **Public interface** — `public_interfaces` declares a supported boundary; inspect source/tests before assuming semantics beyond a verified export.
+3. **Capability scope** — `provides`, configuration, notes, and models help discovery but may be broader than the currently bound executable surface.
+4. **Evidence/maturity metadata** — useful only when current and backed by actual use/test evidence.
+5. **Prose/history** — context and rationale; never stronger than current code and machine-readable state.
+
+If code and metadata disagree, surface that as a defect. Do not silently invent or infer a callable capability because a broad label sounds applicable.
 
 ## Navigation and authority
 
 For cross-repo orientation, start at the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md) and follow the [Agentic Capability Architecture project guide](https://github.com/BrianMills2718/vision/blob/main/wiki/projects/agentic-capability-architecture.md).
 
-Once working inside this repository, use `docs/README.md` for the local documentation map and authority order. Do not treat dated proof plans, session context, experimental PR descriptions, or historical implementation notes as current architecture when a current decision, manifest, or proof ledger says otherwise.
+Inside this repository, use `docs/README.md` for the local documentation map and authority order. `TEAM_GUIDE.md` explains the collaborator-facing value proposition; `docs/ARCHITECTURE_CHARTER.md` owns the current local architecture stance.
+
+Do not treat dated proof plans, session context, experimental PR descriptions, or historical implementation notes as current architecture when a current decision, manifest, code boundary, or proof ledger says otherwise.
 
 ## Before implementing any feature
 
-First establish what already exists. **Internal reuse is only one candidate source; off-the-shelf wins ties.** Investigate in this order:
+Work in this order:
 
-1. **Native runtime/platform:** does Frappe, ERPNext, or the selected runtime already provide the behavior?
-2. **Installed ecosystem:** is an established plugin/app/package already available in the chosen environment?
-3. **Mature external implementation:** is there established OSS or SaaS that should be integrated instead of recreated?
-4. **Existing standard/protocol:** are you about to invent a schema, registry, workflow, authorization, messaging, agent, or provenance mechanism already standardized?
-5. **Internal capability base:** inspect `capability_registry.yml`, capability manifests, `python tools/capability_catalog.py list --json`, and existing public interfaces for an honest semantic match.
-6. **Project-local gap:** only then implement the residual behavior locally. Promote it later only when materially different reuse provides evidence.
+1. **Define the exact behavior.** Separate invariant/domain semantics from incidental implementation details.
+2. **Inspect the verified internal action surface.** Run `python tools/capability_catalog.py list --json`; inspect relevant manifests, `semantic_exports`, public interfaces, source, and tests.
+3. **Identify composition.** State which verified behaviors jointly satisfy the requirement and what must remain local.
+4. **Reject false fits.** Record materially plausible candidates that do not fit and why.
+5. **Source missing providers.** For unsatisfied behavior, investigate native/runtime, installed ecosystem, mature external OSS/SaaS, standards/protocols, and internal capabilities. **Off-the-shelf wins ties**, but sourcing is supporting policy rather than the architecture's main value.
+6. **Implement only the residual.** If no existing capability honestly fits, keep the behavior project-local unless later evidence justifies promotion.
+7. **Plan evidence before coding.** State what tests/runtime observation would prove the composition works and what result would falsify the reuse hypothesis.
 
 Then apply these repository rules:
 
-1. Read `docs/README.md` and the current architecture/decision documents it identifies.
-2. Read the relevant capability manifests and public interfaces before relying on registry prose or old proof material.
-3. Record meaningful alternatives that were rejected and why when the sourcing decision is not obvious.
-4. Prefer configuration over new code.
-5. Prefer composition of existing suitable capabilities over adding new behavior.
-6. Never put client-specific behavior directly into a shared capability.
-7. If behavior is unique to one project, put it in that project's `custom/` layer.
-8. If behavior appears reusable, mark it as a candidate; do not automatically promote it.
-9. Shared behavior must have tests before it is treated as reusable.
-10. Record plausible reusable behavior in `reuse_candidates.yml` rather than promoting it immediately.
-11. Every completed project MUST include `clients/<project>/LEARNINGS.md` with a reuse assessment. If nothing should be promoted yet, say so explicitly and explain why. Silence is not a reuse assessment.
-12. Preserve compatibility with existing consumers unless a breaking change is explicit.
+- Prefer configuration and composition over new shared code when semantics already fit.
+- Never put client-specific behavior directly into a shared capability.
+- If behavior is unique to one project, keep it in that project's `custom/` layer.
+- If behavior appears reusable, record it as a candidate; do not automatically promote it.
+- Shared behavior must have tests before it is treated as reusable.
+- Record plausible reusable behavior in `reuse_candidates.yml` rather than promoting it immediately.
+- Every completed project MUST include `clients/<project>/LEARNINGS.md` with a reuse assessment. If nothing should be promoted, say so and explain why.
+- Preserve compatibility with existing consumers unless a breaking change is explicit.
 
 ## Reuse lifecycle
 
@@ -40,38 +67,40 @@ Use these states:
 
 - `local` — used by one project only.
 - `candidate` — suspected to be reusable, but not demonstrated.
-- `proven` — used successfully by at least two materially different projects.
+- `proven` — used successfully by at least two materially different projects **with the generalized behavior actually exercised**.
 - `core` — mature, broadly relied upon capability.
 
-Do not promote something merely because it looks generic.
+Do not promote something merely because it looks generic or because several projects import the package.
 
-A useful default test for promotion is:
+A useful default review sequence is:
 
 - First use: keep it local.
-- Second materially different use: extract or mark as candidate/proven.
-- Third use: treat as a compatibility/composability test.
+- Second materially different use: candidate/proven review.
+- Third use: explicit compatibility/composability test.
 
-Project count alone is not evidence that the common surface is correct. Failed fits, rejected reuse, incidents, portability limits, and interface churn are also evidence.
+Project count alone is not evidence that the common surface is correct. Failed fits, rejected reuse, incidents, portability limits, interface churn, and cases where a client only uses a trivial subset are also evidence. If a capability's distinctive invariants are not exercised by consumers, record that as negative/insufficient promotion evidence rather than inflating maturity.
 
 ## Architecture rules
 
-Keep these layers separate:
+The durable target is:
 
 ```text
 requested semantic behavior
         ↓
-selected existing capability / public boundary
+verified capability boundaries
         ↓
-project/client configuration
+composition/configuration
         ↓
-project/client custom extension
+project-local residual semantics
         ↓
 runtime/platform infrastructure
+        ↓
+real-use evidence
 ```
 
 Shared capabilities must not depend on client/project code. Do not use `if client == ...` inside shared capability code.
 
-Prefer explicit interfaces, dependency declarations, configuration schemas, and deterministic rule-resolution semantics over hidden coupling.
+Prefer explicit interfaces, dependency declarations, configuration schemas, and deterministic semantics over hidden coupling.
 
 A semantic primitive label does not imply that this repository should own a runtime engine for it. Prefer native/runtime/standard infrastructure for execution, persistence, authorization, scheduling, retries, messaging, and observability when those systems satisfy the requirement.
 
@@ -85,23 +114,13 @@ When multiple rules can affect the same outcome:
 - Equal-priority disagreement should fail deterministically.
 - Critical shared requirements must not be silently weakened by project-specific extensions.
 
-Example decisions:
-
-- `ALLOW`
-- `REQUIRE_APPROVAL`
-- `BLOCK`
+Do not claim client reuse has validated multi-rule arbitration if every consumer passes only one rule. Tests of the shared package prove the implementation invariant; client evidence must prove that a real consumer needed/exercised it.
 
 ## Triggered behavior completeness
 
 When a requirement describes behavior that must happen **later or automatically**—for example reminders, scheduled syncs, retries, expirations, or periodic reports—a callable helper is not a complete implementation.
 
-Prefer an existing runtime-native trigger before inventing orchestration. The project must include an explicit trigger path, such as:
-
-- Frappe `scheduler_events`,
-- a cron/scheduled-job registration,
-- a durable delayed-job mechanism,
-- a mature workflow/runtime service when its guarantees are required, or
-- another framework-native trigger that actually invokes the behavior.
+Prefer an existing runtime-native trigger before inventing orchestration. The project must include an explicit trigger path, such as Frappe `scheduler_events`, cron/scheduled-job registration, a durable delayed-job mechanism, or another runtime mechanism that actually invokes the behavior.
 
 Tests should prove both the business function and the trigger/wiring. A transport adapter like `send_email()` by itself does not satisfy a requirement for scheduled email reminders.
 
@@ -113,88 +132,103 @@ Do not treat a scheduler interval or time-window query as deduplication. Use dur
 
 When ordering matters, reason explicitly about the transaction boundary between durable state and the external side effect. Prefer established outbox/delivery patterns or runtime guarantees rather than inventing a bespoke reliability mechanism.
 
-Tests must invoke the side-effecting job at least twice for the same eligible logical event and prove the external side effect occurs only once. Where concurrency/crash behavior matters, test or use an infrastructure primitive whose guarantee covers that failure mode.
+Tests must invoke the side-effecting job at least twice for the same eligible logical event and prove the external side effect occurs only once. Where concurrency/crash behavior matters, test it or use an infrastructure primitive whose guarantee covers that failure mode.
 
-## Testing rules
+## Testing and evidence rules
 
 Tests are part of the capability, not optional cleanup.
 
 For reusable behavior, prefer:
 
-1. Pure unit tests for business logic.
-2. Framework integration tests for hooks/lifecycle behavior.
-3. Persistence tests for the final document/database state.
-4. Compatibility tests across known consumers when changing a proven/core capability.
+1. pure unit tests for business logic;
+2. framework integration tests for hooks/lifecycle behavior;
+3. persistence tests for final state;
+4. compatibility tests across known consumers when changing a proven/core capability;
+5. negative-control tests for validators/gates—deliberately introduce the defect the gate claims to prevent and assert that it turns red.
 
-Framework/Bench-only tests must still be collectable in the lightweight local bootstrap environment. If a test requires Frappe at import time, use `pytest.importorskip("frappe")` (or otherwise defer the framework import) so `python tools/check_bootstrap.py` can discover the test and skip it locally while real Bench CI executes it.
+Framework/Bench-only tests must still be collectable in the lightweight local bootstrap environment. If a test requires Frappe at import time, use `pytest.importorskip("frappe")` or otherwise defer the framework import.
 
 Every bug fix that reveals a reusable failure mode should leave behind a regression test.
 
-## Knowledge capture
+A green check proves only the invariant that check actually tests. Do not convert structural validity into a broader semantic or maturity claim.
 
-When a project reveals a reusable fact, record it.
+## Knowledge capture
 
 Useful reusable assets include:
 
 - semantic requirement/capability identity;
 - selected and rejected providers with reasons;
-- code and public interfaces;
+- verified public interfaces and code;
 - tests and compatibility evidence;
-- schemas and configuration options;
+- schemas/configuration;
 - integration adapters;
 - deployment recipes;
 - migration knowledge;
-- failure cases and operational incidents;
+- failure cases and incidents;
 - architecture decisions;
 - agent instructions.
 
 Do not assume future agents will infer an important constraint from old code.
 
-Every project must finish with `clients/<project>/LEARNINGS.md`. Record either:
+Every project must finish with `clients/<project>/LEARNINGS.md`. Record either a plausible reuse candidate/reusable constraint/integration lesson or an explicit `No promotion candidate yet` assessment.
 
-- a plausible reuse candidate / reusable constraint / integration lesson, or
-- an explicit `No promotion candidate yet` assessment with the reason the behavior should remain local.
+This requirement preserves evidence; it does not force abstraction.
 
-This requirement is about preserving evidence, not forcing premature abstraction.
+## Paid/client engagement workflow
 
-## Paid/client engagement isolation
+For contractor, agency, or client-paid work, do not put the engagement implementation directly in this canonical repository. Generate an isolated workspace with `python tools/engagement.py new ...`. Client work product stays local to the engagement.
 
-For contractor, agency, or client-paid work, do not put the engagement implementation directly in this canonical repository. Generate an isolated workspace with `python tools/engagement.py new ...`. The snapshot is reusable background capability material; client work product stays local to the engagement.
+Before implementation, the worker must make `CAPABILITY_PLAN.yml` ready and explicitly record selected providers, rejected providers, composition, exact internal exports/interfaces, and residual local gaps.
 
-Before implementation, the worker must make `CAPABILITY_PLAN.yml` ready and explicitly record selected providers, rejected providers, multi-capability composition, and residual local gaps. At closeout, generalized evidence may be proposed only through a sanitized `EVIDENCE_PROPOSAL.yml`; client-confidential material and client-owned code are prohibited from canonical evidence intake. `python tools/engagement.py close ...` produces proposal-only output for human review and never promotes code automatically.
+For internal selections, treat only verified semantic exports/public interfaces as executable boundaries. A broad `provides` label is not enough.
 
-Business metrics (`METRICS.yml`) remain engagement-local. They exist to test whether reuse/composition rates rise and marginal delivery effort falls across materially similar work.
+At closeout, generalized evidence may be proposed through `EVIDENCE_PROPOSAL.yml`; client-confidential material and client-owned code are prohibited from canonical evidence intake. `python tools/engagement.py close ...` produces proposal-only output for human review and never promotes code automatically.
+
+### Current trust boundary
+
+The engagement tooling is a **planning and evidence discipline for a cooperative worker**, not an adversarial sandbox/security product.
+
+- The snapshot checksum and validator are shipped in the same workspace. They detect ordinary changes relative to that shipped state, but a malicious worker who controls both can re-attest modified content.
+- The self-check validates contracts and declared internal exports/interfaces; it does not prove exhaustive provider research or detect every semantic reimplementation.
+- Evidence “sanitization” is a human-reviewed declaration. The tool does not automatically redact credentials, confidential text, or client-owned code from free-text fields.
+
+Do not describe these controls more strongly than they are.
+
+Business metrics (`METRICS.yml`) remain engagement-local. They exist to test whether reuse/composition rates rise and marginal delivery effort falls across materially similar work; there is not yet a canonical cohort time series proving that claim.
 
 ## Change discipline
 
 Before editing a shared capability, answer:
 
 1. What exact requirement is being satisfied?
-2. Which native, ecosystem, external, standards-based, and internal alternatives were considered?
-3. Who currently uses this capability?
-4. Can this be handled through configuration or an existing product/interface instead?
-5. Does the change alter an interface or semantic action meaning?
-6. Does it introduce a new dependency?
-7. What compatibility tests should be added?
-8. Is this truly shared behavior, or should it remain local?
+2. What verified capability/interface currently owns related behavior?
+3. Which native, ecosystem, external, standards-based, and internal alternatives were considered?
+4. Who currently uses this capability, and which distinctive invariants do those consumers actually exercise?
+5. Can configuration/composition solve it without changing shared code?
+6. Does the change alter an interface or semantic action meaning?
+7. Does it introduce a new dependency?
+8. What compatibility and negative-control tests should be added?
+9. Is this truly shared behavior, or should it remain local?
 
-Update `docs/DECISIONS.md` when making a repository-local architectural decision that future work should preserve. Update the Vision wiki only when cross-repo navigation/synthesis or a governing program decision changes; do not copy local technical detail into the global navigation layer.
+Update `docs/DECISIONS.md` when making a repository-local architectural decision that future work should preserve. Update the Vision wiki only when cross-repo navigation/synthesis or a governing program decision changes.
 
 ## Completion gate
 
-Before declaring any project complete, run the exact repository-wide command:
+Before declaring any project complete, run:
 
 ```bash
 python tools/check_bootstrap.py
 ```
 
-Targeted tests, syntax checks, package builds, or schema checks are useful during development but do **not** substitute for this final gate. The gate discovers nested app tests and supplies app import paths itself, so do not rely on packages that happen to be installed in your current shell. If the full command fails, the project is not complete.
+Targeted tests, syntax checks, package builds, or schema checks are useful during development but do **not** substitute for this final gate. If the full command fails, the project is not complete.
 
 ## Machine-readable workflow helpers
 
-- `python tools/new_project.py <name> --capabilities core,scheduling,...` creates a clean project layer.
-- `python tools/record_reuse_candidate.py ...` records a reuse observation without changing shared code.
-- `python tools/engagement.py new|validate|close ...` runs the isolated paid/client engagement operating loop.
-- `python tools/validate_schemas.py` validates the repository contracts.
-- `python tools/capability_catalog.py list --json` lists manifest-derived semantic exports; `describe <action-id> --json` performs exact lookup.
-- `python tools/check_reuse_evidence.py` prevents unsupported promotion labels.
+- `python tools/capability_catalog.py list --json` — list verified manifest-derived semantic exports.
+- `python tools/capability_catalog.py describe <action-id> --json` — exact action lookup.
+- `python tools/capability_catalog.py check` — validate export integrity.
+- `python tools/new_project.py <name> --capabilities core,scheduling,...` — create a clean project layer.
+- `python tools/record_reuse_candidate.py ...` — record a reuse observation without changing shared code.
+- `python tools/engagement.py new|validate|close ...` — run the paid/client planning/evidence loop.
+- `python tools/validate_schemas.py` — validate repository contracts.
+- `python tools/check_reuse_evidence.py` — enforce configured promotion thresholds for promoted statuses; do not infer broader evidence quality from a pass.
