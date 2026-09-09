@@ -2,22 +2,26 @@
 
 ## Mission
 
-Build a **cumulative, composable software-delivery ecosystem** in which coding agents **select and reuse the best existing capability before generating new implementation**, preserve consequential project-local semantics, and leave behind capability knowledge and evidence that make later projects easier to build.
+Build a **cumulative, composable software-delivery ecosystem** in which agents can represent useful behavior as discoverable capabilities with honest typed boundaries, compose those capabilities into new systems, isolate only the genuinely project-local residual, and feed real-use evidence back into the ecosystem so later projects become increasingly composition-driven.
 
-The durable asset is not a large private library. It is **machine-understandable capability knowledge plus evidence about what exists, what it actually does, when it fits, when it fails, and how it composes**.
+The durable asset is not a large private library and not a sourcing checklist. It is **machine-understandable capability knowledge plus compositional structure and evidence about what exists, what it actually does, how it binds, how it composes, where it fails, and what should remain local**.
 
 The governing rules are:
 
-> **Off-the-shelf wins ties.** Native platform features, established ecosystem packages, mature external implementations, and existing standards are first-class candidates alongside internal code.
+> **Composition is the target shape.** A mature project should increasingly be describable as a composition of known capabilities plus only the genuinely novel residual.
+
+> **Every project should strengthen the capability graph.** Successful compositions, rejected fits, interface limits, compatibility facts, and justified reusable behavior all improve later work.
 
 > **Do not force everything to be reusable. Make everything eligible to become reusable, then promote only after materially different uses provide evidence.**
 
-## Cumulative growth contract
+> **Off-the-shelf wins ties.** Provider sourcing is subordinate to the composability model: native/platform/external/internal implementations are all legitimate providers when they satisfy the same capability boundary honestly.
+
+## Composability and cumulative growth contract
 
 Every project is both a **consumer and a contributor** to the capability ecosystem. The architecture should make this compounding loop normal:
 
 ```text
-reuse the best existing capability
+discover / bind / compose known capabilities
         ↓
 implement only the residual local gap
         ↓
@@ -39,11 +43,11 @@ The ordinary application path is:
 ```text
 requested application meaning / semantic requirement
         ↓
-capability sourcing and conservative provider selection
+capability identity and provider resolution
         ↓
-honest typed public boundary
+honest typed public boundaries
         ↓
-project configuration / composition
+explicit configuration / composition
         ↓
 project-local residual behavior
         ↓
@@ -54,7 +58,7 @@ execution, compatibility, and reuse evidence
 
 Upstream application meaning is owned outside this repository by the appropriate semantic/application authority. This repository should not create a second semantic IR merely to perform capability selection.
 
-### 1. Capability sourcing and semantic identity
+### 1. Capability identity, discovery, and provider resolution
 
 A semantic capability/action identity should name the **narrowest reusable behavior actually required/provided**, independently of provider, repository, or deployment. The currently audited internal semantic exports are deliberately narrow: `approval.resolve`, `state.transition.plan`, and `notification.email.send`. Broader research labels such as `policy.resolve`, `state.transition`, and `notification.send` are not canonical merely because an experiment used them.
 
@@ -143,7 +147,7 @@ Before writing project-specific code, an agent should be able to answer:
 8. What evidence/tests will prove the composition works?
 9. What new sourcing/reuse observation should be recorded afterward?
 
-The goal is to make agent planning increasingly **selection-and-composition dominated**, with code generation focused on genuine residual gaps.
+The goal is to make agent planning increasingly **composition-dominated**: semantic capability identity, typed binding, and explicit composition should satisfy more of each project, while code generation contracts toward genuine residual gaps.
 
 ## Federated capability knowledge
 
@@ -168,7 +172,7 @@ real use or rejection
       ↓
 evidence
       ↓
-better sourcing and selection
+better capability binding and composition
       ↓
 less bespoke implementation
       ↓

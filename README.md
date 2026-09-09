@@ -1,50 +1,56 @@
 # Agentic Capability Architecture
 
-A working prototype for building software with AI agents and contractors by **discovering, selecting, and composing existing capabilities before writing new code**. The goal is cumulative software delivery: each completed project should make later comparable projects easier to build.
+A working architecture for **composable software functionality that compounds across projects**. It gives coding agents a machine-readable capability ecosystem: discoverable behaviors, typed public interfaces, explicit composition, project-local residuals, and evidence that feeds back into what later agents can reuse.
 
-## Try the working system
+The core idea is not merely “reuse existing software.” It is to make reusable functionality **legible and composable to agents**, then make every real project strengthen that capability system for the next one.
 
-Start with [`QUICKSTART.md`](QUICKSTART.md). It gives you a reproducible hands-on demo using the included Shipment Exception task. You will generate an isolated engagement workspace, inspect its capability snapshot and planning contract, and then hand that workspace to a coding agent.
+> **Try the working system:** [`QUICKSTART.md`](QUICKSTART.md) generates an isolated engagement from a real task, gives the worker a capability snapshot, requires a capability/composition plan before coding, and validates the result.
 
-```bash
-python -m venv .venv
-. .venv/bin/activate
-python -m pip install 'PyYAML>=6,<7' 'jsonschema>=4,<5'
-python tools/engagement.py new colleague_demo \
-  --task proof/fresh_agent_registry_discovery/challenge/TASK.md \
-  --output ../colleague_demo
-python tools/engagement.py validate ../colleague_demo
-```
-
-The generated workspace contains `TASK.md`, `ENGAGEMENT.yml`, `AGENT_RULES.md`, `CAPABILITY_PLAN.yml`, `METRICS.yml`, `EVIDENCE_PROPOSAL.yml`, a self-contained validator, and a hashed snapshot of available capability metadata and runtime source.
-
-## What it does
+## What the architecture makes possible
 
 ```text
-requirement
-  -> discover available capabilities/providers
-  -> select and reject candidates explicitly
-  -> compose through declared public interfaces
-  -> implement only the residual local gap
-  -> test and deliver
-  -> record evidence, compatibility, failures, and reusable learning
-  -> improve the ecosystem for the next project
+required behavior
+    ↓
+capability identities + machine-readable metadata
+    ↓
+typed public interfaces
+    ↓
+discover / select / compose capabilities
+    ↓
+implement only genuine project-local residuals
+    ↓
+validate in real use
+    ↓
+record composition, compatibility, success, rejection, and failure evidence
+    ↓
+promote or strengthen reusable capability knowledge
+    ↓
+the next project starts from a stronger composable capability ecosystem
 ```
 
-The system is designed so a worker does **not** begin from a blank repository. It receives reusable capability knowledge and must complete a capability/composition plan before implementation. Client-specific work stays isolated; reusable learning is proposed separately for human review.
+That flywheel is the differentiated architectural thesis. The system is designed so that a later project can increasingly be expressed as **composition plus a small residual**, rather than as a fresh application implementation.
 
 ## What exists today
 
-- a machine-readable capability registry and manifest-derived semantic action catalog;
-- reusable capability implementations with honest public interfaces;
-- capability selection/rejection and composition planning;
-- isolated engagement generation for contractor/client work;
-- snapshot integrity and self-contained engagement validation;
-- commercial/delivery metrics and sanitized evidence closeout;
-- multiple project/proof fixtures that pressure-test reuse and local semantics;
-- repository-wide validation, package-build checks, tests, and a protected `bootstrap` CI gate.
+- a capability registry and manifest-derived semantic action catalog;
+- typed public capability boundaries tied to real implementations;
+- reusable capability implementations and multiple proof applications;
+- explicit project composition through capability manifests/plans;
+- a paid-engagement generator that gives contractors/agents a portable hashed capability snapshot;
+- mandatory `CAPABILITY_PLAN.yml` selection, rejection, interface, composition, and local-gap recording before implementation;
+- validation that rejects unknown capabilities/interfaces, uncovered requirements, invalid compositions, and snapshot tampering;
+- evidence, provenance, compatibility, rejection, maturity, and promotion machinery;
+- tests and protected CI covering the repository contracts and proofs.
+
+Provider sourcing is a supporting policy, not the architecture itself. Capabilities may come from internal code, platform-native behavior, external software/services, or standards. What matters architecturally is that the behavior can be represented honestly, bound through a usable interface, composed with other capabilities, validated, and learned from.
 
 ## Why this matters
+
+Most coding-agent workflows still treat each new project as a mostly fresh synthesis problem. This architecture is testing a different model: **software delivery as cumulative composition**.
+
+If it works, the important trend is not simply “more reuse.” It is that the percentage of a new project describable as validated capability composition rises over time, while bespoke residual implementation shrinks toward genuinely novel domain behavior.
+
+
 
 Most coding-agent workflows repeatedly regenerate applications from requirements. This repository tests a different model: a **cumulative, composable capability ecosystem** in which software development should compound. A later project should increasingly reuse proven capabilities, interfaces, compatibility knowledge, and compositions instead of re-solving the same problems.
 
@@ -103,7 +109,7 @@ Ecosystem growth therefore means more than a larger internal codebase. It includ
 
 For contractor or client work, use `python tools/engagement.py new ...` to create an isolated engagement workspace. The contractor consumes a read-only capability snapshot, records a capability/composition plan before coding, keeps client work product local, and produces only sanitized generalized evidence for human review. See [`docs/ENGAGEMENT_OPERATING_SYSTEM.md`](docs/ENGAGEMENT_OPERATING_SYSTEM.md).
 
-## Governing stance
+## Supporting sourcing policy
 
 **Off-the-shelf wins ties.** Reuse does not mean “prefer our code.” Before creating shared implementation, investigate native runtime features, installed ecosystem options, mature external implementations, existing standards/protocols, and only then the internal capability base. Implement the residual local gap when none of those honestly satisfies the requirement.
 
