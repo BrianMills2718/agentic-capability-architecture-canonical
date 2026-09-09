@@ -6,6 +6,10 @@ Research and working implementation for an agent-native **cumulative, composable
 >
 > This README describes this repository's local role. It intentionally does not maintain a competing global “start here” tree.
 
+## Try it
+
+For a reproducible hands-on demonstration, see [`QUICKSTART.md`](QUICKSTART.md). It walks through generating an isolated engagement kit from the included Shipment Exception task, inspecting the capability snapshot and plan, and handing the workspace to a coding agent.
+
 ## Local role
 
 This is the **sole active capability-architecture lineage**. It owns capability/provider metadata, honest reusable public implementation boundaries, conservative capability resolution, reuse/maturity evidence, and the local proof fixtures used to test those ideas.
