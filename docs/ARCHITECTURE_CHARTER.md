@@ -60,7 +60,7 @@ Upstream application meaning is owned outside this repository by the appropriate
 
 ### 1. Capability identity, discovery, and provider resolution
 
-A semantic capability/action identity should name the **narrowest reusable behavior actually required/provided**, independently of provider, repository, or deployment. The currently audited internal semantic exports are deliberately narrow: `approval.resolve`, `state.transition.plan`, and `notification.email.send`. Broader research labels such as `policy.resolve`, `state.transition`, and `notification.send` are not canonical merely because an experiment used them.
+A semantic capability/action identity should name the **narrowest reusable behavior actually required/provided**, independently of provider, repository, or deployment. The currently audited internal semantic exports are deliberately narrow: `approval.resolve`, `availability.query`, `state.transition.plan`, and `notification.email.send`. Broader research labels such as `policy.resolve`, `state.transition`, and `notification.send` are not canonical merely because an experiment used them.
 
 Before creating shared implementation, investigate:
 
