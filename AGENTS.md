@@ -16,7 +16,7 @@ exact requirement
   -> tests and evidence
 ```
 
-A good result may reuse several capabilities, one capability, an external/platform capability, or none. Reuse is only correct when the semantics fit. Preserve consequential project/domain behavior locally rather than forcing it into a generic abstraction.
+A good result may reuse several capabilities, one capability, an external/platform capability, or none. Semantic fit is necessary but insufficient: select a capability only when its concrete implementation, verification, risk-reduction, compatibility, or repeated-use advantage exceeds its discovery, context, binding, and adaptation cost relative to the smallest viable local implementation. Preserve consequential project/domain behavior locally rather than forcing it into a generic abstraction.
 
 ## Machine-readable truth hierarchy
 
@@ -44,11 +44,12 @@ Work in this order:
 
 1. **Define the exact behavior.** Separate invariant/domain semantics from incidental implementation details.
 2. **Inspect the verified internal action surface.** Run `python tools/capability_catalog.py list --json`; inspect relevant manifests, `semantic_exports`, public interfaces, source, and tests.
-3. **Identify composition.** State which verified behaviors jointly satisfy the requirement and what must remain local.
-4. **Reject false fits.** Record materially plausible candidates that do not fit and why.
-5. **Source missing providers.** For unsatisfied behavior, investigate native/runtime, installed ecosystem, mature external OSS/SaaS, standards/protocols, and internal capabilities. **Off-the-shelf wins ties**, but sourcing is supporting policy rather than the architecture's main value.
-6. **Implement only the residual.** If no existing capability honestly fits, keep the behavior project-local unless later evidence justifies promotion.
-7. **Plan evidence before coding.** State what tests/runtime observation would prove the composition works and what result would falsify the reuse hypothesis.
+3. **Test net value against local implementation.** For each selected capability, name the smallest viable local alternative and the concrete advantage that justifies discovery and integration cost. A semantically correct capability may still be the wrong choice when an equally reliable local implementation is cheaper.
+4. **Identify composition.** State which verified behaviors jointly satisfy the requirement and what must remain local.
+5. **Reject false or uneconomic fits.** Record materially plausible candidates that do not fit, or do not create net value, and why.
+6. **Source missing providers.** For unsatisfied behavior, investigate native/runtime, installed ecosystem, mature external OSS/SaaS, standards/protocols, and internal capabilities. **Off-the-shelf wins ties**, but sourcing is supporting policy rather than the architecture's main value.
+7. **Implement only the residual.** If no existing capability honestly fits and creates net value, keep the behavior project-local unless later evidence justifies promotion.
+8. **Plan evidence before coding.** State what tests/runtime observation would prove the composition works and what result would falsify the reuse hypothesis.
 
 Then apply these repository rules:
 
@@ -178,7 +179,7 @@ This requirement preserves evidence; it does not force abstraction.
 
 For contractor, agency, or client-paid work, do not put the engagement implementation directly in this canonical repository. Generate an isolated workspace with `python tools/engagement.py new ...`. Client work product stays local to the engagement.
 
-Before implementation, the worker must make `CAPABILITY_PLAN.yml` ready and explicitly record selected providers, rejected providers, composition, exact internal exports/interfaces, and residual local gaps.
+Before implementation, the worker must make `CAPABILITY_PLAN.yml` ready and explicitly record selected providers, each selection's smallest viable local alternative and net-value reason, rejected providers, composition, exact internal exports/interfaces, and residual local gaps.
 
 For internal selections, treat only verified semantic exports/public interfaces as executable boundaries. A broad `provides` label is not enough.
 

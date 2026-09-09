@@ -14,6 +14,8 @@ The governing rules are:
 
 > **Do not force everything to be reusable. Make everything eligible to become reusable, then promote only after materially different uses provide evidence.**
 
+> **Semantic fit is necessary but insufficient.** Consume a capability only when its concrete implementation, verification, risk-reduction, compatibility, or repeated-use advantage exceeds its discovery, context, binding, and adaptation cost relative to the smallest viable local implementation.
+
 > **Off-the-shelf wins ties.** Provider sourcing is subordinate to the composability model: native/platform/external/internal implementations are all legitimate providers when they satisfy the same capability boundary honestly.
 
 ## Composability and cumulative growth contract
@@ -140,12 +142,13 @@ Before writing project-specific code, an agent should be able to answer:
 1. What exact requirement is being satisfied?
 2. Which native, ecosystem, external, standards-based, and internal candidates are relevant?
 3. Which candidates were rejected, and why?
-4. Which semantic capability/action and honest public interface will be consumed?
-5. What configuration or composition is required?
-6. What behavior must remain project-local?
-7. Which runtime/platform facility supplies execution and reliability guarantees?
-8. What evidence/tests will prove the composition works?
-9. What new sourcing/reuse observation should be recorded afterward?
+4. For each selected capability, what is the smallest viable local alternative and what concrete net advantage justifies consuming the capability?
+5. Which semantic capability/action and honest public interface will be consumed?
+6. What configuration or composition is required?
+7. What behavior must remain project-local?
+8. Which runtime/platform facility supplies execution and reliability guarantees?
+9. What evidence/tests will prove the composition works?
+10. What new sourcing/reuse observation should be recorded afterward?
 
 The goal is to make agent planning increasingly **composition-dominated**: semantic capability identity, typed binding, and explicit composition should satisfy more of each project, while code generation contracts toward genuine residual gaps.
 

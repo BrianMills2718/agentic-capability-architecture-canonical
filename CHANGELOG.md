@@ -1,3 +1,10 @@
+## 2026-09-09 — Capability selection requires net value
+
+- Made semantic fit necessary but insufficient: selected capabilities must provide a concrete advantage over the smallest equally reliable local implementation after discovery and integration costs.
+- Added capability-plan schema version 2 with a required `local_alternative` for every selected provider; frozen version-1 engagement workspaces remain self-contained.
+- Added regression coverage proving missing comparison baselines fail validation and semantically fitting but uneconomic capabilities may be rejected in favor of a local gap.
+- Recorded ADR-013 so capability count cannot substitute for lower marginal delivery effort or reliability.
+
 ## 2026-09-08 — Paid engagement operating MVP
 
 - Added an isolated contractor/client engagement kit generator with a hashed read-only capability snapshot and portable self-validator.

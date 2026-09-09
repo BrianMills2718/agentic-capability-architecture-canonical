@@ -59,6 +59,7 @@ def ready_plan(workspace):
             "requirement_ids": ["task_complete"],
             "semantic_actions": ["state.transition.plan"],
             "interfaces": ["na_core.transitions.plan_transition"],
+            "local_alternative": "Implement and test project-local transition validation.",
             "reason": "Reuse the shared transition planner instead of reimplementing state validation.",
         },
         {
@@ -67,6 +68,7 @@ def ready_plan(workspace):
             "requirement_ids": ["task_complete"],
             "semantic_actions": ["notification.email.send"],
             "interfaces": ["na_notifications.email.send_email"],
+            "local_alternative": "Implement and test a project-local email transport adapter.",
             "reason": "Reuse the shared email transport.",
         },
     ]
@@ -144,6 +146,11 @@ def test_new_engagement_builds_portable_snapshot_with_verified_exports(tmp_path)
     ]
     result = run("validate", workspace)
     assert "snapshot checksum consistency" in result.stdout
+    plan = read_yaml(workspace / "CAPABILITY_PLAN.yml")
+    assert plan["schema_version"] == 2
+    rules = (workspace / "AGENT_RULES.md").read_text(encoding="utf-8")
+    assert "Semantic fit is necessary but insufficient" in rules
+    assert "smallest viable local implementation" in rules
     portable = subprocess.run(
         [sys.executable, "control/engagement.py", "validate", "."],
         cwd=workspace,
@@ -169,6 +176,47 @@ def test_ready_plan_requires_real_internal_capabilities_and_interfaces(tmp_path)
     assert "is not in the snapshot" in result.stderr
 
 
+def test_ready_plan_requires_local_alternative_for_selected_capability(tmp_path):
+    workspace = make_workspace(tmp_path)
+    ready_plan(workspace)
+    plan_path = workspace / "CAPABILITY_PLAN.yml"
+    plan = read_yaml(plan_path)
+    del plan["selected"][0]["local_alternative"]
+    write_yaml(plan_path, plan)
+
+    result = run("validate", workspace, "--require-ready", check=False)
+    assert result.returncode != 0
+    assert "'local_alternative' is a required property" in result.stderr
+
+
+def test_ready_plan_allows_uneconomic_capability_to_remain_local(tmp_path):
+    workspace = make_workspace(tmp_path)
+    plan_path = workspace / "CAPABILITY_PLAN.yml"
+    plan = read_yaml(plan_path)
+    plan["status"] = "ready"
+    plan["selected"] = []
+    plan["rejected"] = [
+        {
+            "source_class": "internal",
+            "candidate": "approvals",
+            "requirement_ids": ["task_complete"],
+            "reason": "A small fixed rule is equally reliable and cheaper to implement locally.",
+        }
+    ]
+    plan["composition"] = []
+    plan["local_gaps"] = [
+        {
+            "requirement_ids": ["task_complete"],
+            "behavior": "Evaluate the small fixed rule locally.",
+            "reason": "The available capability fits semantically but adds no net value for this requirement.",
+        }
+    ]
+    write_yaml(plan_path, plan)
+
+    result = run("validate", workspace, "--require-ready")
+    assert result.returncode == 0
+
+
 def test_ready_plan_rejects_broad_provides_label_as_semantic_action(tmp_path):
     workspace = make_workspace(tmp_path)
     plan_path = workspace / "CAPABILITY_PLAN.yml"
@@ -181,6 +229,7 @@ def test_ready_plan_rejects_broad_provides_label_as_semantic_action(tmp_path):
             "requirement_ids": ["task_complete"],
             "semantic_actions": ["appointment.reschedule"],
             "interfaces": [],
+            "local_alternative": "Implement the project-local rescheduling rule directly.",
             "reason": "This broad provides label should not count as an executable export.",
         }
     ]

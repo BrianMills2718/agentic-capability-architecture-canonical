@@ -108,3 +108,17 @@ Cross-repo semantic/interface policy is governed by the [Vision Semantic Boundar
 **Why:** A fresh-agent experiment derived from a current public ATS/booking job independently required overlap prevention. The scheduling implementation already contained the reusable behavior, but the agent correctly rejected Scheduling because the manifest exposed no verified executable interface. This was a capability-knowledge defect, not an implementation gap. Publishing the existing stable boundary improves discoverability without adding shared code.
 
 **Constraint:** This does not promote Scheduling beyond `candidate`, does not make availability a universal primitive, and does not claim appointment lifecycle actions exist.
+
+---
+
+## ADR-013 — Capability selection requires net value over a local alternative
+
+**Status:** accepted
+
+**Decision:** Semantic fit is necessary but insufficient for capability selection. For every selected capability, the pre-code capability plan must name the smallest viable local implementation and explain the concrete implementation, verification, risk-reduction, compatibility, or repeated-use advantage that exceeds discovery, context, binding, and adaptation cost.
+
+**Rejected alternative:** Select every capability whose semantics fit and rely on later engagement metrics to reveal whether consumption was economical.
+
+**Reason:** The order-approval experiment showed that a correctly selected and composed capability can still increase wall time and context cost for a small fixed rule set. Treating fit as sufficient would reward reuse count instead of lower marginal delivery effort and reliability.
+
+**Consequence:** A capability that fits but offers no concrete advantage over an equally reliable local implementation should be recorded as a rejected candidate and the behavior should remain local. This does not reduce capability value to source-line savings: reused verification, difficult invariants, material risk reduction, compatibility, and amortization across repeated actions are legitimate advantages.

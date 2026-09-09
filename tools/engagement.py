@@ -214,16 +214,17 @@ def agent_rules() -> str:
 3. Before writing implementation code, complete `CAPABILITY_PLAN.yml` and set `status: ready`.
 4. Treat `semantic_exports` as verified executable action claims. A broad `provides` label is discovery/scope metadata, not proof that a callable action exists.
 5. For internal reuse, name the exact verified semantic action and/or declared public interface you will consume.
-6. Decide composition before code: selected capabilities, rejected candidates, multi-capability compositions, and genuinely local residual behavior.
-7. Do not maximize reuse for its own sake. A local gap is correct when available capabilities do not honestly fit.
-8. Source missing behavior from platform/native, ecosystem, mature OSS/SaaS, standards, internal capabilities, then residual local implementation.
-9. Keep consequential client/domain semantics in the engagement implementation. Do not invent a generic framework, registry, workflow engine, or universal abstraction for one job.
-10. Client work product, client source, secrets, and confidential material must stay in this engagement workspace and must never be proposed for canonical ingestion.
-11. Complete `EVIDENCE_PROPOSAL.yml` with generalized learnings only. The sanitization flags are a human-reviewed declaration, not automatic redaction.
-12. Complete `METRICS.yml` after delivery so reuse/composition economics can be measured. Business metrics remain engagement-local.
-13. Obey `ENGAGEMENT.yml` `research.external_allowed`; when false, do not use external research beyond the supplied workspace.
-14. Run `python control/engagement.py validate . --require-ready` before declaring the capability plan complete. This is a cooperative planning/schema check, not an adversarial security boundary.
-15. A human reviewer decides whether generalized evidence or reusable capability is promoted into the canonical ecosystem.
+6. Semantic fit is necessary but insufficient. For every selected capability, `local_alternative` must name the smallest viable local implementation and `reason` must explain the concrete net advantage after discovery, context, binding, and adaptation cost.
+7. Decide composition before code: selected capabilities, rejected candidates, multi-capability compositions, and genuinely local residual behavior.
+8. Do not maximize reuse for its own sake. Reject a capability when an equally reliable local implementation is cheaper, even if the capability semantically fits.
+9. Source missing behavior from platform/native, ecosystem, mature OSS/SaaS, standards, internal capabilities, then residual local implementation.
+10. Keep consequential client/domain semantics in the engagement implementation. Do not invent a generic framework, registry, workflow engine, or universal abstraction for one job.
+11. Client work product, client source, secrets, and confidential material must stay in this engagement workspace and must never be proposed for canonical ingestion.
+12. Complete `EVIDENCE_PROPOSAL.yml` with generalized learnings only. The sanitization flags are a human-reviewed declaration, not automatic redaction.
+13. Complete `METRICS.yml` after delivery so reuse/composition economics can be measured. Business metrics remain engagement-local.
+14. Obey `ENGAGEMENT.yml` `research.external_allowed`; when false, do not use external research beyond the supplied workspace.
+15. Run `python control/engagement.py validate . --require-ready` before declaring the capability plan complete. This is a cooperative planning/schema check, not an adversarial security boundary.
+16. A human reviewer decides whether generalized evidence or reusable capability is promoted into the canonical ecosystem.
 """
 
 
@@ -289,7 +290,7 @@ def command_new(args: argparse.Namespace) -> None:
     write_yaml(
         output / "CAPABILITY_PLAN.yml",
         {
-            "schema_version": 1,
+            "schema_version": 2,
             "engagement_id": args.engagement_id,
             "status": "draft",
             "selected": [],
