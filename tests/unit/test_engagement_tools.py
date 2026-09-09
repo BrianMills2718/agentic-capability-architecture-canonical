@@ -125,7 +125,7 @@ def finish_evidence_and_metrics(workspace):
     write_yaml(metrics_path, metrics)
 
 
-def test_new_engagement_builds_read_only_portable_snapshot(tmp_path):
+def test_new_engagement_builds_portable_snapshot_with_verified_exports(tmp_path):
     workspace = make_workspace(tmp_path)
     assert (workspace / "snapshot/capability_registry.yml").exists()
     assert (workspace / "snapshot/vendor/na_core/na_core/transitions.py").exists()
@@ -135,8 +135,15 @@ def test_new_engagement_builds_read_only_portable_snapshot(tmp_path):
     registry = read_yaml(workspace / "snapshot/capability_registry.yml")
     assert set(registry["capabilities"]) == {"approvals", "core", "notifications", "scheduling"}
     assert registry["source_commit"]
+    core_exports = registry["capabilities"]["core"]["semantic_exports"]
+    assert core_exports == [
+        {
+            "action_id": "state.transition.plan",
+            "public_interface": "na_core.transitions.plan_transition",
+        }
+    ]
     result = run("validate", workspace)
-    assert "snapshot integrity" in result.stdout
+    assert "snapshot checksum consistency" in result.stdout
     portable = subprocess.run(
         [sys.executable, "control/engagement.py", "validate", "."],
         cwd=workspace,
@@ -144,7 +151,7 @@ def test_new_engagement_builds_read_only_portable_snapshot(tmp_path):
         capture_output=True,
         check=True,
     )
-    assert "snapshot integrity" in portable.stdout
+    assert "snapshot checksum consistency" in portable.stdout
 
 
 def test_ready_plan_requires_real_internal_capabilities_and_interfaces(tmp_path):
@@ -162,7 +169,43 @@ def test_ready_plan_requires_real_internal_capabilities_and_interfaces(tmp_path)
     assert "is not in the snapshot" in result.stderr
 
 
-def test_snapshot_tampering_is_detected(tmp_path):
+def test_ready_plan_rejects_broad_provides_label_as_semantic_action(tmp_path):
+    workspace = make_workspace(tmp_path)
+    plan_path = workspace / "CAPABILITY_PLAN.yml"
+    plan = read_yaml(plan_path)
+    plan["status"] = "ready"
+    plan["selected"] = [
+        {
+            "source_class": "internal",
+            "candidate": "scheduling",
+            "requirement_ids": ["task_complete"],
+            "semantic_actions": ["appointment.reschedule"],
+            "interfaces": [],
+            "reason": "This broad provides label should not count as an executable export.",
+        }
+    ]
+    plan["local_gaps"] = []
+    write_yaml(plan_path, plan)
+
+    result = run("validate", workspace, "--require-ready", check=False)
+    assert result.returncode != 0
+    assert "is not a verified semantic export" in result.stderr
+
+
+def test_ready_plan_requires_bound_interface_for_semantic_action(tmp_path):
+    workspace = make_workspace(tmp_path)
+    ready_plan(workspace)
+    plan_path = workspace / "CAPABILITY_PLAN.yml"
+    plan = read_yaml(plan_path)
+    plan["selected"][0]["interfaces"] = []
+    write_yaml(plan_path, plan)
+
+    result = run("validate", workspace, "--require-ready", check=False)
+    assert result.returncode != 0
+    assert "must include its bound public interface" in result.stderr
+
+
+def test_snapshot_change_is_detected_against_shipped_checksum(tmp_path):
     workspace = make_workspace(tmp_path)
     target = workspace / "snapshot/metadata/core/capability.yml"
     target.write_text(target.read_text(encoding="utf-8") + "\n# changed\n", encoding="utf-8")
@@ -171,7 +214,7 @@ def test_snapshot_tampering_is_detected(tmp_path):
     assert "snapshot file changed" in result.stderr
 
 
-def test_closeout_emits_sanitized_proposal_without_client_or_financial_data(tmp_path):
+def test_closeout_emits_proposal_without_client_or_financial_fields(tmp_path):
     workspace = make_workspace(tmp_path)
     ready_plan(workspace)
     finish_evidence_and_metrics(workspace)
@@ -186,9 +229,10 @@ def test_closeout_emits_sanitized_proposal_without_client_or_financial_data(tmp_
     assert "65%" not in proposal_text
     assert "Gross contribution before overhead: 650" in summary_text
     assert "Satisfied through multi-component composition: 1 (100%)" in summary_text
+    assert "requires human sanitization review" in summary_text
 
 
-def test_closeout_blocks_unsanitized_evidence(tmp_path):
+def test_closeout_blocks_evidence_until_human_flags_are_cleared(tmp_path):
     workspace = make_workspace(tmp_path)
     ready_plan(workspace)
     evidence_path = workspace / "EVIDENCE_PROPOSAL.yml"
@@ -197,4 +241,4 @@ def test_closeout_blocks_unsanitized_evidence(tmp_path):
     write_yaml(evidence_path, evidence)
     result = run("close", workspace, check=False)
     assert result.returncode != 0
-    assert "sanitize EVIDENCE_PROPOSAL.yml" in result.stderr
+    assert "review/sanitize EVIDENCE_PROPOSAL.yml" in result.stderr

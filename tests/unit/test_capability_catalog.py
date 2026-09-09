@@ -22,12 +22,14 @@ def test_catalog_contains_only_audited_semantic_exports():
         for item in actions
     }
     assert actual == EXPECTED
+    assert all(item["source_file"].endswith(".py") for item in actions)
 
 
 def test_exact_resolution_returns_declared_public_interface():
     item = resolve_action("state.transition.plan")
     assert item["capability"] == "core"
     assert item["public_interface"] == "na_core.transitions.plan_transition"
+    assert item["source_file"].endswith("na_core/na_core/transitions.py")
     with pytest.raises(CatalogError, match="unknown semantic action"):
         resolve_action("state.transition")
 
@@ -52,6 +54,29 @@ def test_catalog_rejects_non_public_export(tmp_path):
         encoding="utf-8",
     )
     with pytest.raises(CatalogError, match="non-public interface"):
+        build_catalog(tmp_path)
+
+
+def test_catalog_rejects_export_whose_callable_does_not_exist(tmp_path):
+    (tmp_path / "capabilities/example").mkdir(parents=True)
+    runtime = tmp_path / "runtime"
+    (runtime / "example").mkdir(parents=True)
+    (runtime / "example/module.py").write_text(
+        "def other():\n    return 1\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "capability_registry.yml").write_text(
+        "schema_version: 1\ncapabilities:\n  example:\n"
+        "    path: capabilities/example\n    runtime_path: runtime\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "capabilities/example/capability.yml").write_text(
+        "name: example\nversion: 1\nstatus: candidate\nruntime_path: runtime\n"
+        "provides: [example.run]\npublic_interfaces: [example.module.run]\n"
+        "semantic_exports:\n  - action_id: example.run\n    public_interface: example.module.run\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(CatalogError, match="does not resolve to a top-level function/class"):
         build_catalog(tmp_path)
 
 
