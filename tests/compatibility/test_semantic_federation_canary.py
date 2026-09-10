@@ -26,11 +26,21 @@ def _requirement(requirement_id, action, inputs, outputs, transitions=()):
             "role_bindings": [],
             "business_rules": [
                 {
-                    "id": f"rule:{requirement_id}",
+                    "id": "rule:long_appointment_requires_approval",
                     "scope": "biz:Appointment",
                     "priority": 1,
-                    "when": {},
-                    "conclude": {},
+                    "when": {
+                        "all": [
+                            {
+                                "compare": {
+                                    "left": {"property": "rel:durationMinutes", "subject": "$appointment"},
+                                    "operator": ">",
+                                    "right": {"literal": 90},
+                                }
+                            }
+                        ]
+                    },
+                    "conclude": {"approval_request": {"approver_type": "biz:Manager"}},
                     "provenance": {"source_clause": "clause:approval"},
                 }
             ],
@@ -65,7 +75,7 @@ def canary_fixture():
         "requirement_id": "req:transition",
         "output_name": "notification_request",
     }
-    return {
+    payload = {
         "schema_version": "1.0",
         "status": "supported",
         "source_system_spec": {"id": "spec:appointment", "version": "1.0", "semantic_spec_sha256": "a" * 64},
@@ -102,6 +112,16 @@ def canary_fixture():
             ),
         ],
     }
+    payload["requirements"][1]["semantic_context"]["configuration_values"] = [
+        {
+            "path": ["cap:Notification", "cap:notification.defaultReminderOffsetMinutes"],
+            "value": -1440,
+        }
+    ]
+    payload["requirements"][2]["semantic_context"]["configuration_values"] = [
+        {"path": ["cap:Notification", "delivery_channel"], "value": "email"}
+    ]
+    return payload
 
 
 def assert_code(payload, code):
@@ -119,6 +139,8 @@ def test_canary_resolves_actions_preserves_branches_and_validates_graph():
         "notification.email.send",
     ]
     assert result["graph_validation"]["order"] == ["req:approval", "req:transition", "req:notify"]
+    assert result["semantic_parameters"]["approval_threshold_minutes"] == 90
+    assert result["semantic_parameters"]["reminder_offset_minutes"] == -1440
     assert result["side_effects_executed"] is False
 
 
@@ -146,3 +168,9 @@ def test_missing_provenance_fails_visibly():
     payload = canary_fixture()
     payload["requirements"][0].pop("provenance")
     assert_code(payload, "PROVENANCE_MISSING")
+
+
+def test_wrong_canary_parameter_fails_visibly():
+    payload = canary_fixture()
+    payload["requirements"][0]["semantic_context"]["business_rules"][0]["when"]["all"][0]["compare"]["right"]["literal"] = 75
+    assert_code(payload, "CANARY_PARAMETER_MISMATCH")

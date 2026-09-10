@@ -36,6 +36,12 @@ REQUIRED_BRANCHES = {
     "reject": "transition:appointment_approval_rejected",
     "notification": "transition:schedule_appointment_reminder",
 }
+CANARY_PARAMETERS = {
+    "approval_threshold_minutes": 90,
+    "reminder_offset_minutes": -1440,
+    "delivery_channel": "email",
+    "approver_type": "biz:Manager",
+}
 
 
 class CanaryError(ValueError):
@@ -173,6 +179,58 @@ def _branches(requirements: list[dict[str, Any]]) -> dict[str, str]:
     return {name: REQUIRED_BRANCHES[name] for name in sorted(REQUIRED_BRANCHES)}
 
 
+def _semantic_parameters(requirements: list[dict[str, Any]]) -> dict[str, Any]:
+    """Verify the fixed canary through structured semantics, never prose matching."""
+
+    thresholds: set[object] = set()
+    offsets: set[object] = set()
+    channels: set[object] = set()
+    approver_types: set[object] = set()
+    for requirement in requirements:
+        context = requirement.get("semantic_context") or {}
+        for rule in context.get("business_rules") or ():
+            if not isinstance(rule, dict) or rule.get("id") != "rule:long_appointment_requires_approval":
+                continue
+            conclusion = rule.get("conclude") or {}
+            approval_request = conclusion.get("approval_request") or {}
+            approver_types.add(approval_request.get("approver_type"))
+            condition = rule.get("when") or {}
+            for clause in condition.get("all") or ():
+                comparison = clause.get("compare") if isinstance(clause, dict) else None
+                if not isinstance(comparison, dict):
+                    continue
+                left = comparison.get("left") or {}
+                right = comparison.get("right") or {}
+                if left.get("property") == "rel:durationMinutes" and comparison.get("operator") == ">":
+                    thresholds.add(right.get("literal"))
+        for config in context.get("configuration_values") or ():
+            if not isinstance(config, dict):
+                continue
+            path = config.get("path")
+            if path == ["cap:Notification", "cap:notification.defaultReminderOffsetMinutes"]:
+                offsets.add(config.get("value"))
+            if path == ["cap:Notification", "delivery_channel"]:
+                channels.add(config.get("value"))
+
+    observed = {
+        "approval_threshold_minutes": sorted(thresholds, key=repr),
+        "reminder_offset_minutes": sorted(offsets, key=repr),
+        "delivery_channel": sorted(channels, key=repr),
+        "approver_type": sorted(approver_types, key=repr),
+    }
+    mismatches = {
+        name: values
+        for name, values in observed.items()
+        if values != [CANARY_PARAMETERS[name]]
+    }
+    if mismatches:
+        raise CanaryError(
+            "CANARY_PARAMETER_MISMATCH",
+            json.dumps({"expected": CANARY_PARAMETERS, "observed": mismatches}, sort_keys=True),
+        )
+    return dict(CANARY_PARAMETERS)
+
+
 def run_canary(requirements_payload: dict[str, Any]) -> dict[str, Any]:
     """Return a deterministic, side-effect-free conformance result."""
 
@@ -195,6 +253,7 @@ def run_canary(requirements_payload: dict[str, Any]) -> dict[str, Any]:
 
     source_clauses = _source_clauses(requirements)
     branches = _branches(requirements)
+    semantic_parameters = _semantic_parameters(requirements)
     graph = _provider_graph(requirements)
     try:
         from data_contracts.composition import ProviderGraphError, validate_provider_bound_graph
@@ -213,6 +272,7 @@ def run_canary(requirements_payload: dict[str, Any]) -> dict[str, Any]:
         "result": "pass",
         "source_system_spec": requirements_payload.get("source_system_spec"),
         "source_clauses": source_clauses,
+        "semantic_parameters": semantic_parameters,
         "derived_branches": branches,
         "resolved_actions": resolved_actions,
         "graph_validation": {
