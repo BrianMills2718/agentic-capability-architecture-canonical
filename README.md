@@ -1,5 +1,13 @@
 # Agentic Capability Architecture
 
+> **Global navigation:** use the [Vision knowledge index](https://github.com/BrianMills2718/vision/blob/main/wiki/index.md) for cross-repository orientation and the [semantic federation roadmap](https://github.com/BrianMills2718/vision/blob/main/wiki/synthesis/semantic-federation-roadmap-2026-09-10.md) for this repository's place in the semantic system.
+
+**Cross-repo role.** This repository owns capability manifests, verified public
+exports, exact semantic-action resolution, and reuse evidence. The requirement
+compiler owns application meaning and control flow; `data-contracts` owns shared
+typed graph validation; runtime adapters own effects. Resolving an action here
+does not reinterpret the requirement or authorize execution.
+
 > **Composable software functionality that compounds across projects.**
 >
 > Give coding agents persistent, machine-readable capability knowledge so they can **bind and compose verified functionality before writing new code**, keep genuinely domain-specific behavior local, and leave evidence that helps the next project start further ahead.
