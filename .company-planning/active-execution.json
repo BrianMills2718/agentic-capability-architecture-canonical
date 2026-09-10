@@ -1,0 +1,58 @@
+{
+  "active_slice": {
+    "description": "Resolve the compiler appointment behavior against exact manifest-derived capability exports and validate its typed graph through pinned data-contracts without executing side effects.",
+    "next_action": "Implement the deterministic conformance CLI and its four negative controls against the compiler-owned BehaviorRequirements artifact.",
+    "requires_external_action": false,
+    "requires_spend": false,
+    "slice_id": "semantic-federation-phase1-canary",
+    "status": "executing",
+    "target_revision": "76666e40f5ff7194c42b8b13c1686b50592be69f"
+  },
+  "authority": {
+    "external_action_authorized": true,
+    "human_decision": null,
+    "human_decision_required": false,
+    "implementation_authorized": true,
+    "spend_cap_usd": 0,
+    "spend_used_usd": 0
+  },
+  "circuit_breakers": {
+    "context_integrity_valid": true,
+    "max_same_boundary_failures": 3,
+    "runtime_integrity_valid": true
+  },
+  "completion": {
+    "evidence_revision": null,
+    "receipt_ref": null,
+    "remaining_ready_work": 1,
+    "requested": false,
+    "verifier_outcome": null
+  },
+  "cursor_id": "semantic-federation-roadmap-phase1-canary-v1",
+  "cursor_revision": 1,
+  "failure_state": {
+    "boundary": null,
+    "last_failure_ref": null,
+    "same_boundary_failures": 0
+  },
+  "goal_ref": "semantic-repository-federation",
+  "lifecycle_state": "active",
+  "observations": [
+    {
+      "boundary": "existing-canary-evidence",
+      "evidence_ref": "Compiler semantic-interlingua-goal revision d95964e92c2086e056f59b014f2a64fd629ca510 records a real OpenRouter appointment canary with the required action IDs and local corruption controls; actual ACA catalog consumption remains absent and is this slice's gap.",
+      "kind": "supporting_work",
+      "observation_id": "phase1-current-evidence-reconciliation",
+      "outcome": "pass"
+    }
+  ],
+  "plan_revision": "vision@457cc462ad94b873a436e0bbdc1c775e7c046211",
+  "ready_alternatives": [],
+  "record_type": "plan_execution_cursor",
+  "schema_version": "1.0",
+  "target": {
+    "branch": "semantic-federation-canary",
+    "repository": "agentic-capability-architecture-canonical",
+    "worktree": "/home/brian/code/agentic-capability-architecture-canonical/worktrees/semantic-federation-canary"
+  }
+}
