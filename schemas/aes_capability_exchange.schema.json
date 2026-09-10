@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AES Capability Exchange",
+  "description": "Versioned messages exchanged when AES asks the capability catalog to select executable actions and reports the observed reuse result.",
+  "oneOf": [
+    {"$ref": "#/$defs/selection_request"},
+    {"$ref": "#/$defs/selection_response"},
+    {"$ref": "#/$defs/reuse_receipt"}
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.:-]*$"},
+    "non_empty": {"type": "string", "minLength": 1},
+    "evidence": {
+      "type": "object",
+      "required": ["kind", "reference"],
+      "properties": {
+        "kind": {"enum": ["test", "trace", "artifact", "observation"]},
+        "reference": {"$ref": "#/$defs/non_empty"}
+      },
+      "additionalProperties": false
+    },
+    "selection_request": {
+      "type": "object",
+      "required": ["schema_version", "message_kind", "request_id", "catalog_revision", "outcomes", "constraints", "capability_categories", "evidence_level", "runtime_constraints"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "message_kind": {"const": "selection_request"},
+        "request_id": {"$ref": "#/$defs/id"},
+        "catalog_revision": {"$ref": "#/$defs/non_empty"},
+        "outcomes": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/non_empty"}},
+        "constraints": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}},
+        "capability_categories": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/id"}, "uniqueItems": true},
+        "evidence_level": {"enum": ["structural", "tested", "observed"]},
+        "runtime_constraints": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}}
+      },
+      "additionalProperties": false
+    },
+    "selection_response": {
+      "type": "object",
+      "required": ["schema_version", "message_kind", "request_id", "catalog_revision", "selected", "rejected", "uncovered_gaps"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "message_kind": {"const": "selection_response"},
+        "request_id": {"$ref": "#/$defs/id"},
+        "catalog_revision": {"$ref": "#/$defs/non_empty"},
+        "selected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["semantic_action_id", "owner", "version", "public_interface", "evidence", "limitations"],
+            "properties": {
+              "semantic_action_id": {"$ref": "#/$defs/id"},
+              "owner": {"$ref": "#/$defs/non_empty"},
+              "version": {"$ref": "#/$defs/non_empty"},
+              "public_interface": {"$ref": "#/$defs/non_empty"},
+              "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+              "limitations": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}}
+            },
+            "additionalProperties": false
+          }
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["candidate", "reason"],
+            "properties": {"candidate": {"$ref": "#/$defs/non_empty"}, "reason": {"$ref": "#/$defs/non_empty"}},
+            "additionalProperties": false
+          }
+        },
+        "uncovered_gaps": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}}
+      },
+      "additionalProperties": false
+    },
+    "reuse_receipt": {
+      "type": "object",
+      "required": ["schema_version", "message_kind", "request_id", "catalog_revision", "semantic_action_id", "observed_result", "evidence", "adaptations", "failure_reason"],
+      "properties": {
+        "schema_version": {"const": "1.0"},
+        "message_kind": {"const": "reuse_receipt"},
+        "request_id": {"$ref": "#/$defs/id"},
+        "catalog_revision": {"$ref": "#/$defs/non_empty"},
+        "semantic_action_id": {"$ref": "#/$defs/id"},
+        "observed_result": {"enum": ["succeeded", "failed", "inconclusive"]},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+        "adaptations": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}},
+        "failure_reason": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/non_empty"}]}
+      },
+      "additionalProperties": false
+    }
+  }
+}
