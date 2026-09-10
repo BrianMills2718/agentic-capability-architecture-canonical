@@ -4,3 +4,4 @@ wheel>=0.44
 jsonschema>=4,<5
 pytest>=8,<10
 PyYAML>=6,<7
+data_contracts @ git+https://github.com/BrianMills2718/data-contracts.git@22b0c3078e5c1ff68a536529d56a3346efc105f3
