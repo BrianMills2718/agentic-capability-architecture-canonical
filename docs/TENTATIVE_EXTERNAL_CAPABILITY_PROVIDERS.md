@@ -84,6 +84,34 @@ Before adding a new shared control-plane subsystem, answer:
 
 If these questions do not expose a genuine residual, the default should be composition/adoption rather than new shared infrastructure.
 
+### Additional control-plane areas to source before building
+
+Several adjacent concerns deserve the same treatment:
+
+- **Workload/service identity:** evaluate SPIFFE/SPIRE or equivalent established workload-identity infrastructure before creating custom service certificates, service-token issuance, trust bundles, or agent/service identity bootstrapping. ACA may still need application-level meanings such as requester, connection owner, or delegated actor; those meanings should not require ACA to become a workload PKI.
+- **Software supply-chain provenance and signing:** evaluate SLSA provenance, in-toto attestations, Sigstore/Cosign, or equivalent established mechanisms before defining a new cryptographic artifact-attestation format. ACA evidence may say that a capability/provider satisfied a semantic action under particular conditions; artifact authenticity/build provenance should use established supply-chain formats where possible.
+- **Feature/configuration rollout:** evaluate OpenFeature and mature feature-flag/configuration systems before creating generic rollout percentages, per-user enablement, canary-provider routing, or experiment-targeting semantics. ACA can own the reason a provider/capability is under experiment without becoming a flag-delivery platform.
+- **User/group provisioning:** evaluate SCIM for generic cross-domain user and group lifecycle synchronization before creating another provisioning protocol. Product-specific facts such as who owns a Second Brain or what delegated relationship is allowed remain domain semantics above that layer.
+
+These examples are candidates for evaluation, not adopted dependencies. The question is always whether the standard or mature implementation satisfies the actual invariant with lower total cost and risk than a custom subsystem.
+
+### Required prior-art check for new shared infrastructure
+
+Any proposal for a new cross-project **schema, daemon, registry, gateway, identity mechanism, scheduler, policy engine, event envelope, telemetry vocabulary, signing/provenance format, or provisioning protocol** should include an explicit standards/prior-art section before implementation.
+
+At minimum it should record:
+
+1. the exact invariant the new component would own;
+2. relevant standards/protocols and mature implementations considered;
+3. why each plausible option fails or is uneconomic for the requirement;
+4. the smallest adapter/configuration alternative to a new subsystem;
+5. the smallest viable local implementation;
+6. the ACA-specific semantic residual, if any;
+7. migration/exit cost if an external implementation is selected;
+8. evidence that would falsify the decision.
+
+A missing prior-art search should be treated as an incomplete architecture proposal, not as evidence that a custom component is needed.
+
 ## Important identity boundary for agent systems
 
 A provider connection and the human currently requesting an action are not always the same identity.
