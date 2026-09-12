@@ -112,6 +112,27 @@ At minimum it should record:
 
 A missing prior-art search should be treated as an incomplete architecture proposal, not as evidence that a custom component is needed.
 
+## Additional infrastructure that should stay standards-first
+
+A few more control-plane areas deserve the same presumption against custom infrastructure:
+
+| Concern | Existing practices/systems to evaluate first | ACA-specific remainder, if any |
+| --- | --- | --- |
+| Secrets and key custody | Vault/cloud KMS, short-lived credentials, SOPS-class encrypted configuration | which capability/provider needs a secret and what scope/rotation evidence applies |
+| HTTP/RPC interface contracts | OpenAPI, JSON Schema, Protocol Buffers/gRPC where appropriate | ACA semantic action identity and evidence that a concrete interface actually satisfies it |
+| Policy/configuration distribution | OPA bundle/discovery patterns, signed/versioned configuration delivery | ACA-specific policy meaning and the evidence that a particular consumer received/evaluated the intended version |
+| Network-edge resilience | established proxies/service meshes and platform rate limiting, circuit breaking, retries, mTLS | capability-specific failure semantics and any domain rule that must not be hidden by generic retry behavior |
+
+The practical rule is: ACA should reference or bind mature interface/control standards rather than create another IDL, secret store, policy-distribution daemon, proxy, or resilience layer. A custom adapter is justified only when it expresses a real semantic translation or evidence boundary that the underlying system does not provide.
+
+### Contract discipline
+
+When a capability crosses a process or repository boundary, prefer an established machine-readable contract format before creating an ACA-specific schema language. HTTP surfaces should generally start from OpenAPI + JSON Schema; RPC surfaces should consider an established IDL such as Protocol Buffers; asynchronous surfaces should continue to prefer AsyncAPI/CloudEvents. ACA may add semantic action IDs, provider-selection evidence, limitations, and compatibility metadata around those contracts, but should not duplicate their wire/interface semantics.
+
+### Secret-handling discipline
+
+Capability manifests and evidence should refer to logical secret requirements and scopes, never become the secret store. Prefer short-lived/dynamic credentials where available, external secret custody, explicit rotation/revocation, and machine-local resolution. Secret values should not enter capability catalogs, evidence records, prompts, generated documentation, or portable profiles.
+
 ## Important identity boundary for agent systems
 
 A provider connection and the human currently requesting an action are not always the same identity.
