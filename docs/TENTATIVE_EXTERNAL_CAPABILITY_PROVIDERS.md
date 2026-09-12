@@ -38,6 +38,52 @@ This is especially relevant to the current verified exports:
 For example, `availability.query` should remain the semantic behavior. Google Calendar, Microsoft 365, a normalized calendar API, or a managed integration platform can be alternative providers of that behavior. Likewise, `notification.email.send` should not become `gmail.send` simply because Gmail happens to be the first provider.
 
 Provider-specific behavior is still legitimate when the requirement is genuinely provider-specific. The rule is not to hide meaningful provider semantics; it is to avoid making incidental provider names the durable abstraction when the required behavior is broader.
+## Broader control-plane sourcing principle
+
+The same sourcing rule should apply to ACA's **control plane**, not only to business/application capabilities. Before creating new shared infrastructure for authorization, durable execution, events, telemetry, tool metadata, catalogs, or integration plumbing, first test whether an established standard, runtime, or product already satisfies the invariant.
+
+The tentative default should be:
+
+```text
+required control-plane invariant
+  -> established standard / protocol?
+  -> mature runtime or platform capability?
+  -> established external/OSS implementation?
+  -> existing internal capability?
+  -> only then implement the residual gap
+```
+
+This does not mean ACA should adopt a particular vendor or turn standards into mandatory dependencies. It means generic infrastructure needs the same net-value gate ACA already applies to reusable application capabilities.
+
+### Areas that should receive a build-vs-standard check
+
+| Concern | Existing practices/systems to evaluate before custom infrastructure | ACA-specific remainder, if any |
+| --- | --- | --- |
+| Fine-grained authorization | Cedar, OpenFGA, OPA-style policy engines | application-specific resource/action model, delegated-agent semantics, evidence of the decision |
+| Delegation and exact authorization | OAuth delegation/token-exchange concepts, rich/transaction authorization patterns | requester vs. connection-owner distinction and agent-specific approval semantics |
+| OAuth and provider connections | OAuth/OIDC plus Nango/Unified/Composio/Pipedream-like managed connection infrastructure | semantic capability selection and any unavoidable provider-specific residual |
+| Tool metadata/discovery | MCP tool schemas, annotations, and discovery | ACA semantic identity, verified binding, selection/rejection evidence |
+| Events and asynchronous contracts | CloudEvents and AsyncAPI | domain event meaning and admission into governed knowledge |
+| Durable waits/retries/scheduling | Temporal/Restate-style durable execution or runtime-native schedulers | domain workflow intent, approval points, escalation semantics |
+| Observability | OpenTelemetry semantic conventions and standard trace/log/metric pipelines | ACA/consumer-specific attributes such as capability ID, requester, provider selection, policy decision |
+| Generic software/service inventory | Backstage-style software catalogs and existing registries | ACA's capability/evidence graph: semantic behavior, executable boundary, net-value and reuse evidence |
+
+ACA should resist becoming a generic authorization server, workflow engine, event bus, tracing vocabulary, service catalog, OAuth broker, or MCP transport merely because those concerns appear in capability compositions. The differentiated layer is the **agent-facing semantic capability/evidence loop**: stable behavior identity, honest executable boundaries, provider selection/rejection, net-value reasoning, explicit composition, residual-local semantics, and evidence that improves later decisions.
+
+### Pre-build control-plane check
+
+Before adding a new shared control-plane subsystem, answer:
+
+1. What exact invariant is missing?
+2. Which standard or mature implementation already addresses that invariant?
+3. What concrete requirement is not satisfied by those options?
+4. Can an adapter/configuration layer close that gap without creating another platform?
+5. What is the smallest viable local implementation, and does shared infrastructure beat it after discovery, operations, security, and migration cost?
+6. Which parts are genuinely ACA semantics versus generic infrastructure?
+7. What evidence would falsify the decision to build or adopt the component?
+
+If these questions do not expose a genuine residual, the default should be composition/adoption rather than new shared infrastructure.
+
 ## Important identity boundary for agent systems
 
 A provider connection and the human currently requesting an action are not always the same identity.
