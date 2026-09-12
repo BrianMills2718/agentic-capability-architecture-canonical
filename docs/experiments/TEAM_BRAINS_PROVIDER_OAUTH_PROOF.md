@@ -167,3 +167,13 @@ Reject or defer Nango if:
 If the Calendar proof passes, run a consequential-action proof using the existing immutable approval/revalidation path. Then compare whether the same provider substrate can safely support Gmail, Monday, GitHub, Notion, and Slack before deciding whether the custom broker should be retired broadly.
 
 Do not combine this proof with remote-MCP auth replacement, authorization-engine adoption, durable-workflow migration, or telemetry migration. Those have separate falsifiable questions and should remain independently reversible.
+## Implementation scaffold status — 2026-09-12
+
+A disabled-by-default Team-Brains scaffold has now been implemented locally against current `origin/main` in branch `experiment/nango-oauth-proof-scaffold-20260912`.
+
+- `563d409` adds the owner-bound Nango connection resolver, Connect Session client, proxy transport, and focused negative tests.
+- `ce460f0` updates Connect Sessions to use Nango connection `tags` (`end_user_id`, `end_user_email`, `end_user_display_name`) rather than the deprecated `end_user` object, and adds a Google Calendar `freeBusy` proxy seam.
+- the free/busy seam preserves the upstream `calendars` object including per-calendar errors; Team-Brains retains attendee resolution, unreadable-calendar policy, working-hours calculation, requester authorization, audit, and final response shaping.
+- focused verification: 8 tests pass; ruff, mypy, and `git diff --check` pass.
+
+The scaffold is not imported by the Team-Brains MCP server and changes no production routing, settings, credentials, or deployment. Publishing is currently blocked because the authenticated GitHub identity has read-only permission on `Inside-Success/Team-Brains`; the two commits and a generated patch are retained locally until an authorized write path exists.
