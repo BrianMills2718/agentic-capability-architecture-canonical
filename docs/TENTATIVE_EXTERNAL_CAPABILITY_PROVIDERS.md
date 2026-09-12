@@ -190,6 +190,10 @@ Hypothesis: evaluate separately from the provider-runtime question. A governance
 4. **Preserve local policy above provider execution.** Authentication to an external account is not equivalent to authorization for every human or agent that can reach the calling system.
 5. **Preserve evidence.** Selection should retain provider/version, exact connection/configuration class, tests, limitations, incidents, and rejected-fit reasons where they matter for future reuse.
 6. **Do not migrate broadly from a paper comparison.** Prove one or two semantic capabilities under authentic use before replacing working provider-specific infrastructure.
+## Concrete provider/OAuth proof
+
+The first implementation-facing proof is specified in [`experiments/TEAM_BRAINS_PROVIDER_OAUTH_PROOF.md`](experiments/TEAM_BRAINS_PROVIDER_OAUTH_PROOF.md). It intentionally tests provider OAuth custody on one existing semantic capability before any broad integration-platform migration or broker deletion.
+
 ## Suggested first ACA experiment
 
 Use existing verified semantic actions rather than inventing a new generic integration abstraction.
