@@ -149,3 +149,16 @@ implementations.
 semantic actions distinct from `approval.resolve`. They do not authenticate an
 approver, persist consent, perform authorization, or execute an effect; the
 consuming application/runtime owns those boundaries.
+---
+
+## ADR-015 — Reuse receipts version portable evidence independently
+
+**Status:** accepted
+
+**Decision:** Preserve AES capability-exchange selection requests, selection responses, and legacy reuse receipts at schema version `1.0`. Add reuse-receipt version `2.0` for new retained reuse evidence, where each evidence item carries a stable repository record ID, exact Git/content revision, and normalized repository-relative artifact path instead of an unqualified string reference.
+
+**Rejected alternative:** Redefine the existing `1.0` evidence `reference` field in place or bump every exchange message merely because consumer-produced receipt evidence needs stronger custody.
+
+**Reason:** The first positive AES integration canary successfully reused `state.transition.plan` but also showed that the v1 receipt accepts machine-local paths such as `/tmp/.../execution.json`. Selection-response evidence is catalog-owned and already interpreted under the exact catalog revision, while reuse observations are produced by a separate consumer and need an explicit portable owner/revision/path tuple. Changing v1 in place would break strict current readers and erase the meaning of retained historical receipts.
+
+**Consequence:** Existing v1 receipts remain valid historical artifacts. New portable receipt producers should move to v2 once their reader/writer supports it. Do not invent custody when migrating an old v1 string that cannot be resolved from its original context. Selection messages remain v1 until an independent requirement changes their contract.

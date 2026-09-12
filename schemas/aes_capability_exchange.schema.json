@@ -5,11 +5,41 @@
   "oneOf": [
     {"$ref": "#/$defs/selection_request"},
     {"$ref": "#/$defs/selection_response"},
-    {"$ref": "#/$defs/reuse_receipt"}
+    {"$ref": "#/$defs/reuse_receipt"},
+    {"$ref": "#/$defs/reuse_receipt_v2"}
   ],
   "$defs": {
     "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.:-]*$"},
     "non_empty": {"type": "string", "minLength": 1},
+    "portable_artifact_ref": {
+      "type": "object",
+      "required": ["repository_record_id", "revision", "relative_path"],
+      "properties": {
+        "repository_record_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"},
+        "revision": {"anyOf": [{"type": "string", "pattern": "^[0-9a-f]{40}$"}, {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}]},
+        "relative_path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[^/]",
+          "allOf": [
+            {"not": {"pattern": "\\\\"}},
+            {"not": {"pattern": "//"}},
+            {"not": {"pattern": "(^|/)[.][.]?(/|$)"}},
+            {"not": {"pattern": "/$"}}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence_v2": {
+      "type": "object",
+      "required": ["kind", "artifact_ref"],
+      "properties": {
+        "kind": {"enum": ["test", "trace", "artifact", "observation"]},
+        "artifact_ref": {"$ref": "#/$defs/portable_artifact_ref"}
+      },
+      "additionalProperties": false
+    },
     "evidence": {
       "type": "object",
       "required": ["kind", "reference"],
@@ -83,6 +113,22 @@
         "semantic_action_id": {"$ref": "#/$defs/id"},
         "observed_result": {"enum": ["succeeded", "failed", "inconclusive"]},
         "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+        "adaptations": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}},
+        "failure_reason": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/non_empty"}]}
+      },
+      "additionalProperties": false
+    },
+    "reuse_receipt_v2": {
+      "type": "object",
+      "required": ["schema_version", "message_kind", "request_id", "catalog_revision", "semantic_action_id", "observed_result", "evidence", "adaptations", "failure_reason"],
+      "properties": {
+        "schema_version": {"const": "2.0"},
+        "message_kind": {"const": "reuse_receipt"},
+        "request_id": {"$ref": "#/$defs/id"},
+        "catalog_revision": {"$ref": "#/$defs/non_empty"},
+        "semantic_action_id": {"$ref": "#/$defs/id"},
+        "observed_result": {"enum": ["succeeded", "failed", "inconclusive"]},
+        "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence_v2"}},
         "adaptations": {"type": "array", "items": {"$ref": "#/$defs/non_empty"}},
         "failure_reason": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/non_empty"}]}
       },
