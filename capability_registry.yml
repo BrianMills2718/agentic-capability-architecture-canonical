@@ -57,3 +57,14 @@ capabilities:
     optional:
       - approvals
       - notifications
+
+  digimon_governed_evidence:
+    status: local
+    version: 0.1.0
+    path: capabilities/digimon_governed_evidence
+    provides:
+      - knowledge.evidence.search_governed
+    requires: []
+    notes:
+      - External provider descriptor only; ACA does not execute DIGIMON or own its domain semantics.
+      - Local status describes this first ACA adoption descriptor and is not a claim about DIGIMON provider maturity.
