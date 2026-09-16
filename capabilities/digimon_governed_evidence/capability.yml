@@ -1,0 +1,51 @@
+name: digimon_governed_evidence
+status: local
+version: 0.1.0
+
+provides:
+  - knowledge.evidence.search_governed
+
+requires: []
+optional: []
+
+configuration: {}
+
+compatibility:
+  known_consumers:
+    - second-brain
+
+provider_operability:
+  action_id: knowledge.evidence.search_governed
+  provider_id: inside-success.digimon.shared-evidence
+  provider_repository: Inside-Success/graph-retrieval
+  provider_revision: d1f130f1e98c96204637b290aa52c871c2592f16
+  interface:
+    transport: http
+    endpoint: POST /api/tools/execute
+    selector: tool=search_governed_evidence
+    request_contract: digimon.hermes-tool-http-request/1
+    result_contract: digimon.hermes-tool-result/1
+    auth: bearer
+  observability:
+    health_ref: Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:scripts/shared_evidence_service.py#/health/ready
+    trace_ref: Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tools.py#DirectToolResult.provider_trace_ref
+    failure_ref: Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tool_http.py#DirectToolRuntime.execute
+  reliability:
+    retry_owner: provider
+    idempotency_ref: Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tool_store.py#DirectToolResultStore
+  recovery:
+    owner: provider
+    references:
+      - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:scripts/shared_evidence_service.py#/health/ready
+      - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tool_http.py#DirectToolRuntime.execute
+      - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tool_store.py#DirectToolResultStore
+  evidence_refs:
+    - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tool_http.py#SearchGovernedEvidenceHttpRequest
+    - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:digimon/hermes_tools.py#DirectToolResult
+    - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:scripts/shared_evidence_service.py
+    - Inside-Success/graph-retrieval@d1f130f1e98c96204637b290aa52c871c2592f16:tests/unit/test_hermes_tool_http.py
+
+notes:
+  - This ACA status describes the local provider descriptor, not DIGIMON provider maturity.
+  - ACA owns discovery and binding metadata only; DIGIMON owns execution, authorization, retry/idempotency semantics, traces, health, failure behavior, and recovery.
+  - The provider action is intentionally separate from semantic_exports because there is no ACA-local callable to execute.
