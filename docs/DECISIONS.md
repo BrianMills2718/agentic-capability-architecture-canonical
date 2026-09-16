@@ -162,3 +162,17 @@ consuming application/runtime owns those boundaries.
 **Reason:** The first positive AES integration canary successfully reused `state.transition.plan` but also showed that the v1 receipt accepts machine-local paths such as `/tmp/.../execution.json`. Selection-response evidence is catalog-owned and already interpreted under the exact catalog revision, while reuse observations are produced by a separate consumer and need an explicit portable owner/revision/path tuple. Changing v1 in place would break strict current readers and erase the meaning of retained historical receipts.
 
 **Consequence:** Existing v1 receipts remain valid historical artifacts. New portable receipt producers should move to v2 once their reader/writer supports it. Do not invent custody when migrating an old v1 string that cannot be resolved from its original context. Selection messages remain v1 until an independent requirement changes their contract.
+
+---
+
+## ADR-016 — External provider operability is not a local callable claim
+
+**Status:** accepted
+
+**Decision:** Keep verified ACA-local `semantic_exports` separate from external `provider_operability` actions. A provider action may enter the derived capability catalog only when it pins an exact provider repository/revision and names its interface, request/result contracts, authentication boundary, health/trace/failure references, idempotency reference, and provider-owned recovery references. ACA does not import a provider runtime merely to make the action look locally callable.
+
+**Rejected alternative:** Represent an external provider action as a synthetic ACA wrapper or broad semantic export and let ACA own retries/recovery for architectural uniformity.
+
+**Reason:** The DIGIMON governed-evidence adoption already has a concrete authenticated HTTP execution surface, exact request/result contracts, retained provider traces/results, health readback, and idempotent retained-state semantics in the provider repository. A local wrapper would add a second runtime and falsely strengthen ACA metadata into an execution guarantee.
+
+**Consequence:** `tools/capability_catalog.py` exposes provider-owned actions separately from local semantic actions. Provider-operability metadata may help an agent understand/select/bind/observe/recover, but the provider remains authoritative for execution, authorization, retry/idempotency behavior, traces, health, failures, and recovery. A reference that is not pinned to the declared provider revision is a catalog validation failure.
