@@ -6,7 +6,12 @@ import sys
 
 import pytest
 import yaml
-from tools.capability_catalog import CatalogError, build_catalog, resolve_action
+from tools.capability_catalog import (
+    CatalogError,
+    build_catalog,
+    resolve_action,
+    resolve_provider_action,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 EXPECTED = {
@@ -17,16 +22,45 @@ EXPECTED = {
     "notification.email.send": ("notifications", "na_notifications.email.send_email"),
     "state.transition.plan": ("core", "na_core.transitions.plan_transition"),
 }
+DIGIMON_ACTION = "knowledge.evidence.search_governed"
+DIGIMON_REVISION = "d1f130f1e98c96204637b290aa52c871c2592f16"
 
 
 def test_catalog_contains_only_audited_semantic_exports():
-    actions = build_catalog()["semantic_actions"]
+    catalog = build_catalog()
+    actions = catalog["semantic_actions"]
     actual = {
         item["action_id"]: (item["capability"], item["public_interface"])
         for item in actions
     }
     assert actual == EXPECTED
     assert all(item["source_file"].endswith(".py") for item in actions)
+    assert catalog["schema_version"] == 2
+
+
+def test_provider_action_is_explicitly_provider_owned_and_exact_revision_bound():
+    item = resolve_provider_action(DIGIMON_ACTION)
+
+    assert item["capability"] == "digimon_governed_evidence"
+    assert item["execution_owner"] == "provider"
+    assert item["provider_repository"] == "Inside-Success/graph-retrieval"
+    assert item["provider_revision"] == DIGIMON_REVISION
+    assert item["interface"] == {
+        "transport": "http",
+        "endpoint": "POST /api/tools/execute",
+        "selector": "tool=search_governed_evidence",
+        "request_contract": "digimon.hermes-tool-http-request/1",
+        "result_contract": "digimon.hermes-tool-result/1",
+        "auth": "bearer",
+    }
+    assert item["observability"]["health_ref"].startswith(
+        f"Inside-Success/graph-retrieval@{DIGIMON_REVISION}:"
+    )
+    assert item["observability"]["trace_ref"].startswith(
+        f"Inside-Success/graph-retrieval@{DIGIMON_REVISION}:"
+    )
+    assert item["reliability"]["retry_owner"] == "provider"
+    assert item["recovery"]["owner"] == "provider"
 
 
 def test_exact_resolution_returns_declared_public_interface():
@@ -36,6 +70,8 @@ def test_exact_resolution_returns_declared_public_interface():
     assert item["source_file"].endswith("na_core/na_core/transitions.py")
     with pytest.raises(CatalogError, match="unknown semantic action"):
         resolve_action("state.transition")
+    with pytest.raises(CatalogError, match="unknown provider action"):
+        resolve_provider_action("knowledge.evidence")
 
 
 def test_exported_interfaces_are_real_callables():
@@ -99,6 +135,94 @@ def test_catalog_rejects_export_whose_callable_does_not_exist(tmp_path):
         build_catalog(tmp_path)
 
 
+def _provider_fixture(tmp_path: Path, *, provider_operability: dict) -> None:
+    capability = tmp_path / "capabilities/example"
+    capability.mkdir(parents=True)
+    (tmp_path / "capability_registry.yml").write_text(
+        "schema_version: 1\ncapabilities:\n  example:\n"
+        "    path: capabilities/example\n"
+        "    provides: [example.remote]\n"
+        "    requires: []\n",
+        encoding="utf-8",
+    )
+    (capability / "capability.yml").write_text(
+        yaml.safe_dump(
+            {
+                "name": "example",
+                "version": "0.1.0",
+                "status": "local",
+                "provides": ["example.remote"],
+                "requires": [],
+                "provider_operability": provider_operability,
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+
+
+def _valid_provider_operability() -> dict:
+    revision = "a" * 40
+    prefix = f"example/provider@{revision}:"
+    return {
+        "action_id": "example.remote",
+        "provider_id": "example.provider",
+        "provider_repository": "example/provider",
+        "provider_revision": revision,
+        "interface": {
+            "transport": "http",
+            "endpoint": "POST /api/run",
+            "selector": "action=example.remote",
+            "request_contract": "example.request/1",
+            "result_contract": "example.result/1",
+            "auth": "bearer",
+        },
+        "observability": {
+            "health_ref": prefix + "provider.py#/health/ready",
+            "trace_ref": prefix + "contracts.py#Trace",
+            "failure_ref": prefix + "contracts.py#Failure",
+        },
+        "reliability": {
+            "retry_owner": "provider",
+            "idempotency_ref": prefix + "store.py#Store",
+        },
+        "recovery": {
+            "owner": "provider",
+            "references": [prefix + "runbook.md"],
+        },
+        "evidence_refs": [prefix + "tests/test_provider.py"],
+    }
+
+
+def test_provider_operability_rejects_aca_owned_retry(tmp_path):
+    provider = _valid_provider_operability()
+    provider["reliability"]["retry_owner"] = "aca"
+    _provider_fixture(tmp_path, provider_operability=provider)
+
+    with pytest.raises(CatalogError, match="retry ownership must remain provider-owned"):
+        build_catalog(tmp_path)
+
+
+def test_provider_operability_rejects_aca_owned_recovery(tmp_path):
+    provider = _valid_provider_operability()
+    provider["recovery"]["owner"] = "aca"
+    _provider_fixture(tmp_path, provider_operability=provider)
+
+    with pytest.raises(CatalogError, match="recovery ownership must remain provider-owned"):
+        build_catalog(tmp_path)
+
+
+def test_provider_operability_rejects_reference_drift(tmp_path):
+    provider = _valid_provider_operability()
+    provider["observability"]["trace_ref"] = (
+        "example/provider@" + "b" * 40 + ":contracts.py#Trace"
+    )
+    _provider_fixture(tmp_path, provider_operability=provider)
+
+    with pytest.raises(CatalogError, match="references must bind exact"):
+        build_catalog(tmp_path)
+
+
 def test_list_cli_is_machine_readable_json():
     result = subprocess.run(
         [sys.executable, "tools/capability_catalog.py", "list", "--json"],
@@ -108,4 +232,26 @@ def test_list_cli_is_machine_readable_json():
         check=True,
     )
     payload = json.loads(result.stdout)
+    assert payload["schema_version"] == 2
     assert {item["action_id"] for item in payload["semantic_actions"]} == set(EXPECTED)
+    assert {item["action_id"] for item in payload["provider_actions"]} == {DIGIMON_ACTION}
+
+
+def test_describe_provider_cli_is_machine_readable_json():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "tools/capability_catalog.py",
+            "describe-provider",
+            DIGIMON_ACTION,
+            "--json",
+        ],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    payload = json.loads(result.stdout)
+    assert payload["action_id"] == DIGIMON_ACTION
+    assert payload["execution_owner"] == "provider"
+    assert payload["provider_revision"] == DIGIMON_REVISION
