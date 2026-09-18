@@ -8,6 +8,8 @@
 
 The main idea is **not** “use off-the-shelf software when possible.” That is only a sourcing rule. The architectural thesis is to make useful functionality **legible, bindable, composable, and cumulative for agents** so that a later project can increasingly be expressed as **known composition + a small genuinely novel residual**.
 
+A concrete product goal is to make this operating model **enforceable on hired developers and coding agents**, not merely advisory. When someone is hired to build Product X, the delivery process should require them to account for the capabilities the product needs, reuse suitable existing capabilities where appropriate, keep genuinely project-specific behavior local, and leave newly reusable behavior behind through a clean executable boundary with tests/evidence so the next project can start further ahead. The enforcement mechanics themselves are not claimed to be novel or difficult; schemas, CI, required planning/closeout artifacts, protected branches, and acceptance checks are ordinary means to make the desired production discipline non-optional.
+
 ## At a glance
 
 | | Current state | What it means |
