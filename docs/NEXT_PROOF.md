@@ -1,8 +1,20 @@
-# Next Proof — Capability Flywheel Control Experiment
+# Next Proof — Independent Capability Composition
+
+**Proposed next execution route:** [ACA-PLAN-001: minimal composability, off-the-shelf first](plans/2026-09-18-minimal-composability.md).
+
+The immediate question is whether independently authored capabilities can be composed by a fresh worker into a correct useful product with economical adapters, using existing tools and interfaces. CI and contractor artifact requirements support the work; proving that those can be enforced is not the technical experiment.
+
+The linked plan owns sequencing, acceptance, costs, independence, conditional metadata additions, second-consumer reuse, and stop rules. Do not create a separate benchmark platform or contract implementation before its provider-fit and protocol steps. No new experiment result is claimed here.
+
+---
+
+## Historical formulation retained: Capability Flywheel Control Experiment
+
+The text below is retained from the pre-2026-09-18 plan. It explains earlier discovery/planning hypotheses; it is not the current mandatory execution order. Existing evidence remains indexed in `PROOF_LEDGER_EXTENDED.md`.
 
 > **Supersedes the original bootstrap proof plan.** The original real-Frappe lifecycle and bounded fresh-agent acceptance gates have passed. Their evidence is indexed in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md). The next question is harder: whether accumulated capability knowledge creates measurable advantage beyond a good planning contract.
 
-## Why the proof changed
+### Why the proof changed
 
 The existing Shipment Exception fixture under `proof/fresh_agent_registry_discovery/challenge/` is useful for demonstrating the mechanics of a portable snapshot and pre-code composition plan, but its task currently names the shared notification choice, tells the agent not to recreate transition/notification logic, and exposes expected API shapes.
 
@@ -10,7 +22,7 @@ That means a pass primarily demonstrates instruction-following and composition m
 
 Treat that fixture as **guided demo evidence**, not the decisive flywheel experiment.
 
-## The two hypotheses to separate
+### The two hypotheses to separate
 
 **H1 — Planning-contract value:** forcing an agent to declare selections, rejections, compositions, interfaces, and local gaps before coding improves implementation quality even with no accumulated internal capability ecosystem.
 
@@ -18,7 +30,7 @@ Treat that fixture as **guided demo evidence**, not the decisive flywheel experi
 
 The architecture's distinctive flywheel claim depends on H2 adding value beyond H1.
 
-## Experimental design
+### Experimental design
 
 Use the same behavior-only task and fresh independent agent sessions across at least two arms:
 
@@ -40,7 +52,7 @@ The evaluator may define externally visible behavior and acceptance tests, but t
 
 Run multiple fresh sessions per task so one lucky/unlucky agent run is not treated as the result.
 
-## Task-suite requirements
+### Task-suite requirements
 
 The initial suite should contain several materially different decision shapes:
 
@@ -52,7 +64,7 @@ The initial suite should contain several materially different decision shapes:
 
 Do not score “more reuse” as automatically better. Score semantic correctness and unnecessary bespoke work.
 
-## What to measure
+### What to measure
 
 Record per run:
 
@@ -71,7 +83,7 @@ Record per run:
 
 Also record task identity, agent/model/runtime, exact capability snapshot revision, and a comparable-job classification so results can be interpreted rather than pooled blindly.
 
-## Interpretation
+### Interpretation
 
 Evidence for the capability flywheel requires the treatment arm to improve meaningful outcomes without hiding cost in extra metadata/review overhead.
 
@@ -91,7 +103,7 @@ If both arms struggle, improve the task/planning contract before growing the cap
 
 If the treatment consistently wins, then the repository has evidence for the main architectural thesis: software functionality can become an accumulated, agent-readable composition substrate that makes later projects easier.
 
-## Integrity prerequisites before interpreting the experiment
+### Integrity prerequisites before interpreting the experiment
 
 Before relying on the result:
 

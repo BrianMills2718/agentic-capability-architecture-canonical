@@ -162,3 +162,19 @@ consuming application/runtime owns those boundaries.
 **Reason:** The first positive AES integration canary successfully reused `state.transition.plan` but also showed that the v1 receipt accepts machine-local paths such as `/tmp/.../execution.json`. Selection-response evidence is catalog-owned and already interpreted under the exact catalog revision, while reuse observations are produced by a separate consumer and need an explicit portable owner/revision/path tuple. Changing v1 in place would break strict current readers and erase the meaning of retained historical receipts.
 
 **Consequence:** Existing v1 receipts remain valid historical artifacts. New portable receipt producers should move to v2 once their reader/writer supports it. Do not invent custody when migrating an old v1 string that cannot be resolved from its original context. Selection messages remain v1 until an independent requirement changes their contract.
+
+---
+
+## ADR-016 — Plan independent composability with the smallest sufficient substrate
+
+**Status:** proposed local planning direction, recorded from Brian's clarification on 2026-09-18; review/merge pending. No runtime or schema change is selected.
+
+**Decision:** Optimize the next ACA work for a usable product built from independently authored capabilities that a fresh worker can economically compose and reuse in another process. Treat a composability profile of existing interfaces plus targeted conformance tests as the smallest plausible technical addition. It may turn out that ordinary interfaces, descriptions, generated adapters, and existing tests are sufficient.
+
+**Supporting controls:** Enforceable hired-worker delivery remains a system goal. Existing CI, repository protections, engagement artifacts, and review should implement it. Creating a new governance product or proving that a manifest can be required is not the technical research objective.
+
+**Reason:** Brian prioritizes small scope, rapid useful delivery, and one sufficient off-the-shelf product or a small integration over novelty. Compliance artifacts cannot establish that independently developed capabilities are easy to compose. Conversely, some adapter code does not by itself justify another architecture layer.
+
+**Sequencing:** [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) owns the dependency-ordered plan: product/provider fit, one-page contract and protocol, baseline composition, conditional targeted repairs, second-consumer reuse, and explicit boundary selection. It becomes the next execution route on adoption; the previous discovery/control formulation is retained as historical context in `NEXT_PROOF.md`.
+
+**Relationship to existing decisions:** Refines ADR-008's near-term emphasis toward composability rather than discovery or enforcement infrastructure. Retains ADR-007 external-first sourcing, ADR-011 single manifest authority, ADR-013 net value, ADR-014 approval bindings, and ADR-015 receipt compatibility. Existing runtime, evidence, research, and consumers are not retired by this plan. Cross-repo authority remains outside this local decision.
