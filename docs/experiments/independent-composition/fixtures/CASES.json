@@ -1,0 +1,136 @@
+{
+  "fixture_version": "1.0",
+  "frozen_for": "ACA-PLAN-001 independent composition pilot",
+  "product": "Twitter Prospector",
+  "cases": [
+    {
+      "id": "normal-composition",
+      "purpose": "End-to-end happy path",
+      "criteria": {
+        "query": "(\"agentic engineering\" OR \"AI developer tools\") lang:en",
+        "review_threshold": 0.7
+      },
+      "collected": [
+        {
+          "source_candidate_id": "cand-001",
+          "author_handle": "@founder_alex",
+          "tweet_text": "We rebuilt our dev workflow around coding agents and cut review time by half."
+        },
+        {
+          "source_candidate_id": "cand-002",
+          "author_handle": "@devrel_mina",
+          "tweet_text": "Trying five AI code review tools this week. Most still miss architecture context."
+        },
+        {
+          "source_candidate_id": "cand-003",
+          "author_handle": "@research_jo",
+          "tweet_text": "New benchmark for autonomous software agents is live."
+        }
+      ],
+      "scoring_fixture": [
+        {
+          "candidate_id": "cand-001",
+          "relevance_score": 0.91,
+          "signals": [
+            "founder role",
+            "explicit coding-agent use",
+            "recent activity"
+          ]
+        },
+        {
+          "candidate_id": "cand-002",
+          "relevance_score": 0.78,
+          "signals": [
+            "developer tools",
+            "architecture pain",
+            "not clearly buyer"
+          ]
+        },
+        {
+          "candidate_id": "cand-003",
+          "relevance_score": 0.42,
+          "signals": [
+            "topic match only",
+            "research orientation"
+          ]
+        }
+      ],
+      "expected": {
+        "review_ids": [
+          "cand-001",
+          "cand-002"
+        ],
+        "below_threshold_ids": [
+          "cand-003"
+        ],
+        "allowed_handoff_ids": [
+          "cand-001"
+        ]
+      }
+    },
+    {
+      "id": "structural-adapter",
+      "purpose": "Require ordinary field mapping rather than pre-aligned schemas",
+      "producer_output": {
+        "source_candidate_id": "cand-010",
+        "author_handle": "@builder",
+        "tweet_text": "Our team is evaluating autonomous coding workflows."
+      },
+      "consumer_input_shape": {
+        "candidate_id": "string",
+        "name": "string",
+        "text": "string"
+      },
+      "expected_mapping": {
+        "candidate_id": "source_candidate_id",
+        "name": "author_handle",
+        "text": "tweet_text"
+      },
+      "expected": "adapt"
+    },
+    {
+      "id": "semantic-mismatch",
+      "purpose": "Same JSON type must not imply same meaning",
+      "producer_output": {
+        "user_id": "x-user-42",
+        "confidence": 0.93
+      },
+      "requested_consumer_input": {
+        "crm_account_id": "string",
+        "business_relevance_score": "number"
+      },
+      "forbidden_assumptions": [
+        "user_id equals crm_account_id without lookup/evidence",
+        "confidence equals business_relevance_score without a documented semantic contract"
+      ],
+      "expected": "reject_or_use_explicit_lookup"
+    },
+    {
+      "id": "approval-binding",
+      "purpose": "Score cannot authorize handoff",
+      "candidate_id": "cand-020",
+      "score": 0.99,
+      "review": {
+        "decision": "reject",
+        "reason": "Not a buyer"
+      },
+      "expected": {
+        "handoff_created": false
+      }
+    },
+    {
+      "id": "retry-duplicate",
+      "purpose": "Repeated handoff preparation must not duplicate an external effect",
+      "candidate_id": "cand-030",
+      "review": {
+        "decision": "shortlist"
+      },
+      "logical_handoff_id": "handoff:cand-030:v1",
+      "invocations": 2,
+      "expected": {
+        "external_effect_count_max": 1,
+        "second_invocation": "idempotent_or_no_external_effect"
+      }
+    }
+  ]
+}
