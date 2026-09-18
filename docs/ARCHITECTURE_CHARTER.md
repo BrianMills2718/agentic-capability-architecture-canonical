@@ -18,6 +18,35 @@ The governing rules are:
 
 > **Off-the-shelf wins ties.** Provider sourcing is subordinate to the composability model: native/platform/external/internal implementations are all legitimate providers when they satisfy the same capability boundary honestly.
 
+## Enforceable delivery goal
+
+One explicit goal of ACA is to make cumulative capability production **enforceable on hired developers, contractors, and coding agents**. A worker building Product X should not be able to complete the engagement merely by producing working project-local code when the work contains behavior that should reasonably reuse or contribute to the shared capability ecosystem.
+
+The delivery contract should require the worker to:
+
+1. identify the meaningful capabilities required by the product;
+2. inspect and either reuse or explicitly reject suitable existing capabilities;
+3. compose selected capabilities through honest public boundaries;
+4. keep genuinely project-specific residual behavior local rather than forcing abstraction;
+5. expose newly reusable behavior through an independently usable boundary when justified;
+6. leave tests/evidence and closeout information sufficient for the next project or agent to consume that capability knowledge.
+
+This is a **system goal, not a novelty claim**. The enforcement mechanism may be ordinary engineering machinery such as required machine-readable planning/closeout artifacts, schemas, CI validation, protected branches, acceptance checks, and repository policy. ACA should prefer the simplest off-the-shelf enforcement substrate that makes this contract reliable rather than inventing bespoke governance infrastructure.
+
+The point is the compounding outcome:
+
+```text
+paid project N
+    ↓
+reuse existing capabilities where they fit
+    +
+implement only the justified residual
+    ↓
+leave reusable new capability boundaries/evidence where warranted
+    ↓
+paid project N+1 starts with more composable capability
+```
+
 ## Composability and cumulative growth contract
 
 Every project is both a **consumer and a contributor** to the capability ecosystem. The architecture should make this compounding loop normal:
