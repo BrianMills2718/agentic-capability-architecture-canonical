@@ -95,3 +95,17 @@ If X API access is unavailable or uneconomic, re-source the collection capabilit
 Proceed to P2 with **n8n-only workflow substrate as the baseline**, subject to X access validation.
 
 ACA contributes no runtime component at this stage. Its role is limited to the independent-composition contract/protocol that P2 will freeze and test.
+
+
+## Source trail checked for P1
+
+Current public documentation checked on 2026-09-18:
+
+- n8n documentation: https://docs.n8n.io/ — n8n is a workflow automation product designed to connect APIs/apps, supports custom nodes, HTTP/API calls, workflow execution history, waiting/sub-workflows, AI tooling, and self-host/cloud operation.
+- n8n Gmail approval operation: https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gmail/message-operations/ — documents "Send and Wait for Approval" and points complex approvals to the Wait node.
+- Composio Twitter guide: https://docs.composio.dev/kb/guide/toolkits-twitter — current X/Twitter integration requires a customer-owned developer app; app-only search actions require the relevant bearer token and API plan.
+- Composio Twitter toolkit: https://docs.composio.dev/toolkits/twitter — current toolkit exposes X/Twitter actions including recent/full-archive search.
+- Pipedream app catalog: https://pipedream.com/apps — broad integration catalog.
+- Pipedream community X support statement (2026-02-11): https://pipedream.com/community/t/what-is-the-app-slug-for-the-default-x-integration-on-pipedream-connect/14192 — states X is not currently supported in Pipedream Connect after removal requested by X.
+
+These references support provider shortlisting only. They do not prove Brian's account access, plan entitlements, endpoint quotas, or a successful pilot run.
