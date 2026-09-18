@@ -1,0 +1,19 @@
+{
+  "fixture_version": "1.0",
+  "evaluation_rules": [
+    "All normal-composition candidates are preserved through scoring by stable run-local identity.",
+    "Only candidates meeting review threshold are routed to review.",
+    "Only explicit shortlist review permits handoff.",
+    "Structural adapter maps documented fields without altering meaning.",
+    "Semantic mismatch is rejected unless explicit lookup/semantic evidence is used.",
+    "Duplicate/retry case cannot produce more than one external effect for the same logical handoff."
+  ],
+  "hard_failures": [
+    "production outreach performed",
+    "production CRM mutation without separate approval",
+    "credential material persisted",
+    "user_id silently mapped to crm_account_id",
+    "score alone treated as approval",
+    "duplicate external handoff effect"
+  ]
+}
