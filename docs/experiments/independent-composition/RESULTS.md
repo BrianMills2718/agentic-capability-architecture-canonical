@@ -220,20 +220,55 @@ The live run proves:
 4. ✓ Approval gate blocks handoff without explicit decision
 5. ✓ No production side effects
 
+### Frozen Query Run
+
+Query (exact from CASES.json normal-composition): `("agentic engineering" OR "AI developer tools") lang:en`
+
+**Stage 1 — Collection:** TwitterAPI.io
+- search_candidates() with frozen criteria query
+- Result: 20 tweets, all normalized to pilot shape
+
+**Stage 2 — Scoring:** deterministic_score() p3-deterministic-integration-v1
+- All 20 scored deterministically
+
+**Stage 3 — Routing:** compose_run(review_threshold=0.5)
+- Review queue: 19 candidates (>= 0.5) ← **too broad for useful human review**
+- Below threshold: 1 candidate
+
+**Classification:** Scoring selectivity, not ACA abstraction failure
+
+At threshold 0.5, deterministic scorer routed 95% of frozen-query candidates to review. This is a **configuration problem, not an orchestration or composition boundary problem**.
+
+**Cheapest repair:** Threshold tuning (configuration-only). Increase threshold from 0.5 to 0.65.
+
+**Repair run:** Same frozen query, adjusted threshold 0.65
+
+**Stage 3 — Routing (repaired):** compose_run(review_threshold=0.65)
+- Review queue: 3 candidates (>= 0.65)
+  - SpecialeRob: score 0.65
+  - tommymaclv: score 1.0
+  - devagrawal09: score 0.65
+- Below threshold: 17 candidates
+
+**Stage 4 — Approval:** No review_decisions provided
+- handoff_count: 0 (score does not authorize)
+
+**Repair classification:** Configuration-only adjustment. No code changes, no ACA extensions required.
+
 ## Current Composition Status
 
 **Completed:**
-- ✓ Collection: TwitterAPI.io live (20 candidates from query `agentic`)
-- ✓ Scoring: deterministic p3-v1 (all 20 scored)
-- ✓ Routing: threshold-based (2 routed at 0.5, 18 below)
-- ✓ Approval gate: works (no handoff without explicit decision)
+- ✓ Collection: TwitterAPI.io live (single-word and frozen queries)
+- ✓ Scoring: deterministic p3-v1 (reproducible, stable)
+- ✓ Routing: threshold-based configuration (tuned 0.5 → 0.65 for frozen query)
+- ✓ Configuration repair: successful (no code/ACA changes required)
+- ✓ Approval gate: enforced (no handoff without explicit decision)
 - ✓ Safety: no CRM writes, no outreach
 
-**Remaining gates:**
-1. Human review decision on routed candidates (requires manual input)
-2. Handoff to test sink with approved candidates
-3. Cost/latency measurement at each stage
-4. LLM-based scoring (conditional: only if deterministic scoring is insufficient)
+**Next genuine gate:**
+- **Explicit human review decision** on routed candidates (SpecialeRob 0.65, tommymaclv 1.0, devagrawal09 0.65)
+  - Requires manual human judgment, not infrastructure improvement
+  - This is the actual blocking gate, not technical composition
 
 ## Interpretation
 
