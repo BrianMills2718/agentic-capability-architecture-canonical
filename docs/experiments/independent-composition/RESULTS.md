@@ -42,7 +42,7 @@ Implemented four ordinary Python functions that can be composed independently:
 
 Executable boundary: each function has public input/output contract, no hidden state except sink.
 
-**Test suite: 25 direct function and integration tests**
+**Test suite: 31 focused tests (25 composition + 6 provider-adapter tests)**
 
 Tests exercise functions directly with positive and negative controls:
 - Positive: valid inputs produce expected outputs
@@ -85,9 +85,20 @@ All five cases produce JSON receipt to stdout:
 }
 ```
 
+## Provider-boundary progress
+
+Inspection of the existing Twitter prospecting implementation found the active collection provider is **TwitterAPI.io**, not the native X API assumed in the original P1 provider-fit note. The observed ordinary provider contract is:
+
+- base URL: `https://api.twitterapi.io`;
+- read-only search endpoint: `/twitter/tweet/advanced_search`;
+- authentication header: `X-API-Key`;
+- local credential name: `TWITTERAPI_IO_API_KEY` (value not recorded here).
+
+A minimal read-only adapter now exists at `twitterapi_io_collection.py`. It normalizes provider posts into the pilot collection shape while preserving provider post identity and source URL. Six fake-transport tests verify endpoint construction, credential-safe error handling, normalization, missing-credential behavior, and malformed-provider rejection. No live provider request is claimed yet.
+
 ## Not yet claimed
 
-No live n8n execution, X API request, LLM scoring call, human approval event, CRM write, provider latency/cost observation, or second-consumer reuse has occurred.
+No live n8n execution, live TwitterAPI.io/X request, LLM scoring call, human approval event, CRM write, provider latency/cost observation, or second-consumer reuse has occurred.
 
 ## Integration substrate: assistant-to-n8n overhead vs. Python/API composition
 
@@ -106,10 +117,10 @@ The Python baseline demonstrates that composition logic can be:
 **Decision: Python/API composition is the next execution route.**
 
 Rather than orchestrating composition through n8n, next phase should:
-1. Implement candidate collection as Python function wrapping X API (with test fixtures)
-2. Implement scoring as Python function calling selected LLM (with deterministic test mode)
-3. Implement review routing as Python function (approval in tests only)
-4. Implement CRM handoff as Python function writing to test sink
+1. Execute the existing TwitterAPI.io collection boundary live through the new read-only adapter and capture provider evidence
+2. Implement scoring as a Python function calling the selected LLM (with deterministic test mode)
+3. Implement review routing as a Python function (approval in tests only)
+4. Keep CRM handoff on the idempotent local/test sink
 5. Compose these functions in a lightweight Python orchestrator
 
 This avoids:
@@ -127,7 +138,7 @@ Retains:
 ## Current unresolved P2/P3 gates
 
 To run live composition:
-1. X developer API credentials and search endpoint plan
+1. Confirm the existing TwitterAPI.io credential still has read-only search access/quota by executing one bounded request
 2. Selected scoring provider/model (with test mode)
 3. Review approval mechanism/channel
 4. Test CRM/local sink
