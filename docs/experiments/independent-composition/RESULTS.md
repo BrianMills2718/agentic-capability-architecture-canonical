@@ -148,14 +148,92 @@ Retains:
 - test coverage of all cases
 - evidence trail
 
-## Current unresolved P2/P3 gates
+## Live Pipeline Run: 2026-09-19
 
-To continue live composition:
-1. Bind the successful live TwitterAPI.io collection output into scoring
-2. Select the smallest sufficient scoring approach/provider (deterministic local scorer first; LLM only if needed)
-3. Obtain an explicit human review decision on routed live candidates
-4. Keep handoff on the idempotent local/test sink
-5. Record run/time/cost observations as live stages are added
+### Composition Execution
+
+Query: `agentic` (single-word test)
+
+**Stage 1 — Collection:** TwitterAPI.io
+- search_candidates() via twitterapi_io_collection adapter
+- HTTP GET: api.twitterapi.io/twitter/tweet/advanced_search?query=agentic&queryType=Latest
+- Result: 20 tweets, all normalized to pilot shape
+- No collection errors
+
+**Stage 2 — Scoring:** deterministic_score() p3-deterministic-integration-v1
+- Scorer: keyword-based weights (agentic, coding agent, developer, engineering, tool, workflow, code review)
+- All 20 scored deterministically
+- Score range observed: 0.35–0.50 (mathematically bounded/clamped 0.0–1.0)
+
+**Stage 3 — Routing:** compose_run(review_threshold=0.5)
+- Review queue: 2 candidates (>= 0.5)
+- Below threshold: 18 candidates
+
+**Stage 4 — Approval:** No review_decisions provided (proof-of-concept)
+- approval_gated_handoff() returns None for all (score does not authorize)
+- handoff_count: 0
+- No local sink effects
+
+**Assertions:**
+- production_crm_write: False ✓
+- outbound_message_sent: False ✓
+- score_alone_authorizes_handoff: False ✓
+
+### Evidence JSON
+
+```json
+{
+  "ok": true,
+  "query": "agentic",
+  "scoring_revision": "p3-deterministic-integration-v1",
+  "candidate_count": 20,
+  "scored_count": 20,
+  "score_range_observed": [0.35, 0.50],
+  "score_range_bounded": [0.0, 1.0],
+  "review_threshold": 0.5,
+  "review_count": 2,
+  "handoff_count": 0,
+  "assertions": {
+    "production_crm_write": false,
+    "outbound_message_sent": false,
+    "score_alone_authorizes_handoff": false
+  },
+  "nonclaims": [
+    "deterministic integration score is not a conversion or commercial-value prediction",
+    "collection success does not establish provider coverage or long-term reliability"
+  ]
+}
+```
+
+### Interpretation
+
+The **deterministic scorer (p3-deterministic-integration-v1) is provisional integration logic, not predictive validity**:
+- Bounded 0.0–1.0 with max score ~0.95
+- Deterministic keyword weighting (agentic=0.35, coding agent=0.35, developer=0.15, etc.)
+- No business outcome validation
+- No claim of conversion/relevance beyond this run
+
+The live run proves:
+1. ✓ Real TwitterAPI.io collection on live query
+2. ✓ Scoring executes on real candidate data
+3. ✓ Review routing respects explicit threshold
+4. ✓ Approval gate blocks handoff without explicit decision
+5. ✓ No production side effects
+
+## Current Composition Status
+
+**Completed:**
+- ✓ Collection: TwitterAPI.io live (20 candidates from query `agentic`)
+- ✓ Scoring: deterministic p3-v1 (all 20 scored)
+- ✓ Routing: threshold-based (2 routed at 0.5, 18 below)
+- ✓ Approval gate: works (no handoff without explicit decision)
+- ✓ Safety: no CRM writes, no outreach
+
+**Remaining gates:**
+1. Human review decision on routed candidates (requires manual input)
+2. Handoff to test sink with approved candidates
+3. Cost/latency measurement at each stage
+4. LLM-based scoring (conditional: only if deterministic scoring is insufficient)
 
 ## Interpretation
 
