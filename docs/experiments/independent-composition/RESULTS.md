@@ -94,11 +94,24 @@ Inspection of the existing Twitter prospecting implementation found the active c
 - authentication header: `X-API-Key`;
 - local credential name: `TWITTERAPI_IO_API_KEY` (value not recorded here).
 
-A minimal read-only adapter now exists at `twitterapi_io_collection.py`. It normalizes provider posts into the pilot collection shape while preserving provider post identity and source URL. Six fake-transport tests verify endpoint construction, credential-safe error handling, normalization, missing-credential behavior, and malformed-provider rejection. No live provider request is claimed yet.
+A minimal read-only adapter now exists at `twitterapi_io_collection.py`. It normalizes provider posts into the pilot collection shape while preserving provider post identity and source URL. Six fake-transport tests verify endpoint construction, credential-safe error handling, normalization, missing-credential behavior, and malformed-provider rejection.
+
+### Live collection evidence
+
+A bounded read-only provider request was executed on 2026-09-19 using repository revision `072565d` and the existing local `TWITTERAPI_IO_API_KEY` credential without printing or persisting its value.
+
+- query: `agentic engineering`;
+- endpoint: `/twitter/tweet/advanced_search`;
+- provider: TwitterAPI.io;
+- result: HTTP/provider call succeeded and returned 20 normalized candidates;
+- sample normalized identity was observed, confirming the adapter preserved provider post identity and author handle;
+- no outreach, write, CRM mutation, or other external side effect occurred.
+
+The first live-attempt command failed before any provider call because the query was passed as multiple CLI arguments. Classification: **agent/tool invocation mistake**. Retrying with the query passed as one argument succeeded. No ACA extension was required.
 
 ## Not yet claimed
 
-No live n8n execution, live TwitterAPI.io/X request, LLM scoring call, human approval event, CRM write, provider latency/cost observation, or second-consumer reuse has occurred.
+No live n8n execution, LLM scoring call, human approval event, CRM write, provider latency/cost measurement, or second-consumer reuse has occurred. One live read-only TwitterAPI.io collection request has succeeded as recorded above.
 
 ## Integration substrate: assistant-to-n8n overhead vs. Python/API composition
 
@@ -137,12 +150,12 @@ Retains:
 
 ## Current unresolved P2/P3 gates
 
-To run live composition:
-1. Confirm the existing TwitterAPI.io credential still has read-only search access/quota by executing one bounded request
-2. Selected scoring provider/model (with test mode)
-3. Review approval mechanism/channel
-4. Test CRM/local sink
-5. Run budget and time ceiling
+To continue live composition:
+1. Bind the successful live TwitterAPI.io collection output into scoring
+2. Select the smallest sufficient scoring approach/provider (deterministic local scorer first; LLM only if needed)
+3. Obtain an explicit human review decision on routed live candidates
+4. Keep handoff on the idempotent local/test sink
+5. Record run/time/cost observations as live stages are added
 
 ## Interpretation
 
