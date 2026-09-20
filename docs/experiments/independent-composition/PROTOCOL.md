@@ -141,3 +141,27 @@ Before running the pilot, record:
 - composer model/harness version.
 
 Until those are fixed, this document freezes methodology but does not claim an executed experiment.
+
+## P3 Execution Amendment (2026-09-19)
+
+**Baseline selection remains:** n8n (P1 decision, frozen).
+
+**P3 execution route:** After material assistant-to-n8n control/auth integration overhead, Brian approved pivoting P3 execution to ordinary Python/API composition rather than live n8n orchestration.
+
+**Why pivot:** The overhead was not evidence that n8n is unsuitable as a workflow product; rather, the observed cost of composing with n8n as an external orchestration system (controlling workflow deployment, auth, invocation) exceeded the value for this integration-testing phase. Python/API composition lets us execute the frozen behavior and test composition boundaries without the n8n integration layer.
+
+**What remains frozen:**
+- PRODUCT_SLICE behavior (Twitter Prospector workflow shape)
+- CASES.json (5 acceptance cases)
+- EVALUATION.json (hard-failure rules, evaluation invariants)
+- Failure classification strategy (repair sequence priority)
+- Safety rules (no production outreach, no CRM writes without approval, no credential leaks)
+
+**Execution evidence captured:**
+- P3 Python baseline: four reusable composition boundaries + case runners (25 tests)
+- Provider adapter: read-only TwitterAPI.io collection (6 tests)
+- Live pipeline runner: TwitterAPI.io collection + deterministic scoring + approval routing (10 tests)
+- Test suite total: 41 unit tests exercising functions directly
+- n8n fixture validation: frozen workflow structure remains valid reference
+
+**Next phase:** If Python/API composition meets acceptance cases, extend to second consumer reuse; if named failure survives repair sequence, add composability profile extension (no semantic metadata or registry before evidence-driven extension).
