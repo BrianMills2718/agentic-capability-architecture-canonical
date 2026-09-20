@@ -2,10 +2,10 @@
 
 Plan ID: ACA-PLAN-001
 Recorded: 2026-09-18
-Status: proposed execution plan; documentation-only until reviewed/merged.
+Status: execution complete; decision recorded in ADR-017 and P6_DECISION.md.
 Outcome owner: Brian Mills.
 Execution owners: assigned coding workers; roles below are responsibilities, not a requirement to hire a separate person for each.
-Execution status: P0-P2 merged. P3 now has a static/importable n8n fixture baseline and frozen evaluator invariants; live n8n/X execution and product acceptance remain blocked on external access/configuration.
+Execution status: P0-P6 complete (2026-09-20). P3 produced reusable composition boundaries + live TwitterAPI.io evidence (41 tests). P5 second consumer (Engineering Signal Digest) exercised retained boundary successfully (22 tests, live "observability" query). P6 decision: ordinary interfaces + conformance tests are sufficient; no new ACA machinery justified. See ADR-017 and P6_DECISION.md.
 
 ## 1. Outcome and priorities
 
