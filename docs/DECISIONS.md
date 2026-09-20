@@ -167,7 +167,7 @@ consuming application/runtime owns those boundaries.
 
 ## ADR-016 — Plan independent composability with the smallest sufficient substrate
 
-**Status:** proposed local planning direction, recorded from Brian's clarification on 2026-09-18; review/merge pending. No runtime or schema change is selected.
+**Status:** accepted; planning direction from Brian's clarification on 2026-09-18. Experiment concluded with ADR-017 and P6_DECISION.md.
 
 **Decision:** Optimize the next ACA work for a usable product built from independently authored capabilities that a fresh worker can economically compose and reuse in another process. Treat a composability profile of existing interfaces plus targeted conformance tests as the smallest plausible technical addition. It may turn out that ordinary interfaces, descriptions, generated adapters, and existing tests are sufficient.
 
@@ -175,6 +175,20 @@ consuming application/runtime owns those boundaries.
 
 **Reason:** Brian prioritizes small scope, rapid useful delivery, and one sufficient off-the-shelf product or a small integration over novelty. Compliance artifacts cannot establish that independently developed capabilities are easy to compose. Conversely, some adapter code does not by itself justify another architecture layer.
 
-**Sequencing:** [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) owns the dependency-ordered plan: product/provider fit, one-page contract and protocol, baseline composition, conditional targeted repairs, second-consumer reuse, and explicit boundary selection. It becomes the next execution route on adoption; the previous discovery/control formulation is retained as historical context in `NEXT_PROOF.md`.
+**Sequencing:** [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) supplied the dependency-ordered plan: product/provider fit, one-page contract and protocol, baseline composition, conditional targeted repairs, second-consumer reuse, and explicit boundary selection. The experiment executed from 2026-09-18 to 2026-09-20 and concluded with ADR-017/P6 decision. The previous discovery/control formulation is retained as historical context in `NEXT_PROOF.md`.
 
 **Relationship to existing decisions:** Refines ADR-008's near-term emphasis toward composability rather than discovery or enforcement infrastructure. Retains ADR-007 external-first sourcing, ADR-011 single manifest authority, ADR-013 net value, ADR-014 approval bindings, and ADR-015 receipt compatibility. Existing runtime, evidence, research, and consumers are not retired by this plan. Cross-repo authority remains outside this local decision.
+
+---
+
+## ADR-017 — Composition-ready boundaries use ordinary interfaces plus conformance tests
+
+**Status:** accepted from P3/P5 pilot evidence
+
+**Decision:** A capability is composition-ready when it exposes a stable, independently invokable boundary (function, API, workflow) with documented input/output contracts, field semantics where non-obvious, effects/constraints, and at least one realistic example. A fresh consumer demonstrates conformance via a focused test showing invocation at the pinned version, structural mapping, one semantic concern correctly adapted or rejected, and side-effect safety if applicable. Generated adapters are expected and normal.
+
+**Why:** Two materially different consumers successfully composed from a single retained boundary (`search_candidates(query)` from Twitter Prospector, consumed by Engineering Signal Digest) using ordinary Python functions and a lightweight 45-line adapter. No ACA registry, semantic metadata layer, workflow engine, connector platform, shared base class, or new governance machinery was required in the observed runs. Ordinary documentation and test-driven integration proved sufficient.
+
+**Consequence:** Do not mandate semantic metadata, universal schema, registry, workflow engine, semantic compiler, Linguistic Core, Semantic Foundry, MCP/Arazzo infrastructure, or governance machinery until an observed, reproducible composition failure survives the repair sequence (documentation fixes, configuration adjustments, generated adapters, provider-native features). When all repair steps fail, evidence justifies the new layer only if recurring cost measurably exceeds the cost of the extension itself.
+
+**Related:** [P6_DECISION.md](experiments/independent-composition/P6_DECISION.md) records pilot evidence and contractor guidance from ACA-PLAN-001 P3/P5 execution.
