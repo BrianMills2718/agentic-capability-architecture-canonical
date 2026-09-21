@@ -77,7 +77,7 @@ def test_adapter_still_accepts_a_valid_candidate():
     assert [s.signal_id for s in signals] == ["x-post:1"]
 
 
-# --- Boundary: malformed list entries are dropped without a trace -------------
+# --- Boundary: malformed list entries are omitted from returned candidates -----
 
 
 class _FakeResponse:
