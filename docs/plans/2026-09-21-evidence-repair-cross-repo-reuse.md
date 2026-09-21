@@ -6,6 +6,7 @@ Status: proposed execution plan; planning only, not an executed experiment.
 Outcome owner: Brian Mills.
 Planning baseline: canonical `main` at `9bdf123776e6f1379c1a4b1b0ea3ed618d4348b3`.
 Predecessor: [ACA-PLAN-001](2026-09-18-minimal-composability.md), including merged PRs #59–61.
+Governing research agenda: [ACA Research Agenda — Prior Art First](../RESEARCH_AGENDA.md).
 
 ## 1. Decision this work must inform
 
@@ -34,6 +35,12 @@ Do not replace the prior overclaim with another one. P5 had a fresh session; do 
 
 No reason is yet established to say that the original Product N client *could not* be reused. Duplication of its provider integration is an observation; packaging failure is a hypothesis to test. Similarly, n8n control friction does not establish n8n workflow unsuitability. No new n8n setup is planned.
 
+### Prior-art convergence gate — completed by this planning change
+
+Before execution, ACA's research surface was re-mapped against established software-reuse/product-line engineering, OpenAPI/AsyncAPI/MCP-native interface descriptions, Backstage-style catalog/discovery patterns, Pact-style consumer contracts, Arazzo API-workflow descriptions, and established orchestration/durable-execution products such as n8n and Temporal. See [RESEARCH_AGENDA.md](../RESEARCH_AGENDA.md) for the source trail and resulting agenda.
+
+This gate removes already-solved mechanism-building from the experiment. The remaining questions are agent-specific: discovery/selection, publication readiness, economic compounding, compatibility maintenance, effectful composition, and whether accumulated evidence improves later decisions. A0 therefore starts with evidence repair rather than another technology build.
+
 ## 3. Scope, roles, and authorization
 
 Scope is evidence repair, one pre-existing boundary, one separate consumer product, a bounded control/reuse comparison, and a separately scoped local effect-safety canary. Python is acceptable on both sides; another language or platform is not required merely to make the experiment look harder.
@@ -55,6 +62,7 @@ This document authorizes no experimental spend or source-repository change by it
 
 | Stage | Owner | Output | Exit gate |
 | --- | --- | --- | --- |
+| A-1 — Prior-art convergence | Planning author + reviewer | `docs/RESEARCH_AGENDA.md` and narrowed research surface | Existing standards/practices/products are adopted as defaults; no solved mechanism remains on the ACA invention agenda. **Completed by the planning PR.** |
 | A0 — Repair evidence claims | Coordinator + reviewer | Dated audit addendum, corrected navigation/status, bounded ADR-017/P6 amendment, candidate observation | Every material claim maps to a retained source or is explicitly unverified; no historical success erased or invented |
 | A1 — Qualify and publish Product N boundary | Publisher + reviewer | Brownfield portability audit, exact source/dependency revision, ownership/rights check, consumer-blind publication-only normalization if needed, ordinary distribution recipe, original-consumer regression | A clean environment imports/invokes the actual retained implementation without private application setup or silently replacing it; publication debt is measured separately from reuse cost |
 | A2 — Freeze representative task, evaluator, environment, and budget | Evaluator + coordinator | Public brief/examples, nontriviality gate, separate held-out evaluator, run manifest and comparison rules | The scored task exercises at least one distinctive retained invariant beyond a single GET/field rename; isolation and instrument negative controls pass before any scored run |

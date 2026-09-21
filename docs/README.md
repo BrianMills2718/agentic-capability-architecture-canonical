@@ -19,7 +19,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 
 ## Current execution planning
 
-[ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) is the proposed audit follow-up. It plans evidence/status corrections, publication of a pre-existing Product N boundary, a bounded control-versus-reuse comparison, and a separately scoped local effect-safety canary. This is planning only; its execution and proposed spending caps have not been activated.
+[ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) is the proposed audit follow-up. It plans evidence/status corrections, publication of a pre-existing Product N boundary, a bounded control-versus-reuse comparison, and a separately scoped local effect-safety canary. The governing [ACA research agenda](RESEARCH_AGENDA.md) now requires prior-art convergence first: use established software-reuse methods, standards, catalogs, contract-testing patterns, and runtimes rather than recreating them. This is planning only; its execution and proposed spending caps have not been activated.
 
 [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) records the earlier pilot and P6 decision from merged PRs #59–61. The follow-up distinguishes its bounded positive evidence from broader completion/economic claims under review. ADR-017 remains the recorded decision pending an explicit dated amendment; the new plan does not silently replace historical evidence or select new infrastructure.
 
@@ -28,6 +28,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 | Document | Role |
 | --- | --- |
 | [`ARCHITECTURE_CHARTER.md`](ARCHITECTURE_CHARTER.md) | Current local architecture mission, boundaries, sourcing order, evidence model, and non-goals. |
+| [`RESEARCH_AGENDA.md`](RESEARCH_AGENDA.md) | Current ACA research questions after prior-art convergence; explicitly removes established software-engineering mechanisms from the invention agenda. |
 | [`DECISIONS.md`](DECISIONS.md) | Repository-local durable decisions. Cross-repo semantic/interface policy lives in the Vision ADR linked from the global wiki. |
 | [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md) | Required project implementation/reuse workflow. |
 | [`REUSE_PROMOTION.md`](REUSE_PROMOTION.md) | Current internal promotion discipline and the broader evidence factors that sit above the minimum reuse-count checks. |
@@ -56,6 +57,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 
 | Document / directory | Role |
 | --- | --- |
+| [`RESEARCH_AGENDA.md`](RESEARCH_AGENDA.md) | Prior-art convergence map and the narrow active ACA research surface: agent discovery/selection, economic compounding, publication readiness, compatibility maintenance, effectful composition, and evidence reuse. |
 | [`../research/synthesis/off-the-shelf-substrate-vs-residual-audit.md`](../research/synthesis/off-the-shelf-substrate-vs-residual-audit.md) | Preliminary sourcing leads, corrected to make composability the technical focus; not verified provider fit or an approved retirement plan. |
 | [`PRIMITIVE_CAPABILITY_THESIS.md`](PRIMITIVE_CAPABILITY_THESIS.md) | Falsifiable research thesis; not settled architecture. |
 | [`../architecture/primitive_model/`](../architecture/primitive_model/) | Experimental primitive/composition models and evidence. |

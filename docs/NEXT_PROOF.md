@@ -4,7 +4,9 @@
 
 The earlier [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) pilot and P6 decision are retained in merged PRs #59–61. The audit follow-up first reconciles their evidence claims, then asks whether a pre-existing Product N boundary helps a fresh worker deliver Product N+1 outside the source repository, against a competent ordinary-engineering control.
 
-ACA-PLAN-002 owns sequencing, public versus held-out context, exact revisions, proposed budgets, independent acceptance, marginal versus publication-inclusive cost, and stop rules. Its local effect-safety canary is separate from the read-only comparison. No new runtime, registry service, n8n setup, paid experiment, or architectural amendment is performed by this planning change. Next step after adoption is A0, not another platform build.
+The [ACA research agenda](RESEARCH_AGENDA.md) now applies a prior-art convergence gate before ACA invents anything: established software-product-line/reuse practice, native API contracts, catalog patterns, consumer contracts, and existing workflow/durable-execution products are treated as prior art to adopt, not research topics to rebuild. ACA-PLAN-002 therefore tests the remaining agent-specific questions—discovery/selection, publication readiness, compatibility evidence, and economic compounding.
+
+ACA-PLAN-002 owns sequencing, public versus held-out context, exact revisions, proposed budgets, independent acceptance, marginal versus publication-inclusive cost, and stop rules. Its local effect-safety canary is separate from the read-only comparison. No new runtime, registry service, n8n setup, paid experiment, or architectural amendment is performed by this planning change. Prior-art convergence is complete as a planning gate; next step after adoption is A0 evidence repair, not another platform build.
 
 ---
 
