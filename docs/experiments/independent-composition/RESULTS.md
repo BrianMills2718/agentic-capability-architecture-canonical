@@ -3,14 +3,16 @@
 Status: P3 Python baseline with reusable composition boundaries.
 Recorded: 2026-09-19.
 
+> **Amendment 2026-09-21 (ACA-PLAN-002 A0).** This is the 2026-09-19 record, preserved. Current status is bounded by [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md). Corrections are marked inline as **[A0 …]**. Headlines: (1) the test total is **41** (25 + 6 + 10), and the "31" below predates the live-pipeline tests; (2) the "approval binding" and "idempotent side effects" statements describe a string gate and a process-local in-memory sink, not ADR-014 binding or durable state; (3) the `assertions` in the live receipt are hard-coded constants; (4) live runs are prose records with no retained receipt, and the "Evidence JSON" block is not verbatim tool output; (5) the frozen review threshold was 0.7, live runs used 0.5 and 0.65; (6) the n8n workflow was structurally validated, not imported or run; (7) second-consumer reuse and the P6 decision occurred after this file was written (see `SECOND_CONSUMER.md`, `P6_DECISION.md`), and no human review, LLM scoring, or real handoff has occurred.
+
 ## Completed
 
 - P1 product slice frozen (Twitter Prospector behavior).
 - n8n selected as first single-product workflow baseline (P1 decision).
 - P2 minimal composability profile and protocol frozen.
 - Evaluator fixtures frozen (5 acceptance cases, hard-failure rules).
-- Importable n8n fixture workflow created using only built-in Manual Trigger and Code nodes.
-- Static workflow shape and evaluator invariants checked.
+- Importable n8n fixture workflow created using only built-in Manual Trigger and Code nodes. **[A0: "importable" was never verified by importing into n8n; read as "structurally validated fixture".]**
+- Static workflow shape and evaluator invariants checked. **[A0: the validator checks top-level keys, node names, and `CASES.json` invariants; it does not execute the Code nodes.]**
 
 **P3 Python baseline: Reusable composition boundaries**
 
@@ -42,7 +44,7 @@ Implemented four ordinary Python functions that can be composed independently:
 
 Executable boundary: each function has public input/output contract, no hidden state except sink.
 
-**Test suite: 31 focused tests (25 composition + 6 provider-adapter tests)**
+**Test suite: 31 focused tests (25 composition + 6 provider-adapter tests)** **[A0: stale at current revision. Later added 10 live-pipeline tests → 41 in the P3 suites; the Engineering Signal Digest adds 22 separately. Counts are static `def test_` counts.]**
 
 Tests exercise functions directly with positive and negative controls:
 - Positive: valid inputs produce expected outputs
@@ -60,6 +62,8 @@ Tests exercise functions directly with positive and negative controls:
 | semantic_reject | reject user_id risk | accept when safe | multi-pattern |
 | approval_gated_handoff | shortlist→handoff | reject/unreviewed/unknown→None | score irrelevant |
 | IdempotentLocalSink | record deduplication | repeated calls same ID | different IDs tracked |
+
+**[A0: `semantic_reject` fires on field-name presence only and ignores `maps_to` and values; `approval_gated_handoff` compares a string to `"shortlist"` and binds nothing to a payload; `IdempotentLocalSink` is a per-instance in-memory dict. These are bounded fixtures, not production contracts. The limits are pinned by `tests/unit/test_a0_independent_composition_limits.py`.]**
 
 ### Acceptance Case Results
 
@@ -107,13 +111,19 @@ A bounded read-only provider request was executed on 2026-09-19 using repository
 - sample normalized identity was observed, confirming the adapter preserved provider post identity and author handle;
 - no outreach, write, CRM mutation, or other external side effect occurred.
 
+**[A0: recorded in prose. No raw output, log, or machine receipt from this run is retained in the repository, and unrecoverable output is not reconstructed here. Cost and latency were not measured.]**
+
 The first live-attempt command failed before any provider call because the query was passed as multiple CLI arguments. Classification: **agent/tool invocation mistake**. Retrying with the query passed as one argument succeeded. No ACA extension was required.
 
 ## Not yet claimed
 
 No live n8n execution, LLM scoring call, human approval event, CRM write, provider latency/cost measurement, or second-consumer reuse has occurred. One live read-only TwitterAPI.io collection request has succeeded as recorded above.
 
+**[A0: as of 2026-09-19. The second consumer ran on 2026-09-20 (`SECOND_CONSUMER.md`). As of 2026-09-21 there is still no live n8n execution, LLM scoring call, human approval event, CRM write, or measured provider latency/cost.]**
+
 ## Integration substrate: assistant-to-n8n overhead vs. Python/API composition
+
+**[A0: the overhead listed here was reported, not measured, and no n8n run logs are retained. It is not evidence that n8n is unsuitable, and n8n was not evaluated as a product; only a fixture was structurally validated. `PROTOCOL.md` already records the pivot on those terms.]**
 
 The n8n workflow baseline (P1 selection) introduced:
 - assistant-to-n8n orchestration overhead: how to author/deploy/invoke n8n workflows
@@ -181,6 +191,8 @@ Query: `agentic` (single-word test)
 
 ### Evidence JSON
 
+**[A0: this block is an abridged, edited transcription, not a verbatim receipt. `score_range_observed` and `score_range_bounded` are not emitted by `live_pipeline.py`, and the tool's `review_queue`/`handoffs` output is omitted. The three `assertions` are hard-coded `False` constants in `compose_run`, not measured checks.]**
+
 ```json
 {
   "ok": true,
@@ -208,7 +220,7 @@ Query: `agentic` (single-word test)
 ### Interpretation
 
 The **deterministic scorer (p3-deterministic-integration-v1) is provisional integration logic, not predictive validity**:
-- Bounded 0.0–1.0 with max score ~0.95
+- Bounded 0.0–1.0 with max score ~0.95 **[A0: incorrect. The code caps at 1.0, the weights sum to 1.55, and this file records a candidate scored 1.0.]**
 - Deterministic keyword weighting (agentic=0.35, coding agent=0.35, developer=0.15, etc.)
 - No business outcome validation
 - No claim of conversion/relevance beyond this run
@@ -255,6 +267,8 @@ At threshold 0.5, deterministic scorer routed 95% of frozen-query candidates to 
 
 **Repair classification:** Configuration-only adjustment. No code changes, no ACA extensions required.
 
+**[A0 — threshold drift: the frozen `normal-composition` case and the `live_pipeline.py` default use 0.7. The live runs above used 0.5 (explicit override) and then 0.65; no run at the frozen 0.7 is recorded. By the scores recorded above, only 1 of the 3 named candidates (score 1.0) would reach a 0.7 queue; this is derived from the prose, not re-run. The 0.65 value was chosen from the same 20 results it was judged on, with no human review of the resulting queue, so "successful" is not established — only that the change was configuration-only.]**
+
 ## Current Composition Status
 
 **Completed:**
@@ -262,10 +276,10 @@ At threshold 0.5, deterministic scorer routed 95% of frozen-query candidates to 
 - ✓ Scoring: deterministic p3-v1 (reproducible, stable)
 - ✓ Routing: threshold-based configuration (tuned 0.5 → 0.65 for frozen query)
 - ✓ Configuration repair: successful (no code/ACA changes required)
-- ✓ Approval gate: enforced (no handoff without explicit decision)
-- ✓ Safety: no CRM writes, no outreach
+- ✓ Approval gate: enforced (no handoff without explicit decision) **[A0: a string gate; not ADR-014 exact-action binding.]**
+- ✓ Safety: no CRM writes, no outreach **[A0: none were attempted; the code has no CRM/outreach path.]**
 
-**Next genuine gate:**
+**Next genuine gate:** **[A0: as of 2026-09-19. The human review event has still not occurred; the product slice is not complete.]**
 - **Explicit human review decision** on routed candidates (SpecialeRob 0.65, tommymaclv 1.0, devagrawal09 0.65)
   - Requires manual human judgment, not infrastructure improvement
   - This is the actual blocking gate, not technical composition
@@ -277,8 +291,8 @@ P3 demonstrates that independent composition is achievable without ACA-specific 
 - Each function has explicit contract (not inferred)
 - Tests use positive/negative controls, not fixture reassertion
 - Semantic safety is enforced (not assumed)
-- Approval binding is programmatic (not workflow magic)
-- Idempotent side effects are real (tracked state, not counting duplicates)
+- Approval binding is programmatic (not workflow magic) **[A0: overstated — a decision-string comparison; nothing is bound to an action, target, or payload.]**
+- Idempotent side effects are real (tracked state, not counting duplicates) **[A0: overstated — in-memory, per sink instance; it does not survive a new `compose_run` or process.]**
 
 The baseline proves the frozen behavior can be expressed and validated in pure Python. Next phase proves it can accept real provider data (X API, LLM, approval) and compose them without n8n.
 

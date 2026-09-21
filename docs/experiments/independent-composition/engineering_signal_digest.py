@@ -44,32 +44,39 @@ class EngineeringSignalDigest:
         return json.dumps(self.to_dict(), indent=indent)
 
 
+def _required_text(candidate: dict[str, Any], field: str) -> str:
+    """Return a stripped non-empty string field or raise AdapterError.
+
+    A field that is absent, explicitly None, not a string, or whitespace-only is
+    rejected; ``dict.get(field, "")`` alone lets an explicit None reach ``.strip()``.
+    """
+    value = candidate.get(field)
+    if not isinstance(value, str) or not value.strip():
+        raise AdapterError(
+            f"search_candidates result missing required {field} "
+            f"(got {type(value).__name__})"
+        )
+    return value.strip()
+
+
 def adapt_candidates_to_signals(
     candidates: list[dict[str, Any]],
 ) -> list[SignalItem]:
     """Adapt search_candidates output to signal items with deduplication by source_candidate_id.
 
-    Raises AdapterError if a candidate is missing required fields:
-    source_candidate_id, author_handle, tweet_text, or source_url.
+    Raises AdapterError if a candidate is missing, null, non-string, or
+    whitespace-only in any required field: source_candidate_id, author_handle,
+    tweet_text, or source_url.
     """
     seen_candidates: set[str] = set()
     signals: list[SignalItem] = []
 
     for candidate in candidates:
         # Validate required fields from search_candidates boundary
-        source_candidate_id = candidate.get("source_candidate_id", "").strip()
-        author_handle = candidate.get("author_handle", "").strip()
-        tweet_text = candidate.get("tweet_text", "").strip()
-        source_url = candidate.get("source_url", "").strip()
-
-        if not source_candidate_id:
-            raise AdapterError("search_candidates result missing required source_candidate_id")
-        if not author_handle:
-            raise AdapterError("search_candidates result missing required author_handle")
-        if not tweet_text:
-            raise AdapterError("search_candidates result missing required tweet_text")
-        if not source_url:
-            raise AdapterError("search_candidates result missing required source_url")
+        source_candidate_id = _required_text(candidate, "source_candidate_id")
+        author_handle = _required_text(candidate, "author_handle")
+        tweet_text = _required_text(candidate, "tweet_text")
+        source_url = _required_text(candidate, "source_url")
 
         # Deduplicate by source_candidate_id (durable identity from boundary)
         if source_candidate_id in seen_candidates:

@@ -2,7 +2,7 @@
 
 Plan ID: ACA-PLAN-002
 Recorded: 2026-09-21
-Status: proposed execution plan; planning only, not an executed experiment.
+Status: execution active. Prior-art convergence (A-1) is complete. A0 evidence repair was executed and independently reviewed on 2026-09-21 in PR #63; A1 brownfield publication/portability audit is next. A2–A6 have not started.
 Outcome owner: Brian Mills.
 Planning baseline: canonical `main` at `9bdf123776e6f1379c1a4b1b0ea3ed618d4348b3`.
 Predecessor: [ACA-PLAN-001](2026-09-18-minimal-composability.md), including merged PRs #59–61.
@@ -63,7 +63,7 @@ This document authorizes no experimental spend or source-repository change by it
 | Stage | Owner | Output | Exit gate |
 | --- | --- | --- | --- |
 | A-1 — Prior-art convergence | Planning author + reviewer | `docs/RESEARCH_AGENDA.md` and narrowed research surface | Existing standards/practices/products are adopted as defaults; no solved mechanism remains on the ACA invention agenda. **Completed by the planning PR.** |
-| A0 — Repair evidence claims | Coordinator + reviewer | Dated audit addendum, corrected navigation/status, bounded ADR-017/P6 amendment, candidate observation | Every material claim maps to a retained source or is explicitly unverified; no historical success erased or invented |
+| A0 — Repair evidence claims | Coordinator + reviewer | Dated audit addendum, corrected navigation/status, bounded ADR-017/P6 amendment, reuse observation | Every material claim maps to a retained source or is explicitly unverified; no historical success erased or invented |
 | A1 — Qualify and publish Product N boundary | Publisher + reviewer | Brownfield portability audit, exact source/dependency revision, ownership/rights check, consumer-blind publication-only normalization if needed, ordinary distribution recipe, original-consumer regression | A clean environment imports/invokes the actual retained implementation without private application setup or silently replacing it; publication debt is measured separately from reuse cost |
 | A2 — Freeze representative task, evaluator, environment, and budget | Evaluator + coordinator | Public brief/examples, nontriviality gate, separate held-out evaluator, run manifest and comparison rules | The scored task exercises at least one distinctive retained invariant beyond a single GET/field rename; isolation and instrument negative controls pass before any scored run |
 | A3 — Deliver control/reuse pair | Two fresh workers | Separate consumer repos, commits, execution logs and metrics | Both submissions evaluated unchanged; failures/timeouts/rejections retained |
@@ -81,7 +81,7 @@ Amend ADR-017 to retain the default preference for ordinary/native contracts whi
 
 Correct the durable-sink/approval-pattern table, all-six-checks claim, current navigation, stale counts, and null-handling claim. Demonstrate suspected code defects using small local probes or regression tests, not prose alone. Keep original `CASES.json`, `EVALUATION.json`, and n8n artifacts unchanged. Label the field-presence semantic check and in-memory sink as bounded fixtures, not production contracts.
 
-Add the P3 wrapper as a *candidate observation* in `reuse_candidates.yml`, not a newly promoted registered service. Link positive use, limitations, rejection information, and provenance. A later registered export must resolve a real public boundary using existing manifest/catalog conventions; do not invent a second source of metadata truth.
+Add the P3 wrapper as a reuse observation in `reuse_candidates.yml`, using the lowest honest lifecycle status supported by the evidence; do not newly register or promote it. Link positive use, limitations, rejection information, and provenance. A later registered export must resolve a real public boundary using existing manifest/catalog conventions; do not invent a second source of metadata truth.
 
 Recover original logs/receipts only where actually available. A transcription from chat is marked as such; missing raw output stays missing. Do not generate a new JSON object and present it as an original historical execution receipt. Never fill unknown cost with zero.
 

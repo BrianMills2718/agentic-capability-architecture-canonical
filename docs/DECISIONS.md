@@ -183,7 +183,7 @@ consuming application/runtime owns those boundaries.
 
 ## ADR-017 — Composition-ready boundaries use ordinary interfaces plus conformance tests
 
-**Status:** accepted from P3/P5 pilot evidence
+**Status:** accepted from P3/P5 pilot evidence; scope qualified by the 2026-09-21 amendment below
 
 **Decision:** A capability is composition-ready when it exposes a stable, independently invokable boundary (function, API, workflow) with documented input/output contracts, field semantics where non-obvious, effects/constraints, and at least one realistic example. A fresh consumer demonstrates conformance via a focused test showing invocation at the pinned version, structural mapping, one semantic concern correctly adapted or rejected, and side-effect safety if applicable. Generated adapters are expected and normal.
 
@@ -192,3 +192,23 @@ consuming application/runtime owns those boundaries.
 **Consequence:** Do not mandate semantic metadata, universal schema, registry, workflow engine, semantic compiler, Linguistic Core, Semantic Foundry, MCP/Arazzo infrastructure, or governance machinery until an observed, reproducible composition failure survives the repair sequence (documentation fixes, configuration adjustments, generated adapters, provider-native features). When all repair steps fail, evidence justifies the new layer only if recurring cost measurably exceeds the cost of the extension itself.
 
 **Related:** [P6_DECISION.md](experiments/independent-composition/P6_DECISION.md) records pilot evidence and contractor guidance from ACA-PLAN-001 P3/P5 execution.
+
+### Amendment 2026-09-21 — scope of the evidence (ACA-PLAN-002 A0)
+
+The original text above is preserved. This dated qualification limits what it may be cited for; the audit trail is [AUDIT_ADDENDUM_2026-09-21.md](experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md).
+
+**Retained as policy:** ordinary/native contracts (functions, provider APIs, native workflows) plus consumer-side tests remain the *default* posture. Do not add new ACA-specific metadata, an additional registry service, a runtime, or a semantic layer without a named, reproducible failure that survives ordinary docs, examples, adapters, and provider-native features. This does not remove ADR-011's existing manifest-derived catalog. It is a default preference (consistent with ADR-007 and ADR-013), not a finding that no additional mechanism can ever be warranted.
+
+**What P3/P5 empirically support:** one bounded case — a read-only, single-request Python wrapper (`search_candidates`) called by two downstream modules in the same repository, in the same language and provider domain family, where the second consumer was told which boundary to use and the boundary needed no change. The original `Why` sentence's phrase "two materially different consumers" is retained as the 2026-09-20 claim but is **not supported as a maturity/promotion conclusion** by this evidence; the later caller exercised only the same small read-only surface.
+
+**What they do not establish:**
+- *Effectful composition.* The pilot's approval gate is a string comparison, not ADR-014 exact-action binding, and its "idempotent" sink is process-local and in-memory. Neither shows approval binding or durable idempotency to be sufficient or unnecessary. Those remain ACA-PLAN-002 stage A5, and the effect-safety claims in the P6 evidence table are withdrawn.
+- *Cross-repository or cross-language reuse.* No packaging, dependency pin, or version-change behavior was tested; the "pinned revision" was a same-directory import.
+- *Discovery and selection.* The consumer was directed to the boundary.
+- *Economic sufficiency or compounding.* No control arm and no measured time, token, dollar, or human cost exist; unknown is not zero.
+- *Conformance.* The "all six profile checks" statement is unsupported; the consumer's tests never invoke the real boundary.
+- *Product completion.* No human review event, LLM scoring, live n8n orchestration, or real handoff occurred, and n8n was not evaluated as a product.
+
+**Retained unchanged:** ADR-011 (manifest authority), ADR-013 (net value over the smallest local alternative), ADR-014 (exact-action approval binding), and ADR-015 (portable receipt versioning). ADR-017 does not weaken or supersede them, and none of them is contradicted by the pilot.
+
+**Effect on P6:** the statement that no new ACA machinery is justified holds only for the exercised path above. Absence of a demonstrated need is not a demonstration of sufficiency. Further changes to this decision follow ACA-PLAN-002 A3–A6 results.

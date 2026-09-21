@@ -19,9 +19,9 @@ Human-readable status summaries should not duplicate volatile machine state when
 
 ## Current execution planning
 
-[ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) is the proposed audit follow-up. It plans evidence/status corrections, publication of a pre-existing Product N boundary, a bounded control-versus-reuse comparison, and a separately scoped local effect-safety canary. The governing [ACA research agenda](RESEARCH_AGENDA.md) now requires prior-art convergence first: use established software-reuse methods, standards, catalogs, contract-testing patterns, and runtimes rather than recreating them. This is planning only; its execution and proposed spending caps have not been activated.
+[ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) is the current execution plan. Stage **A0 (evidence repair) was executed and independently reviewed on 2026-09-21**; PR #63 carries the repair, with verification recorded in the [audit addendum](experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md) §6 and a dated ADR-017 amendment. **A1 is next.** Stages A1–A6 (Product N publication audit, frozen task/evaluator, control-versus-reuse pair, decision, and the separately scoped effect-safety canary) are otherwise **not started**; the scored-run spending caps have not been activated. The governing [ACA research agenda](RESEARCH_AGENDA.md) requires prior-art convergence first: use established software-reuse methods, standards, catalogs, contract-testing patterns, and runtimes rather than recreating them.
 
-[ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) records the earlier pilot and P6 decision from merged PRs #59–61. The follow-up distinguishes its bounded positive evidence from broader completion/economic claims under review. ADR-017 remains the recorded decision pending an explicit dated amendment; the new plan does not silently replace historical evidence or select new infrastructure.
+[ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) is **historical and bounded**: it records the earlier pilot and P6 decision from merged PRs #59–61. ADR-017 remains the recorded decision as amended on 2026-09-21: ordinary/native contracts stay the default posture, but the pilot empirically supports only a bounded same-repository, same-language, read-only reuse case — not effectful, cross-repository, discovery, or economic sufficiency. Historical evidence is preserved, not rewritten.
 
 ## Current architecture and operating rules
 
@@ -43,7 +43,8 @@ Human-readable status summaries should not duplicate volatile machine state when
 | --- | --- |
 | [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md) | **Current proof-status index.** Completed and pending proof claims should be reconciled here first. |
 | [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md) | Current record of the baseline real-Frappe lifecycle proof result. |
-| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Routes to ACA-PLAN-002's evidence repair and bounded cross-repository comparison; preserves the earlier discovery/control formulation as historical context. |
+| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Routes to ACA-PLAN-002 (A0 evidence repair executed 2026-09-21; A1 onward next); preserves the earlier discovery/control formulation as historical context. |
+| [`experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md`](experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md) | Dated audit of the ACA-PLAN-001 pilot: verified facts, historical claims and their current standing, qualifications, and remaining unknowns. |
 
 ## Operational runbooks and checks
 
