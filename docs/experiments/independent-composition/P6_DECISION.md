@@ -5,6 +5,16 @@
 **Date:** 2026-09-20
 **Recorded by:** Brian Mills
 
+> **Amendment 2026-09-21 (ACA-PLAN-002 A0).** The text below is the 2026-09-20 record and is preserved. It is **bounded** by [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md) and the dated amendment to ADR-017. Read the decision as: *ordinary interfaces plus consumer tests were sufficient for the one read-only, same-repository, same-language path that was exercised; no ACA machinery was shown to be needed there.* It is not a finding of general, cross-repository, effectful, or economic sufficiency. Specific corrections are marked inline as **[A0 …]**. In summary:
+>
+> - The approval-binding and durable-idempotency rows in the composition table are **withdrawn**: the pilot used a string gate and a process-local in-memory sink, not ADR-014 binding or durable state.
+> - "All six conformance checks passed" is **unsupported**: the consumer's tests never call the real boundary and no version pin was used.
+> - "n8n was evaluated" is **overstated**: only a static fixture was validated; live n8n orchestration was not completed.
+> - Live evidence is a one-off run recorded in prose, with no retained machine receipt.
+> - Threshold drift: the frozen threshold was 0.7; runs used 0.5 and 0.65.
+> - The `candidate` → `proven` eligibility statement is not established by two same-repository callers of one GET wrapper.
+> - No cost, time, or control measurements exist; economic value is unknown.
+
 ---
 
 ## Decision
@@ -24,9 +34,9 @@ Generated adapters are normal and expected.
 - **Composition Boundaries:** Four ordinary Python functions + one provider adapter
 - **Interface Type:** Directly invokable functions with documented input/output contracts; `search_candidates(query, *, api_key=None, timeout_seconds=30.0, opener=urllib.request.urlopen) -> list[dict[str, Any]]` with normalized candidate dicts
 - **Test Coverage:** 41 focused tests: 25 composition unit tests + 6 provider adapter tests + 10 live pipeline tests (positive and negative controls)
-- **Live Evidence:** TwitterAPI.io collection successful (live API call on "agentic" and frozen query "agentic engineering" OR "AI developer tools"), deterministic scoring, approval gating, in-memory test-local deduplication sink
-- **Acceptance Cases:** All 5 frozen cases passed without ACA machinery
-- **Safety Enforcement:** Programmatic approval binding, semantic rejection, in-memory deduplication tracking
+- **Live Evidence:** TwitterAPI.io collection successful (live API call on "agentic" and frozen query "agentic engineering" OR "AI developer tools"), deterministic scoring, approval gating, in-memory test-local deduplication sink **[A0: recorded in prose; no raw receipt retained. The frozen query was run at threshold 0.5 and then 0.65, not the frozen 0.7.]**
+- **Acceptance Cases:** All 5 frozen cases passed without ACA machinery **[A0: passed as fixture regressions; the structural case checks keys only, the semantic case passes on any rejection, and `normal-composition` reads `scoring_fixture`, not a scorer.]**
+- **Safety Enforcement:** Programmatic approval binding, semantic rejection, in-memory deduplication tracking **[A0: corrected — a string gate on `"shortlist"` (not ADR-014 binding), a field-presence check (not a semantic checker), and a process-local in-memory sink. The `assertions` block in the live receipt is three hard-coded `False` constants.]**
 - **No Runtime Required:** Pure Python functions, no workflow engine or orchestration platform needed
 
 ### P5 Second Consumer (Engineering Signal Digest)
@@ -36,8 +46,8 @@ Generated adapters are normal and expected.
 - **Test Coverage:** 22 focused tests, all passed
 - **Private Implementation Needed:** None; second consumer is self-contained
 - **Adapter Code Size:** 45 lines of structural mapping + validation (lightweight, readable)
-- **Live Execution:** Query "observability" successful, 20 items, 14 unique authors, identity preservation correct
-- **Conformance Proof:** All six COMPOSABILITY_PROFILE_V0_1 conformance checks passed
+- **Live Execution:** Query "observability" successful, 20 items, 14 unique authors, identity preservation correct **[A0: a one-off CLI run recorded in prose; no machine receipt retained.]**
+- **Conformance Proof:** All six COMPOSABILITY_PROFILE_V0_1 conformance checks passed **[A0: unsupported. No test in the consumer suite imports or calls the real `search_candidates`; all inject `search_fn`. No version pin was used (same-directory import), and no check maps to profile items 1–6. Withdrawn.]**
 
 ### Composition Mechanics Observed
 
@@ -48,9 +58,9 @@ Generated adapters are normal and expected.
 | **Field Semantics** | Ordinary documentation + examples | ✓ Sufficient |
 | **Effects & Constraints** | Published docstrings + negative tests | ✓ Sufficient |
 | **Adaptation** | Generated Python code (manual or LLM-assisted) | ✓ Sufficient |
-| **Safety (Approval)** | Programmatic binding (existing AES `approval.action` pattern) | ✓ Sufficient |
-| **Safety (Idempotency)** | Durable state tracking (existing pattern) | ✓ Sufficient |
-| **Evidence/Provenance** | Git revision + test logs | ✓ Sufficient |
+| **Safety (Approval)** | ~~Programmatic binding (existing AES `approval.action` pattern)~~ **[A0: withdrawn — string gate; `approval.action.bind/verify` not used]** | **Not established** |
+| **Safety (Idempotency)** | ~~Durable state tracking (existing pattern)~~ **[A0: withdrawn — process-local in-memory sink]** | **Not established** |
+| **Evidence/Provenance** | Git revision + test logs **[A0: live runs are prose-only; no retained logs]** | Qualified |
 
 ### What Was Not Needed
 
@@ -72,10 +82,10 @@ All observed failures resolved without ACA extension:
 | Failure | Classification | Resolution | Result |
 |---------|-----------------|-----------|--------|
 | Query parsing (multi-word) | Agent/tool invocation mistake | Retry with correct quoting | No code change |
-| Score selectivity (95% routed to review) | Configuration problem | Threshold tuning (0.5 → 0.65) | Configuration-only adjustment |
+| Score selectivity (95% routed to review) | Configuration problem | Threshold tuning (0.5 → 0.65) **[A0: the frozen threshold was 0.7; 0.65 is a third value tuned on the same 20 live results, with no human judgment of the queue]** | Configuration-only adjustment |
 | UUID identity invention (second consumer design) | Design review catch (not live) | Use boundary's `source_candidate_id` directly | Preserves composition semantics |
 
-**Interpretation:** No failures survived the repair sequence that could not be fixed by documentation, configuration, or generated adapters. No evidence of missing ACA machinery.
+**Interpretation:** No failures survived the repair sequence that could not be fixed by documentation, configuration, or generated adapters. No evidence of missing ACA machinery. **[A0: on the exercised read-only path only. No effectful, cross-repository, discovery, or economic case was run, so "no evidence of need" is not evidence of sufficiency.]**
 
 ---
 
@@ -161,6 +171,8 @@ It is **not** a wire format that flows through a platform or a required input to
 
 n8n was selected in P1 and represented by a frozen fixture-based workflow baseline. Live n8n orchestration was not completed due to assistant-to-n8n control/auth integration overhead. P3 execution pivoted to Python/API composition, which required no additional platform layer and proved sufficient for the frozen behavior and acceptance cases.
 
+**[A0 2026-09-21:** n8n was **not evaluated** as a product. The fixture workflow was only structurally validated (`validate_fixture_baseline.py` checks top-level keys, node names, and `CASES.json` invariants; it does not execute the Code nodes), and no retained record shows it was imported into an n8n instance. The "overhead" was not measured. Read the earlier line "n8n was evaluated; Python was sufficient and simpler" as: *live n8n orchestration was not completed; ordinary Python was sufficient for the fixture-level cases and cheaper to drive from the assistant.* This is a statement about that session's control path, not about n8n's suitability. Frozen n8n artifacts are unchanged.**]**
+
 n8n is:
 - **Optional:** Not required for composition; Python functions proved sufficient for the observed cases
 - **A delivery platform:** Not an ACA dependency; another product could use a different orchestrator or no orchestrator at all
@@ -177,6 +189,8 @@ Evidence from this pilot:
 - ✓ No modifications required to serve both consumers
 
 This qualifies as **`candidate` → eligible for `proven` review** under repository lifecycle policy (AGENTS.md § Reuse lifecycle).
+
+**[A0 2026-09-21: overstated.** Both callers, the wrapper, and the fixtures share one repository, one directory, one language, and one provider; the second consumer's brief names the boundary; and the only behavior both exercise is one read-only call plus field access, so no distinctive invariant of the wrapper was exercised. The wrapper is a **candidate observation** in `reuse_candidates.yml` with its limitations recorded (read-only, same repo/language/domain family, no economic control, no packaging/version-drift evidence). It is not registered, has no manifest export, and is not eligible for promotion on this evidence. AGENTS.md counts failed fits and trivial-subset use as negative or insufficient evidence, not as promotion evidence.**]**
 
 **Promotion decision:** Defer to explicit review via repository procedures. This report documents the evidence; a separate promotion PR will decide `proven` or `candidate` status. If first consumer experiences live failures, or third consumer reveals unanticipated field requirements, demotion remains possible.
 
@@ -226,7 +240,7 @@ This decision informs an addition to `docs/DECISIONS.md`:
 
 ## Summary
 
-The evidence from P3 and P5 demonstrates that **independent composition is achievable without new ACA machinery**. Boundaries that expose stable, invokable interfaces plus clear documentation and tested adapters are sufficient.
+The evidence from P3 and P5 demonstrates that **independent composition is achievable without new ACA machinery** for the exercised read-only, same-repository path. Boundaries that expose stable, invokable interfaces plus clear documentation and tested adapters were sufficient there. **[A0 2026-09-21: this does not extend to effectful actions, other repositories or languages, discovery/selection, or delivery economics; see the ADR-017 amendment and [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md).]**
 
 Future ACA work should focus on:
 1. **Better capability discoverability** (how do agents find suitable boundaries?)
@@ -242,4 +256,4 @@ This approach preserves the ACA mission (composition-driven delivery with eviden
 
 ---
 
-**Next action:** P6 complete. Future ACA extensions require named, reproducible composition failure that survives documented repair sequence and repositories reviewed to justify the new layer.
+**Next action (2026-09-20):** P6 complete. **[A0 2026-09-21: the pilot's decision is complete; the evidence behind it is bounded. Next is ACA-PLAN-002 A1 onward.]** Future ACA extensions require named, reproducible composition failure that survives documented repair sequence and repositories reviewed to justify the new layer.

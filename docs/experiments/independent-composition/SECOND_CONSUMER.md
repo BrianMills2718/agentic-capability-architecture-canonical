@@ -6,6 +6,8 @@
 
 **Date:** 2026-09-20
 
+> **Amendment 2026-09-21 (ACA-PLAN-002 A0).** This is the 2026-09-20 report, preserved. Corrections are marked inline as **[A0 …]** and the audit trail is [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md). Headlines: (1) the live "observability" run was a **one-off CLI run recorded in prose**; no machine receipt or log was retained, so it cannot be reproduced or checked from the repository; (2) the consumer's tests never call the real `search_candidates` — all inject `search_fn` — so "all six conformance checks passed" is **unsupported**; (3) the adapter did **not** reject an explicit `None` when this was written (it raised `AttributeError`); this was fixed and regression-tested in A0; (4) the two consumers share one repository, directory, language, and provider, and the brief names the boundary, so "materially different" and "eligible for `proven` review" are **overstated**; (5) line counts below are corrected.
+
 ## Consumer Brief
 
 Engineering Signal Digest is a focused consumer that ingests a topic query and produces a JSON digest of engineering-relevant signals from Twitter/X sources. Unlike the first product (Twitter Prospector, which applies prospect scoring and CRM handoff), this consumer:
@@ -27,7 +29,7 @@ The digest is suitable for engineering teams to monitor emerging topics and coll
 
 **Function:** `search_candidates(query, *, api_key=None, timeout_seconds=30.0, opener=urllib.request.urlopen) -> list[dict[str, Any]]`
 
-**Pinned Version:** As committed at `072565d` (proof/independent-composition baseline)
+**Pinned Version:** As committed at `072565d` (proof/independent-composition baseline) **[A0: the commit exists, but no dependency pin was used. The consumer resolves the module from its own directory (same repository, same directory), and nothing enforces the revision. This is not evidence of version pinning or of distribution outside the repository.]**
 
 **Invocation Pattern:**
 ```python
@@ -54,16 +56,16 @@ Returns `list[dict[str, Any]]` where each dict is a normalized candidate with:
 - No side effects
 - Requires valid TWITTERAPI_IO_API_KEY credential
 - Raises `ProviderAccessError` on API failure, malformed response, or missing credentials
-- Resilient to null/missing author object (raises ProviderAccessError)
+- Resilient to null/missing author object (raises ProviderAccessError) **[A0: true for a missing or non-object `author` (`normalize_tweet`). Not true of the whole boundary: non-object entries in the provider's `tweets` list are silently skipped with no warning.]**
 
 ## Adapter Code Size & Complexity
 
-**Implementation:** `engineering_signal_digest.py`, 135 lines total
+**Implementation:** `engineering_signal_digest.py`, ~~135~~ **149 lines total** **[A0: 135 was wrong; the summary table below already said 149. Measured at `0cfa0ef`, before A0's edit; A0 adds a small `_required_text` helper.]**
 
-**Adapter Core:** `adapt_candidates_to_signals()` function, ~45 lines
+**Adapter Core:** `adapt_candidates_to_signals()` function, ~45 lines **[A0: 43 lines (47–89) at `0cfa0ef`]**
 - Maps search_candidates output shape to SignalItem dataclass
 - **Validates** that all required fields (source_candidate_id, author_handle, tweet_text, source_url) are present and non-empty
-- Raises `AdapterError` if any required field is missing, null, or whitespace-only
+- Raises `AdapterError` if any required field is missing, null, or whitespace-only **[A0: not true when written. A key that was absent or whitespace-only was rejected, but a key present with an explicit `None` reached `.strip()` and raised `AttributeError`, which the CLI's broad `except Exception` printed as an opaque message. A0 changed the adapter to raise `AdapterError` for `None` and non-string values and added regression tests; that claim is true from A0 onward.]**
 - **Deduplicates** by source_candidate_id (the durable identity from boundary)
 - Preserves author_handle, tweet_text, and source_url exactly
 - No inversion of logic, no invented identity, no unit conversion, no silent defaults
@@ -111,6 +113,8 @@ The boundary itself (`twitterapi_io_collection.py`) contains everything needed. 
 **Deduplication:** Tested by boundary returning duplicates; adapter correctly suppressed on second occurrence
 
 ### Live Evidence Assessment
+
+**[A0: the live evidence above is a one-off CLI run, recorded in this prose. No machine receipt, log, or captured output was retained, and the run is not reproducible from the repository (results depend on live search and a credential). It is an operator observation, not a checked artifact. The "Deduplication: tested by boundary returning duplicates" line refers to unit tests on injected lists; no duplicates in the live output are recorded.]**
 
 The second consumer executed successfully against a live query using the retained boundary, producing properly structured signals with durable identity preservation and exact field mapping. This constitutes the required "second materially different consumer" evidence for composability assessment.
 
@@ -163,7 +167,7 @@ The retained `search_candidates()` boundary required zero modifications to suppo
 - `test_deduplication_preserves_order`: first-occurrence order preserved
 - `test_empty_candidates_list`: empty input handled
 
-#### 4. TestAdapterErrorHandling (6 tests)
+#### 4. TestAdapterErrorHandling (~~6~~ 5 tests) **[A0: 5 listed and 5 present; the suite total of 22 = 1 + 3 + 5 + 5 + 4 + 4]**
 Negative controls — required fields must not be silently invented:
 - `test_missing_source_candidate_id`: raises AdapterError if source_candidate_id absent
 - `test_missing_author_handle`: raises AdapterError if author_handle absent
@@ -188,7 +192,7 @@ Negative controls — required fields must not be silently invented:
 - **No credentials required**: All tests use mocked `search_fn` parameter
 - **Minimal fixtures**: Test data embedded inline
 - **Focused scope**: Each test validates one concern (adapter, dedup, error handling)
-- **Conformance checks**: Tests verify all six conformance checks from COMPOSABILITY_PROFILE_V0_1.md
+- **Conformance checks**: Tests verify all six conformance checks from COMPOSABILITY_PROFILE_V0_1.md **[A0: unsupported. No test imports or calls the real `search_candidates`; all use injected `search_fn` or literals. No test checks a pinned version or a profile item by name. These tests verify the adapter's structure, validation, and deduplication only.]**
 
 ## ACA Extensions Needed?
 
@@ -207,9 +211,9 @@ The boundary (`search_candidates`) is the only external dependency, and it requi
 
 ## Composability Assessment
 
-**Retained Boundary: ✓ Composition-Ready**
+**Retained Boundary: ✓ Composition-Ready** **[A0: qualified. It was invoked once, live, by a same-repository consumer; "composition-ready" here means only that. The six-check assertion below is unsupported (see the tests note above): no retained assertion or artifact maps to any of the six checks, check 1's "pinned version" was not exercised, and the side-effect/retry check (4) and independence check (6) are trivially satisfied by a read-only wrapper with no side effects.]**
 
-The TwitterAPI.io collection boundary meets all six conformance checks from COMPOSABILITY_PROFILE_V0_1.md:
+The TwitterAPI.io collection boundary meets all six conformance checks from COMPOSABILITY_PROFILE_V0_1.md **[A0: unsupported as stated]**:
 
 1. **Invocation**: Stable function name `search_candidates`, pinned version, runnable without registry
 2. **Structural Contract**: Clear input (query string), output (list of dicts), optional fields (api_key, timeout, opener), required fields documented
@@ -236,6 +240,8 @@ The TwitterAPI.io collection boundary meets all six conformance checks from COMP
 - Delivery friction metrics or time-to-value comparison
 
 ## Promotion Eligibility Assessment
+
+> **[A0 2026-09-21: the eligibility conclusion in this section is withdrawn.** The two consumers, the boundary, and the fixtures share one repository, directory, language, and provider; the consumer brief names the boundary (no discovery or rejection was exercised); and the only behavior both exercise is one read-only call plus field access, so no distinctive invariant of the wrapper was tested. AGENTS.md requires the generalized behavior to be exercised by materially different projects, and treats trivial-subset use as insufficient evidence. There is no manifest, registry entry, or semantic export for this wrapper. It is recorded as a **candidate observation** in `reuse_candidates.yml` with its limitations, not promoted and not eligible for promotion on this evidence.**]**
 
 **Current Status: `candidate` → eligible for `proven` review**
 
@@ -264,7 +270,7 @@ This second consumer execution supplies the required evidence for promotion revi
 |------|-------|---------|
 | `engineering_signal_digest.py` | 149 | Consumer implementation (dataclasses, adapter, generator, CLI) |
 | `test_engineering_signal_digest.py` | 444 | 22 test methods (adapter, error handling, integration, identity preservation) |
-| `SECOND_CONSUMER.md` | 301 | This composition report |
+| `SECOND_CONSUMER.md` | 301 | This composition report (as of 2026-09-20; longer after A0 annotations) |
 | **Total** | **894** | Complete second consumer with tests and documentation |
 
 ### Boundary & Extensions

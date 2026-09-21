@@ -18,3 +18,23 @@ candidates:
       - Current client uses of na_approvals resolve at most one rule at a time; multi-rule arbitration is now package-tested and exercised by a market-derived Upwork order-approval experiment, but it is still not validated by a materially different real client/production use.
       - The Upwork experiment passed the same hidden tests in control and treatment; the treatment composed approvals + core but was slower and much more context-expensive, so this is fit/compatibility evidence rather than promotion or economic evidence.
       - Promotion requires a narrow common surface that serves materially different domains without embedding their terminology or policy.
+  - id: twitterapi_io_search_candidates_wrapper
+    project: independent_composition_pilot
+    description: >-
+      Read-only TwitterAPI.io search wrapper search_candidates(query) returning normalized candidate
+      dicts, recorded as a candidate observation only. It is not a registered capability, has no
+      manifest export, and is not promoted.
+    status: candidate
+    evidence:
+      - docs/experiments/independent-composition/twitterapi_io_collection.py (search_candidates, normalize_tweet), introduced in commit 072565d.
+      - "Positive reuse: called by the scoring pipeline docs/experiments/independent-composition/live_pipeline.py and, unchanged, by the separate Engineering Signal Digest consumer docs/experiments/independent-composition/engineering_signal_digest.py (commit 17bcdf8)."
+      - docs/experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md records what was and was not verified.
+    notes:
+      - "Limitation - read-only: a single GET search; no effectful behavior, so it says nothing about approval binding or durable idempotency."
+      - "Limitation - same repository, language, and domain family: both consumers live in one directory of one repository, are Python, and use Twitter search results; no cross-repository or cross-language consumption was tried."
+      - "Limitation - guided use: the second consumer's brief names the boundary, so discovery and rejection were not exercised."
+      - "Limitation - trivial subset: both consumers use one call plus field access, so no distinctive invariant of the wrapper was exercised. Non-object entries in the provider's tweets list are silently skipped, so a malformed-item warning requirement is not met."
+      - "No economic control: there is no control arm and no measured time, token, dollar, or human-intervention cost; unknown is not zero."
+      - "No packaging or version-drift evidence: the pinned revision was a same-directory import, not a dependency pin, and no provider or boundary version change was tested."
+      - "Live evidence is prose only: the 2026-09-19 and 2026-09-20 runs have no retained machine receipt. The consumer test suite never calls the real boundary."
+      - Do not register or promote on this evidence. A registered export must resolve a real public interface through the existing manifest and catalog conventions.

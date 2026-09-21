@@ -164,4 +164,6 @@ Until those are fixed, this document freezes methodology but does not claim an e
 - Test suite total: 41 unit tests exercising functions directly
 - n8n fixture validation: frozen workflow structure remains valid reference
 
+**[Note 2026-09-21 (ACA-PLAN-002 A0):** The counts above are static `def test_` counts and the "41" excludes the 22 Engineering Signal Digest tests. The frozen `CASES.json`/`EVALUATION.json` requirement "duplicate external handoff effect" was exercised only against a process-local in-memory sink, and "exact approved payload required" only as a decision-string gate. See [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md). The execution amendment itself, and the frozen files, are unchanged.**]**
+
 **Next phase:** If Python/API composition meets acceptance cases, extend to second consumer reuse; if named failure survives repair sequence, add composability profile extension (no semantic metadata or registry before evidence-driven extension).

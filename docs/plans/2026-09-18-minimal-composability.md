@@ -2,10 +2,11 @@
 
 Plan ID: ACA-PLAN-001
 Recorded: 2026-09-18
-Status: execution complete; decision recorded in ADR-017 and P6_DECISION.md.
+Status: **historical; bounded.** Executed 2026-09-18 to 2026-09-20; decision recorded in ADR-017 and P6_DECISION.md. Its evidence is bounded to one read-only, same-repository, same-language path. Superseded as the current execution plan by [ACA-PLAN-002](2026-09-21-evidence-repair-cross-repo-reuse.md); see the [2026-09-21 audit addendum](../experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md) and the dated ADR-017 amendment.
 Outcome owner: Brian Mills.
 Execution owners: assigned coding workers; roles below are responsibilities, not a requirement to hire a separate person for each.
-Execution status: P0-P6 complete (2026-09-20). P3 produced reusable composition boundaries + live TwitterAPI.io evidence (41 tests). P5 second consumer (Engineering Signal Digest) exercised retained boundary successfully (22 tests, live "observability" query). P6 decision: ordinary interfaces + conformance tests are sufficient; no new ACA machinery justified. See ADR-017 and P6_DECISION.md.
+Execution status (as recorded 2026-09-20; preserved): P0-P6 complete. P3 produced reusable composition boundaries + live TwitterAPI.io evidence (41 tests). P5 second consumer (Engineering Signal Digest) exercised retained boundary successfully (22 tests, live "observability" query). P6 decision: ordinary interfaces + conformance tests are sufficient; no new ACA machinery justified. See ADR-017 and P6_DECISION.md.
+Current qualification (2026-09-21, ACA-PLAN-002 A0): "complete" means the plan's decision step was recorded, not that the product slice was delivered (no human review, LLM scoring, live n8n, or real handoff occurred). "Sufficient" applies only to the exercised read-only path; the pilot did not exercise ADR-014 approval binding or durable idempotency, cross-repository reuse, discovery, or measured delivery economics. The live runs are prose records with no retained receipt.
 
 ## 1. Outcome and priorities
 
