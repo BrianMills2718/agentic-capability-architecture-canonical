@@ -90,10 +90,14 @@ wheel_size="$(stat -c %s "$wheel_path")"
 cd /tmp
 "$WORKDIR/venv/bin/python" - <<'PY'
 from typing import Any
+import sys
 
 import requests
 from twitter_prospecting_provider import SearchQuery, TwitterApiIoClient
 import twitter_prospecting_provider.twitter_client as provider_module
+
+assert "llm_client" not in sys.modules
+assert not any(name.startswith("twitter_prospecting_provider.agent") for name in sys.modules)
 
 
 class FakeResponse:

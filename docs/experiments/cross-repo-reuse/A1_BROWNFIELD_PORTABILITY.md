@@ -15,7 +15,7 @@ The pre-existing Product N implementation is apps/twitter_prospecting/twitter_cl
 
 The meaningful behavior for ACA-PLAN-002 T1 is TwitterApiIoClient.collect(...), not only its one-request search(...) helper.
 
-At the inspected revision, collect(...):
+From source review at the inspected revision, `collect(...)`:
 - executes multiple search queries independently;
 - retains a QueryExecution disposition for every requested query;
 - allows one query to fail while successful queries survive;
@@ -106,7 +106,7 @@ The copied source files were byte-identical to Product N:
 - twitter_client.py source and bundle sha256: a9be9aabcd5dd8be0a688c07313e0ef71d4b446e12f20d1cdd435ec907df468e
 - models.py source and bundle sha256: aef6fa1dd7263fbb04a4ec246e472b8260c45cf54673f319762fbd4b62ff0149
 
-The temporary package built a wheel and installed it into a clean virtual environment. Execution occurred from /tmp, not from Product N and with no Product N PYTHONPATH.
+The temporary package built a wheel and installed it into a dedicated virtual environment created with `--system-site-packages`, so the declared `requests`/`pydantic` dependencies were inherited from the host rather than independently installed. Execution occurred from `/tmp`, outside Product N and with no Product N `PYTHONPATH`. The check therefore proves package/import separation for the retained source, but not fully isolated dependency installation.
 
 The synthetic-provider test exercised:
 - two queries;
@@ -121,7 +121,7 @@ Observed:
 A1_TEMP_BUNDLE_PASS
 1 candidate, 2 query executions, 2 warnings.
 
-The installed module path was under the temporary environment's site-packages. The retained verification recipe is `docs/experiments/cross-repo-reuse/a1_temp_publication_check.sh`; it reads the two source files directly from the pinned Product N Git revision, verifies their expected hashes, creates only an ephemeral `/tmp` package, runs the synthetic-provider check, prints the artifact/environment evidence, and deletes the temporary private source on exit.
+The installed module path was under the temporary environment's site-packages. The retained verification recipe is `docs/experiments/cross-repo-reuse/a1_temp_publication_check.sh`; it reads the two source files directly from the pinned Product N Git revision, verifies their expected hashes, creates only an ephemeral `/tmp` package, runs the synthetic-provider check, explicitly asserts that `llm_client` and any `twitter_prospecting_provider.agent` module were not imported, prints the artifact/environment evidence, and deletes the temporary private source on exit. The recipe installs `wheel==0.48.0` and therefore may require package-index/network access; it makes no live Twitter provider call.
 
 Reproduced runs used Python 3.12.3, requests 2.34.2, pydantic 2.13.4, setuptools 68.1.2, and wheel 0.48.0. The recipe produced `inside_success_twitter_provider_a1-0.0.0+a1.ab2cfba-py3-none-any.whl`, 9,442 bytes. Per-build wheel hashes differed across repeated ephemeral builds (`a9b64616...` then `dfc290ac...`) despite identical pinned source hashes, so the temporary build is **not** claimed reproducible at the artifact-byte level. A retained publication artifact would need its exact build hash frozen after authorization. The wheels and temporary private source were not retained, committed, uploaded, or distributed.
 
@@ -129,7 +129,7 @@ Reproduced runs used Python 3.12.3, requests 2.34.2, pydantic 2.13.4, setuptools
 
 Verified:
 1. As-is Product N is not publication-ready: no installable package, clean import fails, and the package initializer drags the provider client through the full agent/llm_client dependency.
-2. The byte-identical `twitter_client.py` and `models.py` execute successfully from a separately installed temporary package that does not import `ProspectingAgent` or `llm_client`; this is the evidence that the retained provider logic is not intrinsically coupled to the LLM/agent runtime. The focused original Product N test passing at the recorded shared `llm_client` revision separately confirms the source product remains green at the inspected dependency snapshot.
+2. The byte-identical `twitter_client.py` and `models.py` execute successfully from a separately installed temporary package whose verification recipe asserts that `llm_client` and provider-agent modules are not imported; this is the evidence that the retained provider logic is not intrinsically coupled to the LLM/agent runtime. The focused original Product N test passing at the recorded shared `llm_client` revision separately confirms the source product remains green at the inspected dependency snapshot.
 3. A bounded publication-only normalization appears technically feasible: ordinary package metadata plus a lightweight import surface were enough for the local proof, with no substantive provider/client code change. Active publication engineering time was not instrumented precisely in A1, so this audit does not claim the normalization is economically "small"; ACA-PLAN-002 requires that cost to be measured before any economics conclusion.
 4. This is evidence of publication debt, not evidence that ACA needs a runtime, schema language, or registry service.
 5. The models boundary is broader than the collection capability needs. The temporary proof copied the whole `models.py`, which contains unrelated prospecting/application contracts. Any retained redistribution would therefore need authorization covering both `twitter_client.py` and the copied model definitions; narrowing that surface would be a source-owner design change and is not necessary to demonstrate technical feasibility.
@@ -153,13 +153,16 @@ Not established:
 | Brownfield coupling classified | PASS — packaging + eager package-init/shared-dependency coupling |
 | Original-consumer focused regression at recorded shared dependency | PASS — 1 test |
 | Consumer-blind publication-only feasibility demonstrated locally | PASS |
-| Source-free verification recipe retained in ACA | PASS — recipe reads pinned private source at run time and cleans `/tmp`; wheel bytes are not yet deterministic |
+| Source-nonretaining verification recipe retained in ACA | PASS — recipe requires authorized access to pinned private source, keeps it only under ephemeral `/tmp`, and cleans on normal exit; wheel bytes are not yet deterministic |
 | Provider/client source unchanged in feasibility proof | PASS — hashes identical |
 | Product N source modified | NO |
 | Product N code copied into ACA | NO |
 | Retained/versioned artifact available to A2 consumer | NOT MET — feasibility wheel was ephemeral and deleted |
 | Artifact published/distributed | NO |
+| Publication/normalization active effort measured | NOT MEASURED — no economic conclusion from A1 |
 | Rights/authorization for cross-repo publication | OPEN |
+
+The synthetic feasibility scenario was derived from ACA-PLAN-002's planned T1 invariants before A2 created any scored consumer or held-out evaluator. It is a technical portability check, not a scored A2/A3 result.
 
 A1 technical conclusion: the pre-existing capability appears independently installable after conventional publication/export normalization. The current Product N architecture imposes measurable publication debt (no package boundary plus eager package-init coupling), but the audit has not found substantive provider-logic coupling that would justify new ACA infrastructure. A1's retained-artifact exit gate remains open until publication rights are confirmed and an authorized pinned artifact or source-owner package is produced.
 
