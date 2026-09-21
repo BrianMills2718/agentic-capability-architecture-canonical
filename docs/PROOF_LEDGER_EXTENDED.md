@@ -58,7 +58,7 @@ Indexed here so current status is reconciled in one place. Full audit: [`experim
 
 - **Supported, as scoped:** one read-only Python wrapper (`search_candidates`, TwitterAPI.io) was called by a scoring pipeline and by a second digest consumer in the same repository, language, and provider domain family, with no change to the wrapper. No ACA registry, semantic layer, or runtime was needed for that path. Recorded live runs (2026-09-19, 2026-09-20) are prose only, with no retained receipt.
 - **Not established:** ADR-014 approval binding or durable idempotency (the pilot used a string gate and a process-local in-memory sink); a semantic compatibility checker (field-presence only); "all six profile checks"; a pinned dependency; cross-repository or cross-language reuse; discovery/selection (the consumer was told the boundary); measured delivery economics (no control, no cost/time data; unknown, not zero); product completion (no human review, LLM scoring, live n8n, or real handoff); any n8n product evaluation.
-- **Status of the wrapper:** candidate observation in `reuse_candidates.yml`; not registered, not promoted, no manifest export.
+- **Status of the wrapper:** `observed` reuse entry in `reuse_candidates.yml`; not registered, not promoted, no manifest export. `observed` is intentional because the later caller exercised only a trivial read-only subset in the same repository/domain family.
 - **Next:** ACA-PLAN-002 A1 onward. The effect-safety canary (A5) is the only planned test of approval binding and durable idempotency and has not been run.
 
 ## Pending decisive proof

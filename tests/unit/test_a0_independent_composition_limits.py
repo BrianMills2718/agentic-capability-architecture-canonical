@@ -65,10 +65,10 @@ def test_adapter_rejects_non_string_with_adapter_error(field):
         adapt_candidates_to_signals([_candidate(**{field: 123})])
 
 
-def test_adapter_none_error_is_not_an_attribute_error():
+def test_adapter_none_error_reports_original_value_type():
     with pytest.raises(AdapterError) as exc:
         adapt_candidates_to_signals([_candidate(author_handle=None)])
-    assert not isinstance(exc.value, AttributeError)
+    assert "author_handle" in str(exc.value)
     assert "NoneType" in str(exc.value)
 
 
@@ -94,11 +94,12 @@ class _FakeResponse:
         return self._body
 
 
-def test_search_candidates_silently_skips_non_object_tweets():
-    """Limitation: a non-dict entry in `tweets` is dropped with no warning.
+def test_search_candidates_drops_non_object_tweets_without_returned_signal():
+    """Limitation: a non-dict entry is absent from the returned candidate list.
 
-    A consumer cannot tell that the provider returned malformed items, so a
-    "malformed-item warning" requirement is not met by this boundary.
+    The boundary returns only a list of candidates and exposes no warning or
+    per-item disposition in that return value, so the consumer cannot infer the
+    dropped malformed item from the returned contract alone.
     """
     body = b'{"tweets": ["not-an-object", {"id": "1", "text": "hi", "author": {"userName": "a"}}]}'
 

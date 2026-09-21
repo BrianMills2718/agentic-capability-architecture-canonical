@@ -58,9 +58,11 @@ Generated adapters are normal and expected.
 | **Field Semantics** | Ordinary documentation + examples | ✓ Sufficient |
 | **Effects & Constraints** | Published docstrings + negative tests | ✓ Sufficient |
 | **Adaptation** | Generated Python code (manual or LLM-assisted) | ✓ Sufficient |
-| **Safety (Approval)** | ~~Programmatic binding (existing AES `approval.action` pattern)~~ **[A0: withdrawn — string gate; `approval.action.bind/verify` not used]** | **Not established** |
-| **Safety (Idempotency)** | ~~Durable state tracking (existing pattern)~~ **[A0: withdrawn — process-local in-memory sink]** | **Not established** |
-| **Evidence/Provenance** | Git revision + test logs **[A0: live runs are prose-only; no retained logs]** | Qualified |
+| **Safety (Approval)** | Programmatic binding (existing AES `approval.action` pattern) | ✓ Sufficient |
+| **Safety (Idempotency)** | Durable state tracking (existing pattern) | ✓ Sufficient |
+| **Evidence/Provenance** | Git revision + test logs | ✓ Sufficient |
+
+**[A0 2026-09-21 — current standing of the historical table:** the Approval and Idempotency rows above are **withdrawn as evidence conclusions**. The pilot used a `"shortlist"` string gate and a process-local in-memory sink; it did not compose `approval.action.bind/verify` or durable state. The Evidence/Provenance row is also qualified because the live runs are retained only in prose, not as machine receipts/logs. The original 2026-09-20 table is preserved above for chronology.**]**
 
 ### What Was Not Needed
 
@@ -190,7 +192,7 @@ Evidence from this pilot:
 
 This qualifies as **`candidate` → eligible for `proven` review** under repository lifecycle policy (AGENTS.md § Reuse lifecycle).
 
-**[A0 2026-09-21: overstated.** Both callers, the wrapper, and the fixtures share one repository, one directory, one language, and one provider; the second consumer's brief names the boundary; and the only behavior both exercise is one read-only call plus field access, so no distinctive invariant of the wrapper was exercised. The wrapper is a **candidate observation** in `reuse_candidates.yml` with its limitations recorded (read-only, same repo/language/domain family, no economic control, no packaging/version-drift evidence). It is not registered, has no manifest export, and is not eligible for promotion on this evidence. AGENTS.md counts failed fits and trivial-subset use as negative or insufficient evidence, not as promotion evidence.**]**
+**[A0 2026-09-21: overstated.** Both callers, the wrapper, and the fixtures share one repository, one directory, one language, and one provider; the second consumer's brief names the boundary; and the only behavior both exercise is one read-only call plus field access, so no distinctive invariant of the wrapper was exercised. The wrapper is an **observed reuse entry** (`status: observed`) in `reuse_candidates.yml` with its limitations recorded (read-only, same repo/language/domain family, no economic control, no packaging/version-drift evidence). It is not registered, has no manifest export, and is not eligible for promotion on this evidence. AGENTS.md counts failed fits and trivial-subset use as negative or insufficient evidence, not as promotion evidence.**]**
 
 **Promotion decision:** Defer to explicit review via repository procedures. This report documents the evidence; a separate promotion PR will decide `proven` or `candidate` status. If first consumer experiences live failures, or third consumer reveals unanticipated field requirements, demotion remains possible.
 
@@ -240,7 +242,9 @@ This decision informs an addition to `docs/DECISIONS.md`:
 
 ## Summary
 
-The evidence from P3 and P5 demonstrates that **independent composition is achievable without new ACA machinery** for the exercised read-only, same-repository path. Boundaries that expose stable, invokable interfaces plus clear documentation and tested adapters were sufficient there. **[A0 2026-09-21: this does not extend to effectful actions, other repositories or languages, discovery/selection, or delivery economics; see the ADR-017 amendment and [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md).]**
+The evidence from P3 and P5 demonstrates that **independent composition is achievable without new ACA machinery**. Boundaries that expose stable, invokable interfaces plus clear documentation and tested adapters are sufficient.
+
+**[A0 2026-09-21 — current qualification:** the historical conclusion above is broader than the evidence. The empirical support is limited to the exercised read-only, same-repository, same-language path and does not extend to effectful actions, other repositories/languages, discovery/selection, or delivery economics. See the ADR-017 amendment and [AUDIT_ADDENDUM_2026-09-21.md](AUDIT_ADDENDUM_2026-09-21.md).**]**
 
 Future ACA work should focus on:
 1. **Better capability discoverability** (how do agents find suitable boundaries?)

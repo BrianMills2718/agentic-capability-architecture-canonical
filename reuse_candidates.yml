@@ -19,12 +19,12 @@ candidates:
       - The Upwork experiment passed the same hidden tests in control and treatment; the treatment composed approvals + core but was slower and much more context-expensive, so this is fit/compatibility evidence rather than promotion or economic evidence.
       - Promotion requires a narrow common surface that serves materially different domains without embedding their terminology or policy.
   - id: twitterapi_io_search_candidates_wrapper
-    project: independent_composition_pilot
+    project: aca_plan_001_independent_composition
     description: >-
       Read-only TwitterAPI.io search wrapper search_candidates(query) returning normalized candidate
-      dicts, recorded as a candidate observation only. It is not a registered capability, has no
+      dicts, recorded as an observed reuse result only. It is not a registered capability, has no
       manifest export, and is not promoted.
-    status: candidate
+    status: observed
     evidence:
       - docs/experiments/independent-composition/twitterapi_io_collection.py (search_candidates, normalize_tweet), introduced in commit 072565d.
       - "Positive reuse: called by the scoring pipeline docs/experiments/independent-composition/live_pipeline.py and, unchanged, by the separate Engineering Signal Digest consumer docs/experiments/independent-composition/engineering_signal_digest.py (commit 17bcdf8)."
@@ -37,4 +37,4 @@ candidates:
       - "No economic control: there is no control arm and no measured time, token, dollar, or human-intervention cost; unknown is not zero."
       - "No packaging or version-drift evidence: the pinned revision was a same-directory import, not a dependency pin, and no provider or boundary version change was tested."
       - "Live evidence is prose only: the 2026-09-19 and 2026-09-20 runs have no retained machine receipt. The consumer test suite never calls the real boundary."
-      - Do not register or promote on this evidence. A registered export must resolve a real public interface through the existing manifest and catalog conventions.
+      - "Observed is intentional rather than candidate: the later caller exercised only a trivial read-only subset in the same repository/domain family, so the evidence does not yet establish a credible generalized capability surface. Do not register or promote on this evidence. A registered export must resolve a real public interface through the existing manifest and catalog conventions."

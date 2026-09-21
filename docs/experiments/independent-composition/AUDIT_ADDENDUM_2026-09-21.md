@@ -36,7 +36,7 @@ Reading code and seeing it "look right" is weaker than running it; tags are used
 | F12 | Frozen `CASES.json` uses `review_threshold` 0.7 and `live_pipeline.py` defaults to 0.7 (function and CLI). The recorded live runs used 0.5 and then 0.65 as explicit overrides. No live run at 0.7 is recorded. | [R] [C] |
 | F13 | `RESULTS.md` says the scorer's maximum is "~0.95" but the same file records a candidate scored 1.0. The code caps at 1.0 and the signal weights sum to 1.55. | [R] |
 | F14 | The "Evidence JSON" block in `RESULTS.md` contains `score_range_observed` and `score_range_bounded`. `live_pipeline.py` emits neither key. The block is therefore an abridged/edited transcription, not a verbatim tool receipt. | [R] |
-| F15 | No log, receipt, or captured output from either live run (2026-09-19 pipeline runs; 2026-09-20 digest run) exists under this directory. The live evidence is prose. | [C] |
+| F15 | A0 found no retained log, receipt, or captured output for the 2026-09-19 pipeline runs or 2026-09-20 digest run under `docs/experiments/independent-composition/`; those canonical experiment artifacts therefore retain prose only. A0 did not exhaustively search external machine/chat logs, so it does not claim the output never existed elsewhere. | [C] |
 | F16 | `n8n/validate_fixture_baseline.py` checks required top-level keys, the exact node-name list, and invariants of `CASES.json`. It does not parse or execute the Code nodes. No retained record shows the workflow JSON was imported into an n8n instance. | [R] |
 | F17 | Neither `search_candidates` nor `twitterapi_io_collection` is referenced by any capability manifest, the registry, or a client project. It is not a registered capability. | [C] |
 | F18 | Commit `072565d` (the pinned revision cited by the P5 report) exists; the digest consumer was added later in `17bcdf8` in the same repository and directory. Nothing in code enforces that pin; the consumer resolves the boundary via its own directory. | [G] [R] |
@@ -85,7 +85,7 @@ Reading code and seeing it "look right" is weaker than running it; tags are used
 - That all six profile checks were run against the boundary, or that a version pin was used (F9, F18).
 - That the boundary generalizes across repositories, languages, or effectful actions, or that delivery is cheaper with it. No control arm, cost, time, or package/version-drift measurement exists.
 - That discovery/selection worked. The consumer was told the boundary.
-- That `search_candidates` is `proven`. It is at most a candidate observation (see `reuse_candidates.yml`).
+- That `search_candidates` is `proven` or even a mature `candidate`. It is currently an `observed` reuse result (see `reuse_candidates.yml`), because the later caller exercised only a trivial read-only subset in the same repository/domain family.
 - That n8n is unsuitable or was evaluated.
 - That the Twitter Prospector product was completed (no human review event, LLM scorer, or real handoff).
 
@@ -107,7 +107,7 @@ Reading code and seeing it "look right" is weaker than running it; tags are used
 - `P6_DECISION.md`, `RESULTS.md`, `SECOND_CONSUMER.md`, `PROTOCOL.md`: dated qualification notes and inline corrections of stale counts; original text preserved.
 - ACA-PLAN-001 header: historical/bounded status, pointer to ACA-PLAN-002.
 - `docs/README.md`, `docs/NEXT_PROOF.md`, `docs/PROOF_LEDGER_EXTENDED.md`: navigation/status reconciled.
-- `reuse_candidates.yml`: `search_candidates` wrapper recorded as a candidate observation with limitations. Not registered, not promoted.
+- `reuse_candidates.yml`: `search_candidates` wrapper recorded as an `observed` reuse observation with limitations. Not registered, not promoted.
 - `engineering_signal_digest.py`: explicit `None`/non-string required fields raise `AdapterError`.
 - `tests/unit/test_a0_independent_composition_limits.py` (new): regression for the above and characterization tests for F5, F6, F10, and the payload-unbound approval gate. These pin limitations; they are not production-safety tests.
 
@@ -119,12 +119,13 @@ The editing worker session could execute only read-only shell commands, so it co
 
 | Check | Result |
 | --- | --- |
-| Frozen-artifact sha256, before and after A0 edits | **PASS; unchanged.** `fixtures/CASES.json` `3643f3a93f2c59406c31b13dd05588444bdae2e054e58f23192870c3b7dfd7b6`; `fixtures/EVALUATION.json` `aba3d75231383ef4e047b700e73363becbcc0e25093ba7c9e11ef80a293cddf3`; `n8n/twitter-prospector-fixture-baseline.json` `170e4d40e3fde00a1def222c44a790f44a0b7c9e11ef80a293cddf3`; `n8n/validate_fixture_baseline.py` `cb769b276e449a425e41b9b168a41d611ace3967c3347d899a89341ff58d7b43`. |
+| Frozen-artifact sha256, before and after A0 edits | **PASS; unchanged.** `fixtures/CASES.json` `3643f3a93f2c59406c31b13dd05588444bdae2e054e58f23192870c3b7dfd7b6`; `fixtures/EVALUATION.json` `aba3d75231383ef4e047b700e73363becbcc0e25093ba7c9e11ef80a293cddf3`; `n8n/twitter-prospector-fixture-baseline.json` `170e4d40e3fde00a1def222c44a790f44a0b7c0baab7ae35f7ec6bbbc51ebf2e`; `n8n/validate_fixture_baseline.py` `cb769b276e449a425e41b9b168a41d611ace3967c3347d899a89341ff58d7b43`. |
 | Focused A0/P3/P5 tests | **PASS: 83 tests.** Collected counts: A0 limits 20, P3 composition 25, provider adapter 6, live pipeline 10, Engineering Signal Digest 22. |
 | Frozen n8n validator | **PASS:** `fixture workflow structure and frozen evaluator invariants: PASS`. This remains a static fixture check, not live n8n execution. |
 | `git diff --check` | **PASS.** |
 | Full completion gate | **PASS** using `/tmp/aca-bootstrap-venv/bin/python tools/check_bootstrap.py`: documentation/schema/registry/catalog/project/package checks passed; 11 Frappe packages built; repository pytest result **175 passed, 35 skipped**; `LOCAL BOOTSTRAP CHECKS PASSED`. |
 | Isolated interpreter | `/tmp/aca-bootstrap-venv/bin/python` (Python 3.12 environment created with system site packages and `wheel`). |
+| A0 effort/cost | Active editing/review time and subscription usage were not systematically metered in A0. No experiment-specific live provider call was made during A0. Cash/model cost is therefore **unobserved**, not zero; ACA-PLAN-002 requires prospective measurement for the scored comparison. |
 | Commits | Code/characterization-test checkpoint: `37ee6b0` (`test: make independent-composition limits explicit`). Evidence/navigation amendments are committed separately in the same A0 PR so code characterization and claim repair remain reviewable independently. |
 
 F2's static counts were independently confirmed by pytest collection for the focused suites. F8's repaired explicit-`None` behavior is covered by the new A0 regression suite, which passed. The characterization tests also passed and should be read as executable documentation of limitations, not as claims of production effect safety.
