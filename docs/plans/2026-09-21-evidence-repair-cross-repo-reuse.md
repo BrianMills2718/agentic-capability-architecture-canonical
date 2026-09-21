@@ -2,7 +2,7 @@
 
 Plan ID: ACA-PLAN-002
 Recorded: 2026-09-21
-Status: execution active. Prior-art convergence (A-1) is complete. A0 evidence repair was executed and independently reviewed on 2026-09-21 in PR #63; A1 brownfield publication/portability audit is next. A2–A6 have not started.
+Status: execution active. Prior-art convergence (A-1) is complete. A0 evidence repair merged in PR #63. A1 technical brownfield portability audit is complete and recorded in `docs/experiments/cross-repo-reuse/A1_BROWNFIELD_PORTABILITY.md`; A1 is blocked at source-owner/redistribution authorization before any Product N change or retained artifact. A2–A6 have not started.
 Outcome owner: Brian Mills.
 Planning baseline: canonical `main` at `9bdf123776e6f1379c1a4b1b0ea3ed618d4348b3`.
 Predecessor: [ACA-PLAN-001](2026-09-18-minimal-composability.md), including merged PRs #59–61.
