@@ -19,7 +19,9 @@ Human-readable status summaries should not duplicate volatile machine state when
 
 ## Current execution planning
 
-[ACA-PLAN-001: minimal composability, off-the-shelf first](plans/2026-09-18-minimal-composability.md) is the proposed next execution plan. It contains scope, owners, dependencies, deliverables, acceptance, safety/cost gates, and conditional stop rules. ADR-016 records the planning direction; no provider, new schema, or runtime is selected by that direction. The contract and pilot remain unexecuted until their plan steps are performed.
+[ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) is the proposed audit follow-up. It plans evidence/status corrections, publication of a pre-existing Product N boundary, a bounded control-versus-reuse comparison, and a separately scoped local effect-safety canary. This is planning only; its execution and proposed spending caps have not been activated.
+
+[ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) records the earlier pilot and P6 decision from merged PRs #59–61. The follow-up distinguishes its bounded positive evidence from broader completion/economic claims under review. ADR-017 remains the recorded decision pending an explicit dated amendment; the new plan does not silently replace historical evidence or select new infrastructure.
 
 ## Current architecture and operating rules
 
@@ -40,7 +42,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 | --- | --- |
 | [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md) | **Current proof-status index.** Completed and pending proof claims should be reconciled here first. |
 | [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md) | Current record of the baseline real-Frappe lifecycle proof result. |
-| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Routes to the proposed independent-composition pilot; preserves the earlier discovery/control formulation as historical context, not the next mandatory experiment. |
+| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Routes to ACA-PLAN-002's evidence repair and bounded cross-repository comparison; preserves the earlier discovery/control formulation as historical context. |
 
 ## Operational runbooks and checks
 

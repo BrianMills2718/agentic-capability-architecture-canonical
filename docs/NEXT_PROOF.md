@@ -1,10 +1,10 @@
-# Next Proof — Independent Capability Composition
+# Next Proof — Evidence Repair and Cross-Repository Reuse
 
-**Proposed next execution route:** [ACA-PLAN-001: minimal composability, off-the-shelf first](plans/2026-09-18-minimal-composability.md).
+**Proposed next execution route:** [ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md).
 
-The immediate question is whether independently authored capabilities can be composed by a fresh worker into a correct useful product with economical adapters, using existing tools and interfaces. CI and contractor artifact requirements support the work; proving that those can be enforced is not the technical experiment.
+The earlier [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) pilot and P6 decision are retained in merged PRs #59–61. The audit follow-up first reconciles their evidence claims, then asks whether a pre-existing Product N boundary helps a fresh worker deliver Product N+1 outside the source repository, against a competent ordinary-engineering control.
 
-The linked plan owns sequencing, acceptance, costs, independence, conditional metadata additions, second-consumer reuse, and stop rules. Do not create a separate benchmark platform or contract implementation before its provider-fit and protocol steps. No new experiment result is claimed here.
+ACA-PLAN-002 owns sequencing, public versus held-out context, exact revisions, proposed budgets, independent acceptance, marginal versus publication-inclusive cost, and stop rules. Its local effect-safety canary is separate from the read-only comparison. No new runtime, registry service, n8n setup, paid experiment, or architectural amendment is performed by this planning change. Next step after adoption is A0, not another platform build.
 
 ---
 
