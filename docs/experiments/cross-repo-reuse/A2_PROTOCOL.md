@@ -72,7 +72,9 @@ Frozen scored harness for both arms:
 - fresh session for every scored worker;
 - resolved model in non-scored preflight: `claude-sonnet-5`; the same command/model alias is required for both arms;
 - Python 3.12 task environment;
-- separate consumer repository/worktree outside ACA and Product N;
+- separate consumer repository outside ACA and Product N;
+- each scored Claude process runs inside an unprivileged Linux user+mount+PID namespace (`unshare --user --map-root-user --mount --pid --fork --kill-child`), with its repo bind-mounted as the working surface;
+- worker-visible host paths containing ACA/Product N/Claude history/held-out state are over-mounted with empty tmpfs mounts; only the existing Claude credential file is rebound read-only into an otherwise empty Claude config mount;
 - 30-minute active-worker ceiling per submission;
 - subscription-first resource use;
 - incremental cash target: **$0**;
@@ -80,7 +82,7 @@ Frozen scored harness for both arms:
 - no new subscription or infrastructure purchase;
 - no live provider call.
 
-The original `ask-agent claude --edit` route was rejected during preflight because its non-interactive `acceptEdits` policy denied pytest and git commands. Direct Claude Code `auto` mode is a harness/configuration repair, not an ACA change. In preflight it ran Python 3.12.3, pytest (1 pass), preserved a multi-word CLI argument, wrote files, and committed successfully. The preflight resolved `claude-sonnet-5`.
+The original `ask-agent claude --edit` route was rejected during preflight because its non-interactive `acceptEdits` policy denied pytest and git commands. Direct Claude Code `auto` mode is a harness/configuration repair, not an ACA change. A first direct preflight proved execution worked but also proved same-user path isolation did not. The final namespace preflight then ran Python 3.12.3, pytest (1 pass), preserved a multi-word CLI argument, wrote/committed files, and resolved `claude-sonnet-5` while reporting namespace PID 1 and no held-out-state visibility. A deliberately detached child scheduled to write after worker exit was killed by namespace teardown; its marker file never appeared.
 
 ## Worker context
 
@@ -110,7 +112,7 @@ Later assisted repair is diagnostic work, not a retroactive blind success.
 
 ## Held-out evaluator
 
-The evaluator was authored outside both worker repositories. Preflight showed that Claude Code `auto` mode could read arbitrary known same-user paths, so path placement alone was not an enforceable blind. Before scored runs, all held-out plaintext (evaluator, hidden fixtures, treatment hook, evaluator-author log) and the non-scored reference implementation were removed from the filesystem. The held-out packet is stored only as an AES-256 encrypted archive during worker execution; the decryption key is not stored in the worker repository, environment, or filesystem. Plaintext is restored only after a worker process ends, used for scoring, and removed again before the next worker starts.
+The evaluator was authored outside both worker repositories. Preflight showed that ordinary same-user path placement was not an enforceable blind. The final scored boundary therefore combines two ordinary OS controls rather than trusting path discipline: (1) all held-out plaintext and the non-scored reference are absent while a worker runs, with the held-out packet retained only as an AES-256 encrypted archive whose key is not in worker-visible state; and (2) the worker itself runs in an unprivileged user/mount/PID namespace whose mount view hides ACA worktrees, Product N source, Claude history/state, Windows mounts, and coordinator local state. Namespace teardown uses `--kill-child`, so worker descendants cannot survive into the later decrypt-and-score phase. Plaintext is restored only after namespace exit, used for scoring, and removed again before another worker starts.
 
 Before A3:
 
@@ -134,15 +136,17 @@ The last check is treatment-specific and must not require the control to import 
 
 ## Non-scored preflight
 
-A disposable preflight confirmed:
+Disposable preflights confirmed:
 
 - shell execution: PASS;
 - Python 3.12.3 / pytest execution: PASS;
 - writing files/committing: PASS;
 - multi-word argument preservation: PASS;
 - model/session/cost metadata returned in JSON: PASS (`claude-sonnet-5`);
-- path-only isolation: FAIL (the worker could read a named same-user sentinel under `~/.local/state`);
-- repaired blinding: PASS operationally by removing all held-out plaintext/reference artifacts and retaining only encrypted ciphertext during worker runs.
+- plain same-user path isolation: FAIL, retained as an instrument failure rather than ignored;
+- namespace mount isolation: PASS (`heldout_visible=no`, Claude config history hidden, ACA/Product N paths hidden);
+- namespace process isolation: PASS (worker was PID 1; a detached delayed child did not survive `--kill-child` teardown);
+- Claude subscription auth in the isolated mount view: PASS using the existing credential file rebound read-only, with no credential contents copied into experiment artifacts.
 
 A setup-invalid scored run does not count as an arm result; retain it and fix the instrument before restarting under the remaining budget.
 
@@ -200,7 +204,7 @@ Instrument validation before scoring:
 - [x] Held-out evaluator and hidden replay authored independently from the scored workers.
 - [x] Held-out hashes recorded.
 - [x] Evaluator reference pass and negative control pass.
-- [x] Worker execution/model preflight passes; path-only blinding failure was repaired by encrypted-at-rest holdout removal during runs.
+- [x] Worker execution/model/isolation preflight passes; the initial same-user path failure is repaired by absent/encrypted holdout plus user/mount/PID namespace isolation and child-process teardown.
 - [x] Same scored command/model is available to both arms (`claude-sonnet-5`, direct Claude Code auto mode).
 - [x] Product N rights confirmed for private reuse arm.
 - [x] Authorized retained Product N artifact frozen with exact hash/revision.
