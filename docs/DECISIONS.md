@@ -215,7 +215,7 @@ The original text above is preserved. This dated qualification limits what it ma
 
 ---
 
-## ADR-018 - Apply ACA through AES product engineering
+## ADR-018 — Apply ACA through AES product engineering
 
 **Status:** accepted direction from Brian, 2026-09-22; effective on merge.
 
@@ -258,3 +258,23 @@ integration does not claim universal composability or close AES Plan 001.
 proportionate net-value judgment; ADR-014 approval binding; ADR-015 receipt
 compatibility; ADR-017's bounded evidence qualification. Net-value judgment is
 part of ordinary engineering, not a requirement to benchmark modularity first.
+
+### Verification note - 2026-09-22
+
+The documentation change at `80aabc9b2df4b33d00c63204d9f5f809fa40120f`
+was checked in an isolated native Windows/Python 3.14.7 environment against
+unchanged baseline `a3f17787a96026cc9349dbaa4dbe1308add2a998`.
+`python tools/check_bootstrap.py` passed the documentation, schema, registry,
+6-action catalogue, reuse-evidence, and client-manifest checks; all 11 Frappe
+packages built. Its test phase returned **185 passed, 35 skipped, 3 failed**.
+The three failures (the Bench Bash helper and two POSIX-path expectations in
+catalogue/exchange tests) were reproduced on a separate pristine baseline
+checkout using the same interpreter. They are existing native-Windows execution
+limits, not new behavior introduced by this documentation-only change. The full
+completion gate is **not green**; no unrelated runtime repair was included.
+
+Implementation, tests, schemas, manifests, original evaluator fixtures and n8n
+artifacts were unchanged. The review branch was pushed; canonical main was not
+modified. Git authentication is available, but native GitHub CLI authentication
+is not, so PR creation/merge remains outstanding. WSL was unhealthy and was not
+restarted or repeatedly relaunched to complete this change.
