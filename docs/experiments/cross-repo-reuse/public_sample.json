@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "routes": {
+    "distributed systems observability": {
+      "status_code": 200,
+      "body": {
+        "tweets": [
+          {
+            "id": "101",
+            "text": "Tracing across async services is finally usable.",
+            "createdAt": "2026-09-20T12:00:00Z",
+            "url": "https://x.com/i/status/101",
+            "author": {
+              "userName": "builder",
+              "name": "Builder",
+              "description": "Distributed systems engineer",
+              "followers": 1200,
+              "canDm": false
+            }
+          },
+          {
+            "id": "102",
+            "text": "Cardinality is the hidden cost center in observability.",
+            "createdAt": "2026-09-19T09:00:00Z",
+            "author": {
+              "userName": "opslead",
+              "name": "Ops Lead",
+              "description": "SRE",
+              "followers": 800
+            }
+          },
+          {
+            "id": "bad-1",
+            "text": "This item intentionally has no author."
+          }
+        ]
+      }
+    },
+    "agentic developer tools": {
+      "status_code": 200,
+      "body": {
+        "tweets": [
+          {
+            "id": "103",
+            "text": "Agent traces need the same debugging discipline as distributed systems.",
+            "createdAt": "2026-09-21T08:30:00Z",
+            "author": {
+              "userName": "Builder",
+              "name": "Builder",
+              "description": "Distributed systems engineer",
+              "followers": 1200,
+              "canDm": false
+            }
+          },
+          {
+            "id": "101",
+            "text": "Tracing across async services is finally usable.",
+            "createdAt": "2026-09-20T12:00:00Z",
+            "url": "https://x.com/i/status/101",
+            "author": {
+              "userName": "builder",
+              "name": "Builder",
+              "description": "Distributed systems engineer",
+              "followers": 1200
+            }
+          }
+        ]
+      }
+    },
+    "synthetic provider failure": {
+      "status_code": 503,
+      "body": {
+        "error": "synthetic unavailable"
+      },
+      "text": "synthetic unavailable"
+    }
+  }
+}
