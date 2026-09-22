@@ -1,5 +1,22 @@
 # Agentic Capability Architecture — Charter
 
+## Current AES relationship - 2026-09-22
+
+[ADR-018](DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering)
+refines the execution posture of this charter. The goal of composable,
+cumulative product work remains. Apply it through
+[AES's existing engineering lifecycle](https://github.com/BrianMills2718/agentic-engineering-system-canonical) and the
+[modular-design integration](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md), not by constructing a separate
+ACA platform or requiring controlled research before product delivery.
+
+Use established frameworks/modules, consumer-independent boundaries, explicit
+product policies, native packages/APIs, and thin adapters. Existing ACA
+capability/catalogue/evidence ownership remains intact; Company Planning and
+Enforced Planning retain their roles. No global framework choice, new universal
+schema, automatic extraction, ownership transfer, or repository archival is
+implied. Later sections describe the retained capability discipline; any older
+mandate to start standalone experiments is superseded by this direction.
+
 ## Mission
 
 Build a **cumulative, composable software-delivery ecosystem** in which agents can represent useful behavior as discoverable capabilities with honest typed boundaries, compose those capabilities into new systems, isolate only the genuinely project-local residual, and feed real-use evidence back into the ecosystem so later projects become increasingly composition-driven.

@@ -1,5 +1,32 @@
 # Agent Operating Rules
 
+## Current operating direction - 2026-09-22
+
+Apply ACA through the [Agentic Engineering System](https://github.com/BrianMills2718/agentic-engineering-system-canonical) engineering
+workflow, not as a parallel platform-building or benchmarking programme.
+[ADR-018](docs/DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering)
+owns this local disposition; the [AES integration change](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md)
+records the counterpart design policy and existing provider ownership.
+
+Adopt a sufficient existing product/framework and its native modules first.
+Keep cohesive reusable behavior behind clean boundaries, put product-specific
+variation in configuration/policies, accept thin consumer adapters, and use
+normal package/API publication and product/compatibility tests. Framework
+independence and a new abstraction for every function are not required.
+
+Do not resume standalone ACA experiments, create demo products, or build new
+runtime/catalog/connector/semantic machinery from historical plans. A new
+experiment or mechanism needs separate explicit authorization for a concrete
+product decision or blocker. Ordinary testing, maintenance, and recovery of
+already-produced evidence remain allowed. Existing capability code, manifests,
+consumer compatibility, and evidence authority remain here; nothing is archived,
+transferred, or promoted by this instruction. Company Planning and Enforced
+Planning retain design and execution-governance ownership in AES.
+
+This current direction takes precedence over older experiment-start instructions
+below or in linked plans. Preserve those records without turning them into a
+mandatory work queue.
+
 These rules apply to coding agents working in this repository or in an engagement workspace generated from it.
 
 ## Mission
@@ -49,7 +76,7 @@ Work in this order:
 5. **Reject false or uneconomic fits.** Record materially plausible candidates that do not fit, or do not create net value, and why.
 6. **Source missing providers.** For unsatisfied behavior, investigate native/runtime, installed ecosystem, mature external OSS/SaaS, standards/protocols, and internal capabilities. **Off-the-shelf wins ties**, but sourcing is supporting policy rather than the architecture's main value.
 7. **Implement only the residual.** If no existing capability honestly fits and creates net value, keep the behavior project-local unless later evidence justifies promotion.
-8. **Plan evidence before coding.** State what tests/runtime observation would prove the composition works and what result would falsify the reuse hypothesis.
+8. **Plan product verification before coding.** Specify acceptance, configuration, error/effect, and existing-consumer compatibility checks for the actual change. A/B testing the value of modular architecture is not a delivery prerequisite.
 
 Then apply these repository rules:
 

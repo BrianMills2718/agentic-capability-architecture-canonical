@@ -1,5 +1,25 @@
 # Agentic Capability Architecture
 
+## Current role - modular product engineering through AES
+
+ACA contributes existing capability boundaries, code, and evidence to the
+[Agentic Engineering System](https://github.com/BrianMills2718/agentic-engineering-system-canonical); it is not a parallel engineering
+system or a requirement to invent a framework. See
+[ADR-018](docs/DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering)
+and the [AES integration change](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md).
+
+The next work is ordinary product delivery using a sufficient existing
+foundation, native modules, explicit policies, and thin adapters. Standalone
+ACA experiments are stopped unless separately authorized for a concrete product
+decision. Existing code and proofs stay available and supported; no repository
+archival or capability promotion has occurred.
+
+The overview below is retained historical context. Its research hypotheses and
+experiment invitations are not current execution instructions. Use
+[the local map](docs/README.md) and [current routing](docs/NEXT_PROOF.md).
+
+## Retained pre-integration overview (historical)
+
 > **Composable software functionality that compounds across projects.**
 >
 > Give coding agents persistent, machine-readable capability knowledge so they can **bind and compose verified functionality before writing new code**, keep genuinely domain-specific behavior local, and leave evidence that helps the next project start further ahead.

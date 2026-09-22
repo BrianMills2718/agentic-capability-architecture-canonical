@@ -19,16 +19,26 @@ Human-readable status summaries should not duplicate volatile machine state when
 
 ## Current execution planning
 
-[ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) is the current execution plan. Stage **A0 (evidence repair) was executed and independently reviewed on 2026-09-21** and merged in PR #63. The **A1 technical brownfield portability audit is complete**: [A1_BROWNFIELD_PORTABILITY.md](experiments/cross-repo-reuse/A1_BROWNFIELD_PORTABILITY.md) records that Product N is not installable/importable as-is, but a temporary publication-only package using byte-identical provider/model files passed the retained multi-query partial-failure behavior. A1 is currently stopped at a **source-owner/redistribution authorization gate** before any Product N change or retained artifact. A2–A6 have not started; the scored-run spending caps have not been activated. The governing [ACA research agenda](RESEARCH_AGENDA.md) requires prior-art convergence first: use established software-reuse methods, standards, catalogs, contract-testing patterns, and runtimes rather than recreating them.
+The current route is [normal product engineering through AES](https://github.com/BrianMills2718/agentic-engineering-system-canonical), with
+[ADR-018](DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering) and the
+[AES modular-design integration](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md) governing this change in direction.
+Use the chosen foundation's native modules and extension points. Do not make
+standalone capability research, benchmarks, or new infrastructure a prerequisite.
 
-[ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) is **historical and bounded**: it records the earlier pilot and P6 decision from merged PRs #59–61. ADR-017 remains the recorded decision as amended on 2026-09-21: ordinary/native contracts stay the default posture, but the pilot empirically supports only a bounded same-repository, same-language, read-only reuse case — not effectful, cross-repository, discovery, or economic sufficiency. Historical evidence is preserved, not rewritten.
+[ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) and
+[ACA-PLAN-002](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) are retained
+historical work records, not instructions to resume experiments. Existing
+capabilities, manifests, compatibility tests, and evidence remain supported.
+[RESEARCH_AGENDA.md](RESEARCH_AGENDA.md) retains prior art and deferred questions.
+[NEXT_PROOF.md](NEXT_PROOF.md) supplies the current routing and the historical
+snapshot. Missing execution receipts are not filled with inferred success.
 
 ## Current architecture and operating rules
 
 | Document | Role |
 | --- | --- |
 | [`ARCHITECTURE_CHARTER.md`](ARCHITECTURE_CHARTER.md) | Current local architecture mission, boundaries, sourcing order, evidence model, and non-goals. |
-| [`RESEARCH_AGENDA.md`](RESEARCH_AGENDA.md) | Current ACA research questions after prior-art convergence; explicitly removes established software-engineering mechanisms from the invention agenda. |
+| [`RESEARCH_AGENDA.md`](RESEARCH_AGENDA.md) | Prior-art reference and deferred questions; ADR-018 stops automatic standalone research. |
 | [`DECISIONS.md`](DECISIONS.md) | Repository-local durable decisions. Cross-repo semantic/interface policy lives in the Vision ADR linked from the global wiki. |
 | [`PROJECT_WORKFLOW.md`](PROJECT_WORKFLOW.md) | Required project implementation/reuse workflow. |
 | [`REUSE_PROMOTION.md`](REUSE_PROMOTION.md) | Current internal promotion discipline and the broader evidence factors that sit above the minimum reuse-count checks. |
@@ -43,7 +53,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 | --- | --- |
 | [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md) | **Current proof-status index.** Completed and pending proof claims should be reconciled here first. |
 | [`FRAPPE_TEST_STATUS.md`](FRAPPE_TEST_STATUS.md) | Current record of the baseline real-Frappe lifecycle proof result. |
-| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Routes to ACA-PLAN-002 (A0 evidence repair executed 2026-09-21; A1 onward next); preserves the earlier discovery/control formulation as historical context. |
+| [`NEXT_PROOF.md`](NEXT_PROOF.md) | Routes to AES product engineering; preserves earlier experiment routing as a historical snapshot. |
 | [`experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md`](experiments/independent-composition/AUDIT_ADDENDUM_2026-09-21.md) | Dated audit of the ACA-PLAN-001 pilot: verified facts, historical claims and their current standing, qualifications, and remaining unknowns. |
 
 ## Operational runbooks and checks
@@ -58,7 +68,7 @@ Human-readable status summaries should not duplicate volatile machine state when
 
 | Document / directory | Role |
 | --- | --- |
-| [`RESEARCH_AGENDA.md`](RESEARCH_AGENDA.md) | Prior-art convergence map and the narrow active ACA research surface: agent discovery/selection, economic compounding, publication readiness, compatibility maintenance, effectful composition, and evidence reuse. |
+| [`RESEARCH_AGENDA.md`](RESEARCH_AGENDA.md) | Prior-art convergence map and deferred questions, not an authorized research queue: agent discovery/selection, economic compounding, publication readiness, compatibility maintenance, effectful composition, and evidence reuse. |
 | [`../research/synthesis/off-the-shelf-substrate-vs-residual-audit.md`](../research/synthesis/off-the-shelf-substrate-vs-residual-audit.md) | Preliminary sourcing leads, corrected to make composability the technical focus; not verified provider fit or an approved retirement plan. |
 | [`PRIMITIVE_CAPABILITY_THESIS.md`](PRIMITIVE_CAPABILITY_THESIS.md) | Falsifiable research thesis; not settled architecture. |
 | [`../architecture/primitive_model/`](../architecture/primitive_model/) | Experimental primitive/composition models and evidence. |

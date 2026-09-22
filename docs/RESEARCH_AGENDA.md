@@ -1,6 +1,25 @@
 # ACA Research Agenda — Prior Art First
 
-Status: current research agenda candidate for ACA-PLAN-002.
+## Current disposition - product work, not an active experiment queue
+
+**2026-09-22:** Brian authorized integrating the useful modular-design guidance
+into [AES](https://github.com/BrianMills2718/agentic-engineering-system-canonical) and stopping the standalone ACA diversion. See
+[ADR-018](DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering) and
+[the AES integration change](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md).
+
+The active task is adoption and product delivery through existing planning and
+execution governance. Use established modularity/configuration/adapter patterns
+and preserve real compatibility or failure evidence as normal engineering.
+Discovery research and A/B studies are not prerequisites. Do not start another
+framework, registry service, runtime, semantic layer, proof application, or
+experiment because a historical question below remains unanswered.
+
+The prior-art map remains reference material. R1-R7 and the experimental
+sequence below are deferred questions/history, not authorized work. Reopening
+requires a separately authorized, concrete product decision or reproducible
+blocker. Existing tests and evidence are retained, not declared useless.
+
+Status: prior-art reference; standalone research agenda superseded by ADR-018.
 Recorded: 2026-09-21.
 Purpose: constrain ACA research to questions not already adequately solved by established software-engineering practice, standards, or products.
 
@@ -125,7 +144,7 @@ The following are no longer active ACA research goals absent a new named failure
 
 Existing experimental repositories may continue their own research under their own authority. This agenda only limits what ACA treats as necessary core work.
 
-## Active ACA research questions
+## Deferred research questions (not an execution queue)
 
 ### R1 — Agent discovery and selection
 
@@ -222,9 +241,9 @@ The key outcome is not the size of the catalog. It is whether later workers:
 - deliver faster or with fewer regressions;
 - know when *not* to reuse.
 
-## Current experimental sequence
+## Historical experimental sequence (do not resume automatically)
 
-ACA-PLAN-002 is the current execution vehicle.
+ACA-PLAN-002 was the experimental execution vehicle; ADR-018 stops further automatic execution.
 
 1. **Prior-art convergence gate** — map each proposed ACA mechanism to established practice/product/standard; remove solved mechanisms from the agenda.
 2. **Evidence repair** — narrow earlier P3/P5/P6 claims to what was actually exercised.
