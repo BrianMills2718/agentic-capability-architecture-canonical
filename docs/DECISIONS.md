@@ -213,6 +213,8 @@ The original text above is preserved. This dated qualification limits what it ma
 
 **Effect on P6:** the statement that no new ACA machinery is justified holds only for the exercised path above. Absence of a demonstrated need is not a demonstration of sufficiency. Further changes to this decision follow ACA-PLAN-002 A3–A6 results.
 
+**Later execution disposition — 2026-09-22:** ADR-018 stopped automatic standalone ACA execution after A2 and before any scored A3 worker started. A3–A6 therefore remain unrun historical stages, not a current queue. Any future controlled experiment or ACA-specific mechanism requires separate explicit authorization for a concrete product decision or reproducible blocker.
+
 ---
 
 ## ADR-018 — Apply ACA through AES product engineering
