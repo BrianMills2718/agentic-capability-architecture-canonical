@@ -8,6 +8,16 @@ Planning baseline: canonical `main` at `9bdf123776e6f1379c1a4b1b0ea3ed618d4348b3
 Predecessor: [ACA-PLAN-001](2026-09-18-minimal-composability.md), including merged PRs #59–61.
 Governing research agenda: [ACA Research Agenda — Prior Art First](../RESEARCH_AGENDA.md).
 
+### Execution disposition at stop — 2026-09-22
+
+- **A-1 — prior-art convergence:** complete.
+- **A0 — evidence repair:** complete; merged in PR #63.
+- **A1 — Product N brownfield portability:** complete; merged in PR #64. Private experimental reuse authorization was subsequently confirmed, while retained private artifacts stayed outside this public repository.
+- **A2 — frozen control/reuse instrument:** complete; finalized in PR #67 after the initial A2 freeze in PR #66. The public task, private treatment artifact, held-out evaluator, negative controls, treatment-provenance check, and worker isolation/model preflight were frozen and validated.
+- **A3–A6:** **not run.** No scored A3 worker started. ADR-018 stopped automatic standalone ACA execution; do not resume these stages without separate explicit authorization for a concrete product decision or reproducible blocker.
+
+This stage record preserves what was actually completed without turning the historical plan into a current work queue.
+
 ## 1. Decision this work must inform
 
 Does useful capability work from Product N let a fresh worker deliver a materially different Product N+1 more correctly or economically than ordinary engineering without that accumulated asset?
