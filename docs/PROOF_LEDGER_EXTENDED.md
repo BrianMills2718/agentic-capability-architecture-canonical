@@ -69,7 +69,7 @@ Indexed here so current status is reconciled in one place. Full audit: [`experim
 - **Supported, as scoped:** one read-only Python wrapper (`search_candidates`, TwitterAPI.io) was called by a scoring pipeline and by a second digest consumer in the same repository, language, and provider domain family, with no change to the wrapper. No ACA registry, semantic layer, or runtime was needed for that path. Recorded live runs (2026-09-19, 2026-09-20) are prose only, with no retained receipt.
 - **Not established:** ADR-014 approval binding or durable idempotency (the pilot used a string gate and a process-local in-memory sink); a semantic compatibility checker (field-presence only); "all six profile checks"; a pinned dependency; cross-repository or cross-language reuse; discovery/selection (the consumer was told the boundary); measured delivery economics (no control, no cost/time data; unknown, not zero); product completion (no human review, LLM scoring, live n8n, or real handoff); any n8n product evaluation.
 - **Status of the wrapper:** `observed` reuse entry in `reuse_candidates.yml`; not registered, not promoted, no manifest export. `observed` is intentional because the later caller exercised only a trivial read-only subset in the same repository/domain family.
-- **Next:** ACA-PLAN-002 A1 onward. The effect-safety canary (A5) is the only planned test of approval binding and durable idempotency and has not been run.
+- **Historical next at the time:** ACA-PLAN-002 A1 onward. Current disposition: A0, A1, and A2 were completed; A3–A6 were not run; ADR-018 stopped automatic standalone continuation. The effect-safety canary (A5) remains **unrun and deferred**, not queued.
 
 ## Deferred research question (not a current execution mandate)
 
@@ -77,7 +77,7 @@ The most important unresolved question is **not** whether a fresh agent can foll
 
 The existing Shipment Exception challenge under `proof/fresh_agent_registry_discovery/challenge/` is useful as a guided mechanics fixture, but its task currently names the shared notification choice, instructs the agent not to recreate shared transition/notification logic, and exposes expected API shapes. A pass therefore demonstrates bounded instruction-following/composition mechanics, not independent discovery advantage.
 
-The next decisive experiment should use fresh sessions and behavior-only task specifications with at least two arms:
+If separately reauthorized for a concrete product decision, the cleanest controlled test remains fresh sessions and behavior-only task specifications with at least two arms:
 
 ```text
 control:   planning contract + ordinary/blank project context
@@ -86,4 +86,4 @@ comparison: same planning contract + accumulated capability snapshot
 
 Measure task success, first-pass tests, agent turns/tokens/time, human intervention, bespoke code, duplicated implementation, rework, selection accuracy, and composition accuracy. Include irrelevant capabilities that should be rejected and at least one task where the honest answer is no internal reuse.
 
-That experiment is what can support or falsify the compounding capability-flywheel claim.
+Such an experiment could support or falsify the compounding capability-flywheel claim. It is not the current work queue. Under ADR-018, current evidence should primarily accumulate through ordinary AES product engineering, product acceptance, compatibility/safety checks, and honest capability-use or rejection observations.

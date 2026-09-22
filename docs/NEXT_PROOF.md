@@ -19,7 +19,7 @@ changes. Recovery and honest archival of already-produced evidence may proceed
 without rerunning or expanding experiments; missing canonical receipts stay
 unverified rather than being reconstructed as original execution evidence.
 
-The AES Repository Context / Plan 001 frontier is owned in that repository.
+The AES Repository Context / Plan 001 frontier is owned in that repository. Read AES [`.agentic/repo.yaml`](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/main/.agentic/repo.yaml) for the machine-readable active plan/frontier and [`docs/plans/README.md`](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/main/docs/plans/README.md) for the current closure path rather than mirroring volatile AES status here.
 This routing change does not mark that implementation delivered or close its
 verification/utility gaps. Existing ACA catalogue/code/evidence remains available
 under its current ownership. Neither repository is being archived.
@@ -33,13 +33,13 @@ context, not to authorize a new run or assert today's completion state.
 
 ### Prior next-proof page — Evidence Repair and Cross-Repository Reuse
 
-**Current execution route:** [ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md). A0 merged in PR #63 and A1 merged in PR #64. The pre-existing Product N client is not installable/importable as-is, but its byte-identical provider/model code is technically portable after ordinary publication normalization. The user confirmed authorization for private experimental reuse on 2026-09-22, and a private retained wheel is pinned outside this public repository. **A2 is complete:** the nontrivial public task/replay, private treatment artifact, host-side held-out evaluator, negative controls, treatment-provenance check, and worker isolation/model preflight are frozen and validated; scored A3 workers have not started. See [A2_PROTOCOL.md](experiments/cross-repo-reuse/A2_PROTOCOL.md).
+**Historical status at the time:** [ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md). A0 merged in PR #63 and A1 merged in PR #64. The pre-existing Product N client is not installable/importable as-is, but its byte-identical provider/model code is technically portable after ordinary publication normalization. The user confirmed authorization for private experimental reuse on 2026-09-22, and a private retained wheel is pinned outside this public repository. **A2 is complete:** the nontrivial public task/replay, private treatment artifact, host-side held-out evaluator, negative controls, treatment-provenance check, and worker isolation/model preflight are frozen and validated; scored A3 workers have not started. See [A2_PROTOCOL.md](experiments/cross-repo-reuse/A2_PROTOCOL.md).
 
 The earlier [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) pilot and P6 decision are retained in merged PRs #59–61 as **historical, bounded** evidence: they support one read-only, same-repository, same-language reuse case, and do not support effectful, cross-repository, discovery, or economic sufficiency (ADR-017 amendment, 2026-09-21). The plan asks whether a pre-existing Product N boundary helps a fresh worker deliver Product N+1 outside the source repository, against a competent ordinary-engineering control.
 
 The [ACA research agenda](RESEARCH_AGENDA.md) now applies a prior-art convergence gate before ACA invents anything: established software-product-line/reuse practice, native API contracts, catalog patterns, consumer contracts, and existing workflow/durable-execution products are treated as prior art to adopt, not research topics to rebuild. ACA-PLAN-002 therefore tests the remaining agent-specific questions—discovery/selection, publication readiness, compatibility evidence, and economic compounding.
 
-ACA-PLAN-002 owns sequencing, public versus held-out context, exact revisions, proposed budgets, independent acceptance, marginal versus publication-inclusive cost, and stop rules. Its local effect-safety canary is separate from the read-only comparison. Prior-art convergence is complete; A0 repaired the evidence record, A1 measured Product N publication debt, and A2 uses ordinary OS namespace isolation plus existing Claude subscription tooling rather than a custom ACA harness. The next step is the first frozen A3 control/reuse pair, not another platform build.
+ACA-PLAN-002 owns sequencing, public versus held-out context, exact revisions, proposed budgets, independent acceptance, marginal versus publication-inclusive cost, and stop rules. Its local effect-safety canary is separate from the read-only comparison. Prior-art convergence is complete; A0 repaired the evidence record, A1 measured Product N publication debt, and A2 uses ordinary OS namespace isolation plus existing Claude subscription tooling rather than a custom ACA harness. At that time, the planned next step was the first frozen A3 control/reuse pair, not another platform build. ADR-018 later stopped standalone execution before any scored A3 worker started.
 
 ---
 
@@ -47,7 +47,7 @@ ACA-PLAN-002 owns sequencing, public versus held-out context, exact revisions, p
 
 The text below is retained from the pre-2026-09-18 plan. It explains earlier discovery/planning hypotheses; it is not the current mandatory execution order. Existing evidence remains indexed in `PROOF_LEDGER_EXTENDED.md`.
 
-> **Supersedes the original bootstrap proof plan.** The original real-Frappe lifecycle and bounded fresh-agent acceptance gates have passed. Their evidence is indexed in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md). The next question is harder: whether accumulated capability knowledge creates measurable advantage beyond a good planning contract.
+> **Supersedes the original bootstrap proof plan.** The original real-Frappe lifecycle and bounded fresh-agent acceptance gates have passed. Their evidence is indexed in [`PROOF_LEDGER_EXTENDED.md`](PROOF_LEDGER_EXTENDED.md). At that time, the next research question was harder: whether accumulated capability knowledge creates measurable advantage beyond a good planning contract.
 
 ### Why the proof changed
 
@@ -149,4 +149,4 @@ Before relying on the result:
 - tasks must not name the expected capability choices;
 - run failures and negative results must be retained rather than discarded.
 
-The experiment should decide what infrastructure to build next. Do not add a generalized planner, marketplace, primitive runtime, or broader capability catalog merely to prepare for a result that has not been observed.
+The proposed experiment was intended to decide what infrastructure, if any, would be justified next. It is now deferred under ADR-018; do not add a generalized planner, marketplace, primitive runtime, or broader capability catalog merely to prepare for a result that has not been observed.

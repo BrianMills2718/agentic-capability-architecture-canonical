@@ -2,7 +2,7 @@
 
 This repository is not only an architecture document. It contains a working capability registry, audited semantic exports, reusable capability implementations, project examples, validation/proof tooling, and an engagement workflow that creates portable contractor/agent workspaces.
 
-If you want the conceptual explanation first, read [`TEAM_GUIDE.md`](TEAM_GUIDE.md). If you want to see the mechanics, continue here.
+If you want the conceptual explanation first, read [`TEAM_GUIDE.md`](TEAM_GUIDE.md). If you want to see the mechanics, continue here. This quickstart is a guided demonstration of retained ACA machinery, **not the current execution route**; current product work applies ACA through [AES canonical](https://github.com/BrianMills2718/agentic-engineering-system-canonical) under [ADR-018](docs/DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering).
 
 ## What you should understand by the end
 
@@ -21,13 +21,13 @@ That is the capability flywheel this repository is testing.
 
 The included Shipment Exception task is currently a **guided mechanics demonstration**. Its task text names expected transition/notification behavior and therefore is **not** a clean experiment proving that an agent independently discovered the best composition.
 
-Use it to understand the engagement/capability workflow. Do not cite a successful run as evidence that the accumulated capability system beats a blank/control repository. The controlled fresh-agent experiment remains separate work.
+Use it to understand the engagement/capability workflow. Do not cite a successful run as evidence that the accumulated capability system beats a blank/control repository. A controlled fresh-agent comparison remains a valid deferred research design, but ADR-018 stops standalone ACA experiments unless separately authorized for a concrete product decision or reproducible blocker.
 
 ## Prerequisites
 
 - Python 3.11+
 - Git
-- access to this private GitHub repository
+- access to this repository checkout
 
 Create an isolated Python environment and install the two dependencies used by the engagement controller:
 
@@ -168,6 +168,6 @@ That includes documentation/schema/registry checks, capability/project validatio
 
 This demonstrates a working technical mechanism and bounded proof fixtures. It does **not** yet prove the key economic/productivity claim.
 
-The decisive next experiment is a controlled comparison across fresh sessions and comparable tasks: planning contract alone versus planning contract plus accumulated capability snapshot. Measure success, first-pass tests, turns/tokens/time, human intervention, bespoke code, duplication, rework, and composition accuracy.
+If separately reauthorized, a decisive controlled experiment would compare fresh sessions on comparable tasks: planning contract alone versus planning contract plus accumulated capability snapshot, measuring success, first-pass tests, turns/tokens/time, human intervention, bespoke code, duplication, rework, and composition accuracy. It is **not** the current work queue; current evidence should accumulate through normal AES product engineering and its product/compatibility/safety checks.
 
 The separate startup/business hypothesis is tracked in `BrianMills2718/capability-services`.
