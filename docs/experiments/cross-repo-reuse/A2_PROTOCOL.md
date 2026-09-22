@@ -3,7 +3,7 @@
 Plan: ACA-PLAN-002, stage A2.
 Recorded: 2026-09-21.
 Authoring baseline: canonical `867f558a2238af7754d15ede46918d0546ab38e9` (PR #64 merged).
-Status: public and held-out instrument frozen; **A3 remains blocked only on worker-isolation/model preflight** before the first scored pair.
+Status: **A2 complete.** Public task, private treatment artifact, replacement held-out evaluator, negative controls, and worker isolation/model preflight are frozen. No scored A3 worker has started.
 
 ## Question
 
@@ -112,7 +112,7 @@ Later assisted repair is diagnostic work, not a retroactive blind success.
 
 ## Held-out evaluator
 
-The evaluator was authored outside both worker repositories. Preflight showed that ordinary same-user path placement was not an enforceable blind. The final scored boundary therefore combines two ordinary OS controls rather than trusting path discipline: (1) all held-out plaintext and the non-scored reference are absent while a worker runs, with the held-out packet retained only as an AES-256 encrypted archive whose key is not in worker-visible state; and (2) the worker itself runs in an unprivileged user/mount/PID namespace whose mount view hides ACA worktrees, Product N source, Claude history/state, Windows mounts, and coordinator local state. Namespace teardown uses `--kill-child`, so worker descendants cannot survive into the later decrypt-and-score phase. Plaintext is restored only after namespace exit, used for scoring, and removed again before another worker starts.
+The evaluator was authored outside both worker repositories. Preflight showed that ordinary same-user path placement was not an enforceable blind. The scored boundary therefore combines two ordinary OS controls rather than trusting path discipline: (1) the frozen replacement held-out packet lives on the Windows host at a coordinator-only path while scored workers run in WSL with `/mnt` hidden; no held-out plaintext or non-scored reference remains in the WSL worker filesystem; and (2) each worker runs in an unprivileged user/mount/PID namespace whose mount view hides ACA worktrees, Product N source, Claude history/state, Windows mounts, and coordinator local state. Namespace teardown uses `--kill-child`, so worker descendants cannot survive into the later host-side score phase. The earlier AES-encrypted WSL holdout is retained only as superseded historical evidence; its unavailable key is not part of the scored recovery path.
 
 Before A3:
 
@@ -178,24 +178,26 @@ Use the research agenda's prior-art-first rule. If a named failure survives ordi
 
 Public artifacts:
 
-- `A2_PUBLIC_BRIEF.md` sha256 `f6063e1ff192a07cf7ff5e280f91691c7b46ccbf82ce14d1d57fcb927be310c4`
+- `A2_PUBLIC_BRIEF.md` sha256 `6e0d914556a7865937543c5c818de3bf5c0de82bc67f90a511d16cd0090d1245`
 - `provider_replay.py` sha256 `7dcb4e375a99265a8c2a7314fe6afa1948d0069ee0dfe32dea7e1a8cf373e416`
 - `public_sample.json` sha256 `5eebc807ee9f4e7c39967eb216138bebc12677f0b58820ba95649373a4922a44`
 
-Held-out artifact plaintext hashes (the plaintext packet is absent during scored worker execution):
+Replacement held-out artifact hashes (stored on the Windows host and absent from the WSL worker filesystem during scored execution):
 
-- evaluator sha256 `684753fa57e7f0f935354e7fb9532d13d839532d1bdf21d1677abea241752de1`
-- hidden request sha256 `0a499dd5a05541036a5a1b52b23a3ff7d2608a272e5f64048c9c66653d863dde`
-- hidden replay sha256 `cc96a677fd0511e01f1ef65db50c4207bc4209fa927f29ff81958071bfac6499`
-- negative-control procedure sha256 `5dfca8edbf871b8ffb201c0fa4255b41825e9d73cb9163fb303fb91f8d1817a8`
-- treatment provenance hook sha256 `b6650f47e5ed027532df7dd238691bda1cb74ba8ee962ccbc0fcfd953ce16d65`
-- encrypted held-out archive sha256 `5dacf6a12da0cf0d73f8cc06d2e14e529ef55eaa2a834f2c4d6bedfdd95e79a0`; its decryption key is kept outside worker-visible state.
+- evaluator sha256 `9012158262447f3266a9031b92ac92d343b35af8cf588947a8e1d9b04bb3e644`
+- hidden request sha256 `b74bc639db9c5d7e8d7d21d72d92108ca822738e56de5f6a7c8e564c75aa59d0`
+- hidden replay sha256 `992ca05a4f5b579be06e0495f965dc55d96ff149107db99574efbe4f0b13bf7a`
+- negative-control procedure sha256 `d06cf8f971979c54ac38bf52de2f7aa314100e34507e3020e0906d8e7c2ebc86`
+- treatment provenance hook sha256 `53a4cb616ab6f0a087ad7756a1439343405435ca9a539de05f3b21b001a86c56`
+
+The earlier encrypted archive `aca-a2-heldout-20260921.enc` is superseded and will not be used for A3 scoring because its decryption key is unavailable in the current recoverable execution path.
 
 Instrument validation before scoring:
 
-- an independently written reference initially failed 12 checks, exposing a global post-identity interpretation error; after correcting that public-brief interpretation it passed **40/40 behavioral checks** with the treatment hook skipped;
-- a deliberate combined mutant (dropped failed dispositions, swallowed warnings, credential leak, nondeterministic extra output) failed **13 checks**, proving the evaluator turns red on multiple independent defects;
-- the evaluator's network guard is self-tested before every score and blocks live network access.
+- a reference implementation written only from the public brief passed **35/35 behavioral checks** with the treatment hook skipped;
+- a deliberate combined mutant (dropped failed dispositions, swallowed warnings, prospect/follower ranking, credential leak, nondeterministic extra output) failed **16 checks**, proving the evaluator turns red on multiple independent defects;
+- treatment provenance checks were exercised separately: explicit reasoned rejection passes without a use claim; declared use passes only when runtime instrumentation observes the retained Product N `collect()` call; declared use without that call fails as bypass;
+- the evaluator installs a socket guard before each black-box run and fails any live network attempt.
 
 ## Gates before A3
 
@@ -204,10 +206,10 @@ Instrument validation before scoring:
 - [x] Held-out evaluator and hidden replay authored independently from the scored workers.
 - [x] Held-out hashes recorded.
 - [x] Evaluator reference pass and negative control pass.
-- [x] Worker execution/model/isolation preflight passes; the initial same-user path failure is repaired by absent/encrypted holdout plus user/mount/PID namespace isolation and child-process teardown.
+- [x] Worker execution/model/isolation preflight passes; the initial same-user path failure is repaired by a host-side Windows holdout plus user/mount/PID namespace isolation and child-process teardown.
 - [x] Same scored command/model is available to both arms (`claude-sonnet-5`, direct Claude Code auto mode).
 - [x] Product N rights confirmed for private reuse arm.
 - [x] Authorized retained Product N artifact frozen with exact hash/revision.
 - [x] No scored worker has seen hidden evaluator content (no scored worker has started).
 
-All A2 gates are now satisfied. A3 may start with the control and reuse workers as fresh sessions; held-out plaintext must remain absent until each submission is frozen.
+All A2 gates are now satisfied. A3 may start with the control and reuse workers as fresh sessions. The Windows-held evaluator remains outside the scored namespace and is used only after each worker exits and its submission is frozen.
