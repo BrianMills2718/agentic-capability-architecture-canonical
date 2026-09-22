@@ -66,11 +66,11 @@ The treatment evaluator uses a separate provenance hook. An explicit, reasoned r
 
 ## Worker harness
 
-Planned scored harness for both arms:
+Frozen scored harness for both arms:
 
-- `ask-agent claude`;
+- direct Claude Code subscription CLI: `claude -p --permission-mode auto --permission-prompts none --model sonnet --output-format json`;
 - fresh session for every scored worker;
-- same model/harness resolution for paired runs;
+- resolved model in non-scored preflight: `claude-sonnet-5`; the same command/model alias is required for both arms;
 - Python 3.12 task environment;
 - separate consumer repository/worktree outside ACA and Product N;
 - 30-minute active-worker ceiling per submission;
@@ -80,7 +80,7 @@ Planned scored harness for both arms:
 - no new subscription or infrastructure purchase;
 - no live provider call.
 
-Record the exact model resolved by the first non-scored preflight and require the same model family/configuration for the paired scored run.
+The original `ask-agent claude --edit` route was rejected during preflight because its non-interactive `acceptEdits` policy denied pytest and git commands. Direct Claude Code `auto` mode is a harness/configuration repair, not an ACA change. In preflight it ran Python 3.12.3, pytest (1 pass), preserved a multi-word CLI argument, wrote files, and committed successfully. The preflight resolved `claude-sonnet-5`.
 
 ## Worker context
 
@@ -110,13 +110,13 @@ Later assisted repair is diagnostic work, not a retroactive blind success.
 
 ## Held-out evaluator
 
-The evaluator is authored and stored outside both worker-accessible repositories/paths until scoring is complete.
+The evaluator was authored outside both worker repositories. Preflight showed that Claude Code `auto` mode could read arbitrary known same-user paths, so path placement alone was not an enforceable blind. Before scored runs, all held-out plaintext (evaluator, hidden fixtures, treatment hook, evaluator-author log) and the non-scored reference implementation were removed from the filesystem. The held-out packet is stored only as an AES-256 encrypted archive during worker execution; the decryption key is not stored in the worker repository, environment, or filesystem. Plaintext is restored only after a worker process ends, used for scoring, and removed again before the next worker starts.
 
 Before A3:
 
 - record evaluator content hash;
 - record held-out replay content hash;
-- prove the worker sandbox cannot read the evaluator path;
+- ensure no plaintext evaluator/hidden fixture exists anywhere available to the worker during its run;
 - run evaluator negative controls;
 - verify the evaluator itself never makes live provider calls.
 
@@ -134,15 +134,15 @@ The last check is treatment-specific and must not require the control to import 
 
 ## Non-scored preflight
 
-Before A3, use a disposable trivial repository/session to confirm:
+A disposable preflight confirmed:
 
-- shell execution;
-- Python/pytest execution;
-- dependency availability;
-- writing files/committing;
-- multi-word argument preservation;
-- evaluator path is outside worker-readable scope;
-- usage/time capture works.
+- shell execution: PASS;
+- Python 3.12.3 / pytest execution: PASS;
+- writing files/committing: PASS;
+- multi-word argument preservation: PASS;
+- model/session/cost metadata returned in JSON: PASS (`claude-sonnet-5`);
+- path-only isolation: FAIL (the worker could read a named same-user sentinel under `~/.local/state`);
+- repaired blinding: PASS operationally by removing all held-out plaintext/reference artifacts and retaining only encrypted ciphertext during worker runs.
 
 A setup-invalid scored run does not count as an arm result; retain it and fix the instrument before restarting under the remaining budget.
 
@@ -178,13 +178,14 @@ Public artifacts:
 - `provider_replay.py` sha256 `7dcb4e375a99265a8c2a7314fe6afa1948d0069ee0dfe32dea7e1a8cf373e416`
 - `public_sample.json` sha256 `5eebc807ee9f4e7c39967eb216138bebc12677f0b58820ba95649373a4922a44`
 
-Held-out artifacts are stored outside worker-accessible repositories under the coordinator's local state and are referenced here by hash only:
+Held-out artifact plaintext hashes (the plaintext packet is absent during scored worker execution):
 
 - evaluator sha256 `684753fa57e7f0f935354e7fb9532d13d839532d1bdf21d1677abea241752de1`
 - hidden request sha256 `0a499dd5a05541036a5a1b52b23a3ff7d2608a272e5f64048c9c66653d863dde`
 - hidden replay sha256 `cc96a677fd0511e01f1ef65db50c4207bc4209fa927f29ff81958071bfac6499`
 - negative-control procedure sha256 `5dfca8edbf871b8ffb201c0fa4255b41825e9d73cb9163fb303fb91f8d1817a8`
 - treatment provenance hook sha256 `b6650f47e5ed027532df7dd238691bda1cb74ba8ee962ccbc0fcfd953ce16d65`
+- encrypted held-out archive sha256 `5dacf6a12da0cf0d73f8cc06d2e14e529ef55eaa2a834f2c4d6bedfdd95e79a0`; its decryption key is kept outside worker-visible state.
 
 Instrument validation before scoring:
 
@@ -199,10 +200,10 @@ Instrument validation before scoring:
 - [x] Held-out evaluator and hidden replay authored independently from the scored workers.
 - [x] Held-out hashes recorded.
 - [x] Evaluator reference pass and negative control pass.
-- [ ] Worker isolation/preflight passes.
-- [ ] Same scored model/harness available to both arms.
+- [x] Worker execution/model preflight passes; path-only blinding failure was repaired by encrypted-at-rest holdout removal during runs.
+- [x] Same scored command/model is available to both arms (`claude-sonnet-5`, direct Claude Code auto mode).
 - [x] Product N rights confirmed for private reuse arm.
 - [x] Authorized retained Product N artifact frozen with exact hash/revision.
 - [x] No scored worker has seen hidden evaluator content (no scored worker has started).
 
-Until the two remaining preflight items are satisfied, A3 has **not** started.
+All A2 gates are now satisfied. A3 may start with the control and reuse workers as fresh sessions; held-out plaintext must remain absent until each submission is frozen.
