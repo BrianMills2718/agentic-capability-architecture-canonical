@@ -102,6 +102,7 @@ or:
 Rules:
 
 - `status` is `ok` or `error`.
+- For a successful query, `returned_posts` is the length of the provider's raw `tweets` list **before** malformed items are skipped or duplicates are removed.
 - A failed query has `returned_posts: 0`.
 - Error text must be useful but must not contain credential values.
 - One failed query must not discard successful query results.
@@ -138,13 +139,14 @@ Each candidate must contain:
 Rules:
 
 - `candidate_id` is `x-user:<casefolded handle>`.
-- The first valid profile occurrence in request/query order owns profile fields.
-- Aggregate evidence for the same handle across successful queries.
-- Deduplicate posts by `post_id`.
-- If the same `post_id` reappears with conflicting text/URL/author evidence, keep the first valid occurrence and emit a warning.
-- `matched_query_labels` contains each successful query label that contributed retained evidence, in request order with no duplicates.
+- The first valid profile occurrence in request/query/item order owns profile fields and preserves that occurrence's handle spelling. For missing optional profile data use `name = handle`, `bio = ""`, `followers = 0`, and `profile_url = "https://x.com/<handle>"`.
+- Aggregate evidence for the same handle across successful queries using case-insensitive handle identity.
+- `post_id` is a **global source identity**, not merely author-local. Deduplicate posts globally by `post_id`.
+- If an identical retained post reappears in a later successful query, do not duplicate the post but add that query label to the retained post owner's `matched_query_labels`.
+- If the same `post_id` reappears with conflicting text, URL, **or author** evidence, keep the entire first valid occurrence (including its author ownership), emit a warning, and do not create a ghost candidate from the conflicting copy.
+- `matched_query_labels` contains each successful query label that contributed retained or identical-duplicate evidence, in request order with no duplicates. A dropped conflicting copy does not contribute its query label unless that same label also contributed other retained evidence for the candidate.
 - Sort each candidate's posts by `created_at` descending, then `post_id` ascending.
-- A malformed tweet (missing required post ID, text, or author handle) is skipped and produces a warning rather than failing the whole successful query.
+- A malformed tweet (missing required post ID, text, `createdAt`, or author handle) is skipped and produces a warning rather than failing the whole successful query.
 
 ### Candidate ranking and limit
 
