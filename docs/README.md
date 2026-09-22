@@ -24,6 +24,7 @@ The current route is [normal product engineering through AES](https://github.com
 [AES modular-design integration](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md) governing this change in direction.
 Use the chosen foundation's native modules and extension points. Do not make
 standalone capability research, benchmarks, or new infrastructure a prerequisite.
+For the exact current AES work frontier, read AES [`.agentic/repo.yaml`](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/main/.agentic/repo.yaml) and its [plans index](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/main/docs/plans/README.md); ACA should link to that authority rather than duplicate volatile AES status.
 
 [ACA-PLAN-001](plans/2026-09-18-minimal-composability.md) and
 [ACA-PLAN-002](plans/2026-09-21-evidence-repair-cross-repo-reuse.md) are retained
