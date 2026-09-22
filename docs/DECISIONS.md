@@ -212,3 +212,69 @@ The original text above is preserved. This dated qualification limits what it ma
 **Retained unchanged:** ADR-011 (manifest authority), ADR-013 (net value over the smallest local alternative), ADR-014 (exact-action approval binding), and ADR-015 (portable receipt versioning). ADR-017 does not weaken or supersede them, and none of them is contradicted by the pilot.
 
 **Effect on P6:** the statement that no new ACA machinery is justified holds only for the exercised path above. Absence of a demonstrated need is not a demonstration of sufficiency. Further changes to this decision follow ACA-PLAN-002 A3–A6 results.
+
+---
+
+## ADR-018 — Apply ACA through AES product engineering
+
+**Status:** accepted direction from Brian, 2026-09-22; effective on merge.
+
+**Context:** The user wants established architecture that makes difficult useful
+behavior modular, configurable, and consumable with thin adapters. Repeated
+standalone experiments and framework invention displaced that product goal.
+This decision is based on the explicit operating-direction change, not on a
+claim that one Twitter control/reuse result settles the value of modularity.
+
+**Decision:** Apply the useful ACA architectural discipline through
+[AES canonical](https://github.com/BrianMills2718/agentic-engineering-system-canonical). The companion
+[AES Decision 0009](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md) defines how AES applies it using Company
+Planning's existing design packet/profile and Enforced Planning's execution and
+verification. Prefer sufficient existing products/frameworks and native modules;
+keep cohesive shared behavior, explicit consequential policy/configuration,
+consumer-local adapters, native publication, and ordinary compatibility tests.
+No new skill, framework, registry service, universal schema, semantic compiler,
+or mandatory runtime is selected. A shared framework dependency is legitimate;
+cross-framework universality and speculative abstraction are not requirements.
+
+**Ownership:** AES owns its lifecycle/design policy; Company Planning and
+Enforced Planning keep their existing responsibilities. ACA retains authority
+for its existing catalogue, code, provenance, and evidence. Other implementation
+and methodology owners remain unchanged. No repository is archived, code copied,
+capability promoted, or incumbent silently superseded by this decision.
+
+**Execution disposition:** ACA-PLAN-001/002 and the research sequence are
+historical, not automatic work queues. Stop further standalone benchmarks,
+demonstration products, and mechanism-building. A new experiment or ACA-specific
+addition needs separate explicit authorization for a concrete product decision
+or reproducible blocker. Normal product acceptance, compatibility, safety tests,
+maintenance, and honest recovery of already-produced evidence continue.
+
+**Evidence boundary:** Existing results retain their qualifications. Missing
+canonical receipts remain missing until recovered; do not fabricate archival
+artifacts or rerun work to manufacture a historical success. This instruction
+integration does not claim universal composability or close AES Plan 001.
+
+**Preserved:** ADR-007 sourcing; ADR-011 existing manifest authority; ADR-013
+proportionate net-value judgment; ADR-014 approval binding; ADR-015 receipt
+compatibility; ADR-017's bounded evidence qualification. Net-value judgment is
+part of ordinary engineering, not a requirement to benchmark modularity first.
+
+### Verification note - 2026-09-22
+
+The documentation change at `80aabc9b2df4b33d00c63204d9f5f809fa40120f`
+was checked in an isolated native Windows/Python 3.14.7 environment against
+unchanged baseline `a3f17787a96026cc9349dbaa4dbe1308add2a998`.
+`python tools/check_bootstrap.py` passed the documentation, schema, registry,
+6-action catalogue, reuse-evidence, and client-manifest checks; all 11 Frappe
+packages built. Its test phase returned **185 passed, 35 skipped, 3 failed**.
+The three failures (the Bench Bash helper and two POSIX-path expectations in
+catalogue/exchange tests) were reproduced on a separate pristine baseline
+checkout using the same interpreter. They are existing native-Windows execution
+limits, not new behavior introduced by this documentation-only change. The full
+completion gate is **not green**; no unrelated runtime repair was included.
+
+Implementation, tests, schemas, manifests, original evaluator fixtures and n8n
+artifacts were unchanged. The review branch was pushed; canonical main was not
+modified. Git authentication is available, but native GitHub CLI authentication
+is not, so PR creation/merge remains outstanding. WSL was unhealthy and was not
+restarted or repeatedly relaunched to complete this change.

@@ -1,4 +1,37 @@
-# Next Proof — Evidence Repair and Cross-Repository Reuse
+# Next action - apply modular design through AES
+
+**Current direction (2026-09-22):** continue normal product engineering through
+[Agentic Engineering System canonical](https://github.com/BrianMills2718/agentic-engineering-system-canonical). The local disposition is
+[ADR-018](DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering);
+[the AES integration change](https://github.com/BrianMills2718/agentic-engineering-system-canonical/blob/d65df4a6df2015dc345f2cd04c0d6ce003df59c4/docs/decisions/0009-modular-product-design-without-parallel-aca-platform.md) connects the guidance to existing
+Company Planning design and Enforced Planning execution, without a new skill,
+transport schema, runtime, or parallel governance workflow.
+
+Use a sufficient existing product/framework, its native modules and extension
+points, clear shared boundaries, product-specific policies, thin adapters, and
+product/compatibility checks. Do not select a framework for the whole portfolio
+or start a new demonstration product to illustrate the patterns.
+
+ACA-PLAN-001 and ACA-PLAN-002 are retained records, not current work queues.
+No repeat pair, Approvals experiment, or effect-safety canary is authorized by
+this page. Existing safety/compatibility tests remain applicable to product
+changes. Recovery and honest archival of already-produced evidence may proceed
+without rerunning or expanding experiments; missing canonical receipts stay
+unverified rather than being reconstructed as original execution evidence.
+
+The AES Repository Context / Plan 001 frontier is owned in that repository.
+This routing change does not mark that implementation delivered or close its
+verification/utility gaps. Existing ACA catalogue/code/evidence remains available
+under its current ownership. Neither repository is being archived.
+
+---
+
+## Historical routing snapshot before the AES integration (not instructions)
+
+The snapshot below may describe then-pending work. It is retained to preserve
+context, not to authorize a new run or assert today's completion state.
+
+### Prior next-proof page — Evidence Repair and Cross-Repository Reuse
 
 **Current execution route:** [ACA-PLAN-002: evidence repair and cross-repository reuse](plans/2026-09-21-evidence-repair-cross-repo-reuse.md). A0 merged in PR #63 and A1 merged in PR #64. The pre-existing Product N client is not installable/importable as-is, but its byte-identical provider/model code is technically portable after ordinary publication normalization. The user confirmed authorization for private experimental reuse on 2026-09-22, and a private retained wheel is pinned outside this public repository. **A2 is complete:** the nontrivial public task/replay, private treatment artifact, host-side held-out evaluator, negative controls, treatment-provenance check, and worker isolation/model preflight are frozen and validated; scored A3 workers have not started. See [A2_PROTOCOL.md](experiments/cross-repo-reuse/A2_PROTOCOL.md).
 

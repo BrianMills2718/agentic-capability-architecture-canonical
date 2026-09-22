@@ -2,7 +2,7 @@
 
 Plan ID: ACA-PLAN-002
 Recorded: 2026-09-21
-Status: execution active. Prior-art convergence (A-1) is complete. A0 evidence repair merged in PR #63. A1 technical brownfield portability audit is complete and recorded in `docs/experiments/cross-repo-reuse/A1_BROWNFIELD_PORTABILITY.md`; A1 is blocked at source-owner/redistribution authorization before any Product N change or retained artifact. A2–A6 have not started.
+Status: historical / standalone execution stopped by Brian on 2026-09-22; see ADR-018 and docs/NEXT_PROOF.md. Preserve existing artifacts and recover already-produced evidence without claiming missing receipts or starting further trials. This is a direction change, not a passed-all-stages or economic-sufficiency claim.
 Outcome owner: Brian Mills.
 Planning baseline: canonical `main` at `9bdf123776e6f1379c1a4b1b0ea3ed618d4348b3`.
 Predecessor: [ACA-PLAN-001](2026-09-18-minimal-composability.md), including merged PRs #59–61.
@@ -212,4 +212,4 @@ Planning is complete when this plan is linked from current navigation, source cl
 
 Execution closes with one useful delivered consumer or an honestly retained failed/rejected reuse result, independently checked compatibility/evidence, measured economics or explicit unknowns, and a scoped adoption/defer/reject decision. Register/propose a boundary only with honest provenance and observed use; no automatic `proven`/`core` promotion. Index the outcome in the existing proof ledger.
 
-**Next executable step after adoption: A0, evidence/status repair.** Then qualify the original Product N boundary and freeze one fair pair. Do not start with a new ACA subsystem, an n8n connection, or another broad architecture audit.
+**Historical next-step instruction superseded by ADR-018.** Do not resume this sequence automatically; current work returns to AES product engineering.

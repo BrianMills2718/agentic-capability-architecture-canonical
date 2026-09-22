@@ -1,5 +1,15 @@
 # Proof Ledger
 
+## Current continuation disposition - 2026-09-22
+
+ADR-018 stops automatic continuation of standalone ACA research and routes the
+architecture guidance into AES product engineering. The observations below keep
+their original scope; pending hypotheses are not an instruction to run more
+experiments. No new A3 score receipt is asserted by this documentation change.
+Already-produced local results may be recovered and indexed separately, with
+actual provenance and limitations, without rerunning the experiment. This does
+not promote a capability, prove or disprove modular architecture, or retire code.
+
 This is the repository's **current proof-status index**. Historical proof plans, iteration logs, PR descriptions, and session notes may describe what was pending at the time they were written; reconcile current completed/pending claims here first.
 
 GitHub Actions run IDs are retained so claims can be checked against the original proof repositories where access remains available.
@@ -61,7 +71,7 @@ Indexed here so current status is reconciled in one place. Full audit: [`experim
 - **Status of the wrapper:** `observed` reuse entry in `reuse_candidates.yml`; not registered, not promoted, no manifest export. `observed` is intentional because the later caller exercised only a trivial read-only subset in the same repository/domain family.
 - **Next:** ACA-PLAN-002 A1 onward. The effect-safety canary (A5) is the only planned test of approval binding and durable idempotency and has not been run.
 
-## Pending decisive proof
+## Deferred research question (not a current execution mandate)
 
 The most important unresolved question is **not** whether a fresh agent can follow a task that names the expected capability choices. It is whether accumulated capability knowledge materially improves agent performance over a control.
 
