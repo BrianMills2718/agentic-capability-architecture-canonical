@@ -2,7 +2,7 @@
 
 Plan ID: ACA-PLAN-002
 Recorded: 2026-09-21
-Status: execution active. Prior-art convergence (A-1) is complete. A0 evidence repair merged in PR #63. A1 technical brownfield portability audit is complete and recorded in `docs/experiments/cross-repo-reuse/A1_BROWNFIELD_PORTABILITY.md`; A1 is blocked at source-owner/redistribution authorization before any Product N change or retained artifact. A2–A6 have not started.
+Status: **read-only tranche complete on 2026-09-22.** A-1 prior-art convergence, A0 evidence repair, A1 brownfield portability, A2 frozen instrument, A3 first control/reuse pair, A4 evaluation, and A6 closeout are complete. A5 effect-safety canary is explicitly deferred because this tranche makes no new effectful-readiness claim. Result: [A3/A4 control-vs-reuse result](../experiments/cross-repo-reuse/A3_A4_RESULT.md).
 Outcome owner: Brian Mills.
 Planning baseline: canonical `main` at `9bdf123776e6f1379c1a4b1b0ea3ed618d4348b3`.
 Predecessor: [ACA-PLAN-001](2026-09-18-minimal-composability.md), including merged PRs #59–61.
@@ -17,6 +17,8 @@ Separate three claims: **technical consumption** (the retained boundary actually
 Keep the current default: ordinary provider interfaces, existing packages/products, generated adapters, and focused tests before custom ACA infrastructure. Missing proof of general sufficiency is not evidence that a new runtime is needed. Retain existing manifest-derived discovery, evidence, and lifecycle controls while testing whether they help; do not expand them by default.
 
 The endpoint is a bounded delivery decision, not another platform or universal composability proof. No further Twitter prospect scoring or manual prospect review is needed for this work.
+
+**Outcome recorded 2026-09-22:** the treatment worker passed the held-out product contract but explicitly rejected the retained Product N asset for dependency and semantic-fit reasons; it was 26.8% slower and materially more model-context-expensive than control. The experiment therefore does not demonstrate economic reuse compounding for this asset/task. It does provide bounded evidence that a fresh worker can reject a plausible reusable asset rather than force-fit it. No new ACA machinery is justified.
 
 ## 2. Starting evidence and necessary qualifications
 

@@ -38,3 +38,20 @@ candidates:
       - "No packaging or version-drift evidence: the pinned revision was a same-directory import, not a dependency pin, and no provider or boundary version change was tested."
       - "Live evidence is prose only: the 2026-09-19 and 2026-09-20 runs have no retained machine receipt. The consumer test suite never calls the real boundary."
       - "Observed is intentional rather than candidate: the later caller exercised only a trivial read-only subset in the same repository/domain family, so the evidence does not yet establish a credible generalized capability surface. Do not register or promote on this evidence. A registered export must resolve a real public interface through the existing manifest and catalog conventions."
+  - id: product_n_twitter_collection_boundary
+    project: aca_plan_002_cross_repo_reuse
+    description: >-
+      Pre-existing Product N TwitterAPI.io multi-query collection behavior audited for cross-repository
+      portability and then offered to a fresh Product N+1 treatment worker. Recorded as rejected-fit
+      evidence, not as a promoted reusable capability.
+    status: observed
+    evidence:
+      - docs/experiments/cross-repo-reuse/A1_BROWNFIELD_PORTABILITY.md records the brownfield publication audit and private pinned-artifact feasibility.
+      - docs/experiments/cross-repo-reuse/A3_A4_RESULT.md records the frozen control/reuse pair and explicit treatment rejection.
+    notes:
+      - "Technical portability: byte-identical provider/model code ran after ordinary packaging/export normalization; no ACA runtime or registry service was needed."
+      - "Publication debt: the source product had no installable package boundary and eager package initialization pulled in broader application/LLM dependencies."
+      - "Rejected fit: the A3 treatment worker rejected the retained asset for offline dependency friction plus semantic mismatch with Product N+1 ranking, profile ownership, conflict-warning, and all-query-failure requirements."
+      - "Economic result: treatment was 26.8% slower than control and materially more model-context/list-cost intensive; the asset was not executed by the submitted solution."
+      - "Correctness result: treatment passed 35/35 hidden behavioral checks; control passed 33/35. Because the asset was rejected, do not attribute this correctness difference to code reuse."
+      - "Do not register or promote from this evidence. Retain the rejection so later agents can avoid rediscovering the same mismatch or can reconsider only after a materially different consumer requirement or producer revision."

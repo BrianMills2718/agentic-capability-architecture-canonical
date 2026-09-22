@@ -59,11 +59,23 @@ Indexed here so current status is reconciled in one place. Full audit: [`experim
 - **Supported, as scoped:** one read-only Python wrapper (`search_candidates`, TwitterAPI.io) was called by a scoring pipeline and by a second digest consumer in the same repository, language, and provider domain family, with no change to the wrapper. No ACA registry, semantic layer, or runtime was needed for that path. Recorded live runs (2026-09-19, 2026-09-20) are prose only, with no retained receipt.
 - **Not established:** ADR-014 approval binding or durable idempotency (the pilot used a string gate and a process-local in-memory sink); a semantic compatibility checker (field-presence only); "all six profile checks"; a pinned dependency; cross-repository or cross-language reuse; discovery/selection (the consumer was told the boundary); measured delivery economics (no control, no cost/time data; unknown, not zero); product completion (no human review, LLM scoring, live n8n, or real handoff); any n8n product evaluation.
 - **Status of the wrapper:** `observed` reuse entry in `reuse_candidates.yml`; not registered, not promoted, no manifest export. `observed` is intentional because the later caller exercised only a trivial read-only subset in the same repository/domain family.
-- **Next:** ACA-PLAN-002 A1 onward. The effect-safety canary (A5) is the only planned test of approval binding and durable idempotency and has not been run.
+- **Next at that time:** ACA-PLAN-002 A1 onward. The later ACA-PLAN-002 read-only tranche is recorded below. The effect-safety canary (A5) remains unrun and no effectful-readiness claim follows from either plan.
+
+## Cross-repository control/reuse experiment (ACA-PLAN-002, 2026-09-21 to 2026-09-22) — bounded negative for reuse economics
+
+Full result: [`experiments/cross-repo-reuse/A3_A4_RESULT.md`](experiments/cross-repo-reuse/A3_A4_RESULT.md).
+
+- **Publication finding:** the pre-existing Product N TwitterAPI.io client was not publication-ready as-is (no installable package boundary and eager package-init coupling), but byte-identical provider/model code was technically portable after ordinary packaging/export normalization. This was publication debt, not evidence for an ACA runtime.
+- **Frozen pair:** both scored workers used fresh `claude-sonnet-5` subscription sessions, the same behavior-only Product N+1 brief, synthetic replay transport, no live provider calls, and the same held-out evaluator. Control commit `dbe7023` completed in 295 s; treatment commit `3c5ee95` completed in 374 s.
+- **Correctness:** control passed 33/35 mandatory behavioral checks; treatment passed 35/35 plus treatment-provenance checks.
+- **Asset outcome:** the treatment worker explicitly **rejected** the retained Product N asset for dependency/publication friction and semantic mismatch, then implemented the required behavior locally. The provenance hook accepted this as a reasoned rejection, not silent bypass.
+- **Economics:** treatment was 26.8% slower and its Claude-reported list-basis model cost was ~78.8% higher. Actual incremental model cash was $0 in both arms because existing subscription access was used. A1 publication active time was not measured precisely enough to compute honest first-use economics.
+- **Interpretation:** this experiment does **not** demonstrate economic compounding or successful composition of Product N behavior into Product N+1. It does provide bounded evidence that a fresh worker can reject a plausible accumulated asset instead of force-fitting it. No new ACA mechanism was needed or justified.
+- **Stop rule:** no confirmation pair was run because the frozen positive criterion required at least 20% accepted-delivery-time improvement in **both** pairs; the first pair already made that criterion unattainable. The read-only tranche is closed; A5 is deferred.
 
 ## Pending decisive proof
 
-The most important unresolved question is **not** whether a fresh agent can follow a task that names the expected capability choices. It is whether accumulated capability knowledge materially improves agent performance over a control.
+The most important unresolved question remains whether accumulated capability knowledge materially improves agent performance over a control **when the candidate asset is genuinely well-matched and discovered rather than handed to the worker**. ACA-PLAN-002 adds one bounded negative data point: the supplied asset was correctly rejected and did not improve delivery economics.
 
 The existing Shipment Exception challenge under `proof/fresh_agent_registry_discovery/challenge/` is useful as a guided mechanics fixture, but its task currently names the shared notification choice, instructs the agent not to recreate shared transition/notification logic, and exposes expected API shapes. A pass therefore demonstrates bounded instruction-following/composition mechanics, not independent discovery advantage.
 
