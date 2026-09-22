@@ -2,6 +2,8 @@
 
 This is the shortest explanation for collaborators who want to understand what the repository is for before reading the research history.
 
+**Current operating direction:** ACA contributes its existing capability boundaries, code, and evidence through [AES canonical](https://github.com/BrianMills2718/agentic-engineering-system-canonical) under [ADR-018](docs/DECISIONS.md#adr-018--apply-aca-through-aes-product-engineering). Standalone ACA benchmarks, demonstration products, and mechanism-building are not an automatic work queue; normal product delivery should use established frameworks/modules and retain evidence through the owning systems.
+
 ## The 30-second version
 
 Most coding-agent workflows start each project with a requirement plus whatever happens to be in that project's repository. The agent then rediscovers interfaces, rewrites familiar behavior, and leaves most of what it learned trapped in that project.
@@ -80,7 +82,7 @@ Several important claims remain hypotheses:
 - Candidate capability maturity evidence is still being hardened; a green structural check should not be read as proof that every capability claim is semantically true.
 - The engagement workspace is a planning/evidence discipline for a cooperative worker. Its shipped hashes and self-check are not an adversarial security boundary, and evidence sanitization still requires human review.
 
-These are useful limits because they define the next experiments rather than weakening the architecture thesis.
+These are useful limits on what can be claimed. They remain legitimate research questions, but under ADR-018 they do **not** define an automatic standalone experiment queue; current evidence should emerge primarily from normal AES product delivery and authentic capability use/rejection.
 
 ## Machine-readable truth hierarchy
 
@@ -102,9 +104,9 @@ For a real task, a good instruction is:
 
 For a hands-on guided demonstration, follow [`QUICKSTART.md`](QUICKSTART.md).
 
-## How we will know whether the thesis is right
+## How the thesis can be evaluated
 
-The decisive experiment is not whether an agent can follow these instructions. It is whether, on comparable tasks and fresh sessions, the accumulated capability system causes measurable improvement over a control.
+The decisive evidence is not whether an agent can follow these instructions. It is whether accumulated capability knowledge materially improves comparable delivery over an appropriate control or, in ordinary product work, repeatedly reduces effort/risk while preserving quality. A dedicated control/treatment experiment is deferred unless separately authorized for a concrete product decision.
 
 The metrics that matter include:
 
