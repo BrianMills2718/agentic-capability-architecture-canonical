@@ -43,9 +43,12 @@ candidates:
     description: >-
       Turn office, web and mail documents (Word, Excel, PowerPoint, PDF, HTML, XML, YAML, email,
       zip) into text passages that keep each passage's source file and position. Implemented
-      separately in at least four projects; selected implementation is off the shelf (Microsoft
-      MarkItDown, with IBM Docling as the alternative for hard PDFs and tables), per AES Decision
-      0012 and AES-CAP-002. No product code is stored here.
+      separately in at least four projects. Implementation is off the shelf, per AES Decision 0012
+      and AES-CAP-002: IBM Docling as primary, because it records provenance (page, bounding box,
+      origin document) on every item and its chunker carries it into chunk metadata, which the
+      passage boundary needs; Microsoft MarkItDown only for formats Docling does not read, since
+      its Markdown output has no documented positions. To confirm on Brian's real files before
+      promotion. No product code is stored here.
     status: candidate
     similar_to:
       - crest_kg
