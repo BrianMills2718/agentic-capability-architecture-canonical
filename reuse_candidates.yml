@@ -38,3 +38,24 @@ candidates:
       - "No packaging or version-drift evidence: the pinned revision was a same-directory import, not a dependency pin, and no provider or boundary version change was tested."
       - "Live evidence is prose only: the 2026-09-19 and 2026-09-20 runs have no retained machine receipt. The consumer test suite never calls the real boundary."
       - "Observed is intentional rather than candidate: the later caller exercised only a trivial read-only subset in the same repository/domain family, so the evidence does not yet establish a credible generalized capability surface. Do not register or promote on this evidence. A registered export must resolve a real public interface through the existing manifest and catalog conventions."
+  - id: documents_to_text
+    project: digimon_capability_ledger
+    description: >-
+      Turn office, web and mail documents (Word, Excel, PowerPoint, PDF, HTML, XML, YAML, email,
+      zip) into text passages that keep each passage's source file and position. Implemented
+      separately in at least four projects; selected implementation is off the shelf (Microsoft
+      MarkItDown, with IBM Docling as the alternative for hard PDFs and tables), per AES Decision
+      0012 and AES-CAP-002. No product code is stored here.
+    status: candidate
+    similar_to:
+      - crest_kg
+      - graph_application_toolkit
+      - trajectory
+      - digimon_corpus_prepare
+    evidence:
+      - "DIGIMON capability ledger (BrianMills2718/digimon_application_20260215 docs/reports/216_capability_ledger.md, PR #426): nine KGAS document loaders (t02 Word, t07 HTML, t08 XML, t09 YAML, t10 Excel, t11 PowerPoint, t12 zip, t13 web, t14 email) neither present in DIGIMON nor recorded; DIGIMON's legacy corpus_prepare (Core/AgentTools/corpus_tools.py) is old-path only."
+      - "project-meta PROJECT_GRAPH.json descriptions: crest_kg (batch private ingestion), graph_application_toolkit (source-traceable multi-document corpus ingestion), trajectory (ingests commits, logs and docs) each ingest documents themselves; no project owns document ingestion."
+      - "AES Decision 0012 (agentic-engineering-system-canonical PR #451) names documents-to-text as the first case of catalogue-checked reuse."
+    notes:
+      - "Brian, 2026-10-08: \"we should definitely be using off the shelf for all these utils unless we absolutely can't\"; utilities live in BrianMills2718 utils as thin wrappers, not rebuilt loaders."
+      - "Promotion requires two consumers (DIGIMON and crest_kg) calling one tool with a typed passage boundary that keeps source file and position."
