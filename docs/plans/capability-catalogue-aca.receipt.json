@@ -1,0 +1,409 @@
+{
+  "schema_version": "planning-method-conformance-receipt.v1",
+  "record_type": "planning_method_conformance_receipt",
+  "receipt_id": "RECEIPT-capability-catalogue-aca-75b8e14b169b",
+  "plan": {
+    "plan_ref": "docs/plans/capability-catalogue-aca.md",
+    "plan_sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+  },
+  "path_decision": {
+    "ref": "docs/plans/capability-catalogue-aca.path-decision.json",
+    "sha256": "37bbc4c08b6d9d3fc49e27b0bb781b98710e08f68118b22e046ff74a03552d3f",
+    "selected_path": "prototype",
+    "classified_path": "prototype",
+    "errors": []
+  },
+  "route": "inline_prototype",
+  "profile": {
+    "profile_id": "bounded-design",
+    "revision": "bounded-design@6",
+    "path": "contracts/method-conformance/profiles/bounded-design.v1.json",
+    "sha256": "0b8b1ff4860f7caf400897ba1a7ddae85a227b15ce17c8a2f7412d6d2dc825e5"
+  },
+  "compiler": {
+    "path": "scripts/method_conformance/compiler.py",
+    "sha256": "97e8810884e9875e02d9729fc9b18010173f4daf881423ec2da8a1baa186b502"
+  },
+  "activation": {
+    "facts_ref": "docs/plans/capability-catalogue-aca.facts.json",
+    "facts_sha256": "911d4e6228494127842de1d50e73da7d6d02cdb157729a67c3746413dd0a9901",
+    "facts": {
+      "shared_mechanism": false,
+      "empirical_comparison_proposed": false,
+      "llm_central": false,
+      "irreversible_or_spend_action": false,
+      "crosses_system_boundary": false,
+      "deploys": false,
+      "multiple_writers": false,
+      "consequential_boundary": false,
+      "inline_prototype": true
+    },
+    "fact_origins": {
+      "shared_mechanism": "declared:derived_current_boundary",
+      "empirical_comparison_proposed": "declared:derived_current_boundary",
+      "llm_central": "declared:derived_current_boundary",
+      "irreversible_or_spend_action": "declared:derived_current_boundary",
+      "crosses_system_boundary": "default:not_declared",
+      "deploys": "default:not_declared",
+      "multiple_writers": "derived:path_decision.concurrent_writers",
+      "consequential_boundary": "derived:path_decision.persistent_migration|consequential_external_mutation",
+      "inline_prototype": "derived:classified_path==prototype"
+    },
+    "overlays": [
+      {
+        "overlay_id": "OV-PRIOR-ART",
+        "activation_fact": "shared_mechanism",
+        "active": false,
+        "reason": "shared_mechanism=false (declared:derived_current_boundary)"
+      },
+      {
+        "overlay_id": "OV-EMPIRICAL-COMPARISON",
+        "activation_fact": "empirical_comparison_proposed",
+        "active": false,
+        "reason": "empirical_comparison_proposed=false (declared:derived_current_boundary)"
+      },
+      {
+        "overlay_id": "OV-LLM-CENTRAL",
+        "activation_fact": "llm_central",
+        "active": false,
+        "reason": "llm_central=false (declared:derived_current_boundary)"
+      },
+      {
+        "overlay_id": "OV-MULTIPLE-WRITERS",
+        "activation_fact": "multiple_writers",
+        "active": false,
+        "reason": "multiple_writers=false (derived:path_decision.concurrent_writers)"
+      },
+      {
+        "overlay_id": "OV-CONSEQUENTIAL-BOUNDARY",
+        "activation_fact": "consequential_boundary",
+        "active": false,
+        "reason": "consequential_boundary=false (derived:path_decision.persistent_migration|consequential_external_mutation)"
+      },
+      {
+        "overlay_id": "OV-INLINE-PROTOTYPE",
+        "activation_fact": "inline_prototype",
+        "active": true,
+        "reason": "inline_prototype=true (derived:classified_path==prototype)"
+      },
+      {
+        "overlay_id": "OV-SYSTEM-BOUNDARY",
+        "activation_fact": "crosses_system_boundary",
+        "active": false,
+        "reason": "crosses_system_boundary=false (default:not_declared)"
+      },
+      {
+        "overlay_id": "OV-DEPLOYMENT",
+        "activation_fact": "deploys",
+        "active": false,
+        "reason": "deploys=false (default:not_declared)"
+      }
+    ]
+  },
+  "checklist": {
+    "checklist_id": "method-conformance.bounded-design",
+    "revision": "sha256:c8e67ed3d251f684e71e4954c5c85c0e39fdef493e2d7b18560def78f86cd600",
+    "definition_sha256": "5b519fb3b1c3226e14eac6d767d0a37d16eb0503fc45d2559818ffb57ae1e0bc",
+    "bundle_ref": "docs/plans/capability-catalogue-aca.bundle.json",
+    "bundle_sha256": "2cd10d607c64f1f93b93364609f5a70065ff2349ff19d3b85b5dcbc0191535cb",
+    "coverage": "complete",
+    "definition_matches_recompilation": true
+  },
+  "items": [
+    {
+      "item_id": "CORE-ACTOR-RESULT-EXAMPLE",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#actor-and-result",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-ACTOR-RESULT-EXAMPLE",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The evidence explicitly names the actor as Brian, states the desired result for catalog-info.yaml, and gives a concrete, user-visible stable example: the AES collector reads and reports the status of the documents_to_text entry.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-ROUTE",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "structural",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.path-decision.json",
+          "sha256": "37bbc4c08b6d9d3fc49e27b0bb781b98710e08f68118b22e046ff74a03552d3f"
+        }
+      ],
+      "semantic": null,
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-SUCCESS-DISPROOF",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#success-and-disproof",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-SUCCESS-DISPROOF",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The evidence explicitly defines success as the collector reporting the required descriptor, capabilities, and source status, with repository checks exiting 0 and trace requirements. It also gives a concrete disproof condition: the descriptor is invalid or a source entry is missing.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-TRACE-REVIEW",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#success-and-disproof",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-TRACE-REVIEW",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The evidence names the AES collector success check run, specifies that it ran once on the change commit, identifies its complete saved output and exact path, and states what must be seen beyond the final result, including commands, checks, results, skips, exit status, and model-element lines. It also explicitly states that both success and disproof are judged from that trace.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-SYSTEM-MODEL",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-SYSTEM-MODEL",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The evidence explicitly provides the exemption line: “System model: exempt -- adds one read-only descriptor file; no stored state or view changes in this repository.” The exemption fits the stated condition because it explicitly says there is no stored state or view change.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-AUTHORITY-NONGOALS",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#authority-and-non-goals",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-AUTHORITY-NONGOALS",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The evidence explicitly identifies Brian as the authority requesting the change in his own repository and states the non-goals: work outside the listed files, irreversible actions, and spending.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-IRREVERSIBLE-SPEND",
+      "effect": "blocking",
+      "applicability_mode": "conditional",
+      "condition_fact": "irreversible_or_spend_action",
+      "condition_value": false,
+      "verifier_kind": "semantic",
+      "disposition": "not_applicable",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [],
+      "semantic": null,
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-UNCERTAINTIES",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#uncertainties",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-UNCERTAINTIES",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The plan explicitly lists a material uncertainty—whether the change needs files beyond the listed file—and provides resolving evidence: `git status --short` listing only `catalog-info.yaml`, to be checked before editing.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "CORE-ACTIVATION-FACTS",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#activation-facts",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-ACTIVATION-FACTS",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The plan explicitly describes a bounded read-only descriptor change, with “no shared mechanism, no comparison, no LLM at the centre, no irreversible action or spend.” Its checks validate the built result against stated outcomes rather than comparing alternative designs, so none of the facts declared false is triggered.",
+        "reused": false
+      },
+      "suggested_action": null
+    },
+    {
+      "item_id": "OV-PROTO-VERTICAL-RESET",
+      "effect": "blocking",
+      "applicability_mode": "required",
+      "condition_fact": null,
+      "condition_value": null,
+      "verifier_kind": "semantic",
+      "disposition": "pass",
+      "verifier_result": "pass",
+      "reason_codes": [],
+      "evidence": [
+        {
+          "ref": "docs/plans/capability-catalogue-aca.md#vertical-and-reset",
+          "sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17"
+        }
+      ],
+      "semantic": {
+        "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/OV-PROTO-VERTICAL-RESET",
+        "model": "openrouter/openai/gpt-5.6-luna",
+        "verdict": "pass",
+        "materiality": "non_material",
+        "missing": null,
+        "rationale": "The evidence explicitly names the minimal vertical result (`catalog-info.yaml` plus the saved check output), defines the reset boundary as `git revert` of the commit, and states the non-goal as anything outside these files. It does not add coordinated-work ceremony.",
+        "reused": false
+      },
+      "suggested_action": null
+    }
+  ],
+  "item_counts": {
+    "pass": 9,
+    "unresolved": 0,
+    "not_applicable": 1,
+    "unavailable": 0,
+    "missing": 0
+  },
+  "semantic_verifier": {
+    "kind": "llm_client",
+    "available": true,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "task": "company_planning.method_conformance.semantic_item_review"
+  },
+  "conformance_report": {
+    "schema_version": "1.0",
+    "record_type": "planning_conformance_report",
+    "report_id": "REPORT-capability-catalogue-aca-75b8e14b169b",
+    "snapshot_ref": "SNAPSHOT-capability-catalogue-aca",
+    "snapshot_revision": "sha256:2cd10d607c64f1f93b93364609f5a70065ff2349ff19d3b85b5dcbc0191535cb",
+    "packet_ref": "docs/plans/capability-catalogue-aca.md",
+    "packet_revision": "sha256:75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17",
+    "structural_status": "pass",
+    "semantic_review_status": "complete",
+    "diagnostics": [],
+    "route": "inline_prototype",
+    "adoption_readiness": "ready_for_contributor",
+    "limitations": [
+      "Semantic verdicts judge only the cited plan excerpt against the item statement; they do not judge product strategy."
+    ]
+  },
+  "advisory_deviations": [],
+  "result": "pass",
+  "reason_codes": [],
+  "actionable_summary": [
+    "pass: 9 items evidenced, 1 confirmed not applicable, 0 advisory deviation(s)"
+  ],
+  "limitations": [
+    "Semantic verdicts judge only the cited plan excerpt against the item statement; they do not judge product strategy."
+  ],
+  "caller": {
+    "client": "quick-adopt",
+    "session": "36c60342-4bb5-4e4e-aaa7-ea5b7916b499"
+  },
+  "started_at": "2026-10-09T00:30:35Z",
+  "completed_at": "2026-10-09T00:31:06Z",
+  "duration_ms": 28025
+}

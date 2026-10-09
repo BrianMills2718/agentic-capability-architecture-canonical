@@ -1,0 +1,74 @@
+{
+  "19c4a0fa024385b1ea9f4e838607fe36508af85329866cf07db6cef83f0f33b7": {
+    "item_id": "CORE-TRACE-REVIEW",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The evidence names the AES collector success check run, specifies that it ran once on the change commit, identifies its complete saved output and exact path, and states what must be seen beyond the final result, including commands, checks, results, skips, exit status, and model-element lines. It also explicitly states that both success and disproof are judged from that trace.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-TRACE-REVIEW",
+    "verdict": "pass"
+  },
+  "26bcc9aeb326ece2bd83f5aacf84dd89ff4760aa0032d4b85dd78306d372ed1c": {
+    "item_id": "OV-PROTO-VERTICAL-RESET",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The evidence explicitly names the minimal vertical result (`catalog-info.yaml` plus the saved check output), defines the reset boundary as `git revert` of the commit, and states the non-goal as anything outside these files. It does not add coordinated-work ceremony.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/OV-PROTO-VERTICAL-RESET",
+    "verdict": "pass"
+  },
+  "3f7ee9b1c2170b7f7bacecfaa297e037a3d8856a7117d7b12421e18d6f8f0e86": {
+    "item_id": "CORE-ACTOR-RESULT-EXAMPLE",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The evidence explicitly names the actor as Brian, states the desired result for catalog-info.yaml, and gives a concrete, user-visible stable example: the AES collector reads and reports the status of the documents_to_text entry.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-ACTOR-RESULT-EXAMPLE",
+    "verdict": "pass"
+  },
+  "840570ccea37b25a05af86acde87e7608464188c9e7dbeaca46de6e8cb6d2368": {
+    "item_id": "CORE-AUTHORITY-NONGOALS",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The evidence explicitly identifies Brian as the authority requesting the change in his own repository and states the non-goals: work outside the listed files, irreversible actions, and spending.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-AUTHORITY-NONGOALS",
+    "verdict": "pass"
+  },
+  "91303362f90042676a023ff3297cd54ee59b8b758afada2784884479081c8b4f": {
+    "item_id": "CORE-ACTIVATION-FACTS",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The plan explicitly describes a bounded read-only descriptor change, with \u201cno shared mechanism, no comparison, no LLM at the centre, no irreversible action or spend.\u201d Its checks validate the built result against stated outcomes rather than comparing alternative designs, so none of the facts declared false is triggered.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-ACTIVATION-FACTS",
+    "verdict": "pass"
+  },
+  "a1906258d18d92e8b0d0d59bbcad043bad7467bfbc396724aac92919c152b4fe": {
+    "item_id": "CORE-SUCCESS-DISPROOF",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The evidence explicitly defines success as the collector reporting the required descriptor, capabilities, and source status, with repository checks exiting 0 and trace requirements. It also gives a concrete disproof condition: the descriptor is invalid or a source entry is missing.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-SUCCESS-DISPROOF",
+    "verdict": "pass"
+  },
+  "ac192d1da5a8789fc8f779769ff452fc0677a71db21e8b8d9f83d5483ef96889": {
+    "item_id": "CORE-SYSTEM-MODEL",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The evidence explicitly provides the exemption line: \u201cSystem model: exempt -- adds one read-only descriptor file; no stored state or view changes in this repository.\u201d The exemption fits the stated condition because it explicitly says there is no stored state or view change.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-SYSTEM-MODEL",
+    "verdict": "pass"
+  },
+  "c9e19cdb9625c0eeddb25d0182985d7b7c095c97b9437b94094f4c759348441d": {
+    "item_id": "CORE-UNCERTAINTIES",
+    "materiality": "non_material",
+    "missing": null,
+    "model": "openrouter/openai/gpt-5.6-luna",
+    "rationale": "The plan explicitly lists a material uncertainty\u2014whether the change needs files beyond the listed file\u2014and provides resolving evidence: `git status --short` listing only `catalog-info.yaml`, to be checked before editing.",
+    "trace_id": "company-planning/method-conformance/capability-catalogue-aca/db8e9f9804a6/CORE-UNCERTAINTIES",
+    "verdict": "pass"
+  }
+}
