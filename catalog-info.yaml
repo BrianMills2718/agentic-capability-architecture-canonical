@@ -1,0 +1,73 @@
+# Backstage catalog descriptor (https://backstage.io/docs/features/software-catalog/descriptor-format).
+# Read by the AES capability catalogue (agentic-engineering-system-canonical scripts/catalogue/,
+# Decision 0012); no Backstage server runs. reuse_candidates.yml and capability_registry.yml stay
+# the authority (Decision 0012): each capability below points at its entry with
+# source: <file>#<id>, the collector shows that entry's status and flags the capability when the
+# id is gone. Nothing here restates the entry's evidence beyond one pointer line.
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: agentic-capability-architecture
+  title: Agentic Capability Architecture
+  description: The capability catalogue applied through AES (Decision 0009, 0012); reuse candidates observed across projects and the capability packages this repository holds.
+  annotations:
+    github.com/project-slug: BrianMills2718/agentic-capability-architecture-canonical
+spec:
+  type: library
+  lifecycle: experimental
+  owner: user:default/brianmills2718
+  capabilities:
+    - id: documents_to_text
+      title: Turn documents into text passages that keep source file and position
+      status: selected
+      source: reuse_candidates.yml#documents_to_text
+      implementations:
+        - {name: docling, package: docling, role: primary, kind: off_the_shelf}
+        - {name: markitdown, package: markitdown, role: fallback, kind: off_the_shelf}
+      tools: []
+      boundary:
+        status: unresolved
+        note: "No data_contracts passage type with page and position exists yet; promotion needs one (reuse_candidates.yml notes)."
+      evidence:
+        - "reuse_candidates.yml#documents_to_text (DIGIMON capability ledger, PR #426; AES Decision 0012)."
+      consumers: [digimon, crest_kg]
+    - id: approval_action_workflow
+      title: Approval-gated action lifecycle
+      status: partial
+      source: reuse_candidates.yml#approval_action_workflow
+      implementations:
+        - {name: na_approvals, path: capabilities/approvals/frappe_app/na_approvals, role: rule resolver, kind: internal}
+      tools: []
+      boundary:
+        status: unresolved
+        note: "Approval rules resolve inside the Frappe app; no data_contracts type."
+      evidence:
+        - "reuse_candidates.yml#approval_action_workflow (Client Intake + Booking and Internal Procurement; clients/internal_procurement/LEARNINGS.md)."
+      consumers: [client_intake_booking, internal_procurement]
+    - id: twitterapi_io_search_candidates_wrapper
+      title: Read-only TwitterAPI.io search returning normalised candidates
+      status: present
+      source: reuse_candidates.yml#twitterapi_io_search_candidates_wrapper
+      implementations:
+        - {name: TwitterAPI.io, role: hosted search API, kind: external_service}
+      tools: []
+      boundary:
+        status: unresolved
+        note: "Returns plain dicts; no typed boundary."
+      evidence:
+        - "reuse_candidates.yml#twitterapi_io_search_candidates_wrapper (docs/experiments/independent-composition/twitterapi_io_collection.py, commit 072565d)."
+      consumers: [live_pipeline, engineering_signal_digest]
+    - id: capability_package_catalogue
+      title: List, describe and check this repository's capability packages
+      status: present
+      source: capability_registry.yml#capabilities
+      implementations: []
+      tools:
+        - {kind: make, name: capability-list}
+        - {kind: make, name: capability-describe}
+        - {kind: make, name: capability-catalog-check}
+      boundary:
+        status: unresolved
+        note: "JSON output of tools/capability_catalog.py; no data_contracts type."
+      evidence:
+        - "Makefile targets run tools/capability_catalog.py list/describe/check over capability_registry.yml."
