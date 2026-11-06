@@ -1,0 +1,1 @@
+{"attempted_at": "2026-10-09T00:31:06Z", "decision": "adopted", "not_passed_items": [], "plan_ref": "docs/plans/capability-catalogue-aca.md", "plan_sha256": "75b8e14b169b9ba612a065177c1d04fded305d142b7066fc5360194364f51b17", "reason_codes": [], "receipt_result": "pass", "record_type": "method_adoption_attempt", "route": "inline_prototype", "route_fit": null}
