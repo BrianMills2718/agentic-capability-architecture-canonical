@@ -63,6 +63,8 @@ snapshot. Missing execution receipts are not filled with inferred success.
 | --- | --- |
 | [`FRAPPE_INTEGRATION_RUNBOOK.md`](FRAPPE_INTEGRATION_RUNBOOK.md) | Current local real-Bench regression invocation; the executable script owns the app/site matrix. |
 | [`EXPORT_CHECKLIST.md`](EXPORT_CHECKLIST.md) | Current post-bootstrap export/handoff checklist. |
+| [`AGENT_IMPLEMENTATION_RULES.md`](AGENT_IMPLEMENTATION_RULES.md) | Agent rules moved from the root `AGENTS.md`: business-rule composition, triggered behavior and idempotent side effects, testing and evidence, change discipline. |
+| [`AGENT_ENGAGEMENT_RULES.md`](AGENT_ENGAGEMENT_RULES.md) | Agent rules moved from the root `AGENTS.md`: knowledge capture and the paid/client engagement workflow with its current trust boundary. |
 | [`ENGAGEMENT_OPERATING_SYSTEM.md`](ENGAGEMENT_OPERATING_SYSTEM.md) | Paid/client engagement workflow: isolated contractor kit, capability/composition plan, local delivery, metrics, and sanitized evidence closeout. |
 
 ## Experimental and research material

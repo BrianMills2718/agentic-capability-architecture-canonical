@@ -27,7 +27,9 @@ def test_package_check_validates_frappe_module_markers():
     assert "modules.txt" in checker
 
 def test_agent_rules_require_idempotent_retryable_side_effects():
-    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    # Moved from AGENTS.md to keep the root under the instruction-size cap; the root routes here.
+    agents = (ROOT / "docs/AGENT_IMPLEMENTATION_RULES.md").read_text(encoding="utf-8")
+    assert "docs/AGENT_IMPLEMENTATION_RULES.md" in (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     workflow = (ROOT / "docs/PROJECT_WORKFLOW.md").read_text(encoding="utf-8")
     assert "durable idempotency" in agents
     assert "side effect occurs only once" in agents
