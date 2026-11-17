@@ -1,0 +1,13 @@
+[project]
+name = "agentic-capability-architecture-tooling"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = []
+[dependency-groups]
+dev = ["agentic-engineering-system", "pytest>=9.1", "import-linter>=2.15", "PyYAML>=6,<7", "jsonschema>=4,<5", "requests"]
+[tool.uv]
+package = false
+[tool.uv.sources]
+agentic-engineering-system = { git = "https://github.com/BrianMills2718/agentic-engineering-system-canonical", rev = "05ee80c1a9cc77f692954b6de09a81ab0d9bdb0a" }
+[tool.lockstep]
+source = ["tools"]

@@ -29,6 +29,7 @@ def test_catalog_contains_only_audited_semantic_exports():
     assert all(item["source_file"].endswith(".py") for item in actions)
 
 
+@pytest.mark.req("capability-catalog/export-resolves-to-public-callable", existing=True)
 def test_exact_resolution_returns_declared_public_interface():
     item = resolve_action("state.transition.plan")
     assert item["capability"] == "core"
@@ -60,6 +61,7 @@ def test_exported_interfaces_are_real_callables():
             sys.path.remove(value)
 
 
+@pytest.mark.req("capability-catalog/export-names-non-public-interface", existing=True)
 def test_catalog_rejects_non_public_export(tmp_path):
     (tmp_path / "capabilities/example").mkdir(parents=True)
     (tmp_path / "capability_registry.yml").write_text(
@@ -76,6 +78,7 @@ def test_catalog_rejects_non_public_export(tmp_path):
         build_catalog(tmp_path)
 
 
+@pytest.mark.req("capability-catalog/export-target-missing", existing=True)
 def test_catalog_rejects_export_whose_callable_does_not_exist(tmp_path):
     (tmp_path / "capabilities/example").mkdir(parents=True)
     runtime = tmp_path / "runtime"
