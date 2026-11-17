@@ -6,6 +6,14 @@ this catalog only when its declared public target can also be resolved to a real
 top-level callable in the capability's pinned runtime source. This keeps the
 agent-facing executable surface narrower and stronger than broad capability-scope
 metadata such as ``provides``.
+
+Implements: capability-catalog/verified-semantic-exports
+
+Requirement text (generated):
+    capability-catalog/verified-semantic-exports: The catalog SHALL admit a semantic export only
+        when its action is declared in `provides`, its target is declared in `public_interfaces`,
+        and the target resolves to a real top-level function or class in the capability's runtime
+        source.
 """
 from __future__ import annotations
 

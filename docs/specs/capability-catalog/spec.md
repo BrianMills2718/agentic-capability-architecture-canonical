@@ -1,0 +1,1 @@
+../../../openspec/specs/capability-catalog/spec.md

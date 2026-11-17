@@ -1,0 +1,5 @@
+specification { element component }
+model {
+ catalog = component 'Semantic action catalog' { metadata { python 'tools.capability_catalog' } }
+}
+views { view index { include * } }
